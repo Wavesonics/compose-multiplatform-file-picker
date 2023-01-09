@@ -19,7 +19,7 @@ kotlin {
     sourceSets {
         val jvmMain by getting {
             dependencies {
-                implementation(project(":common"))
+                implementation(project(":mpfilepicker"))
                 implementation(compose.desktop.currentOs)
             }
         }

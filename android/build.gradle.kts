@@ -8,11 +8,11 @@ group "com.darkrockstudios.libraries.mpfilepicker"
 version "1.0-SNAPSHOT"
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {
-    implementation(project(":common"))
+    implementation(project(":mpfilepicker"))
     implementation("androidx.activity:activity-compose:1.6.1")
 }
 
