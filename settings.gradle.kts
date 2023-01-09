@@ -17,4 +17,4 @@ pluginManagement {
 
 rootProject.name = "MultiplatformFilePicker"
 
-include(":mpfilepicker", ":android", ":desktop")
+include(":mpfilepicker", ":android", ":desktopExample")
