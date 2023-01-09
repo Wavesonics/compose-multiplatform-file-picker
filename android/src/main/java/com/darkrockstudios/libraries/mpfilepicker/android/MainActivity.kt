@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.darkrockstudios.libraries.mpfilepicker.common.DirectoryPicker
 import com.darkrockstudios.libraries.mpfilepicker.common.FilePicker
 
 class MainActivity : AppCompatActivity() {
@@ -19,19 +20,38 @@ class MainActivity : AppCompatActivity() {
         setContent {
             MaterialTheme {
                 Column {
-                    var show by remember { mutableStateOf(false) }
+                    var showFilePicker by remember { mutableStateOf(false) }
                     var pathChosen by remember { mutableStateOf("") }
 
                     Button(onClick = {
-                        show = true
+                        showFilePicker = true
                     }) {
                         Text("Choose File")
                     }
                     Text("File Chosen: $pathChosen")
 
-                    FilePicker(show) { path ->
-                        pathChosen = path
-                        show = false
+
+                    val fileType = "jpg"
+                    FilePicker(showFilePicker, fileExtension = fileType) { path ->
+                        pathChosen = path ?: "none selected"
+                        showFilePicker = false
+                    }
+
+                    /////////////////////////////////////////////////////////////////
+
+                    var showDirPicker by remember { mutableStateOf(false) }
+                    var dirChosen by remember { mutableStateOf("") }
+
+                    Button(onClick = {
+                        showDirPicker = true
+                    }) {
+                        Text("Choose Directory")
+                    }
+                    Text("Directory Chosen: $dirChosen")
+
+                    DirectoryPicker(showDirPicker) { path ->
+                        dirChosen = path ?: "none selected"
+                        showDirPicker = false
                     }
                 }
             }

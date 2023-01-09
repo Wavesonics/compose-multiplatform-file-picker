@@ -20,11 +20,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 api(compose.runtime)
-                api(compose.uiTooling)
-                api(compose.preview)
                 api(compose.foundation)
-                api(compose.material)
-                //api(compose.material3)
             }
         }
         val commonTest by getting {
@@ -34,6 +30,9 @@ kotlin {
         }
         val androidMain by getting {
             dependencies {
+                api(compose.uiTooling)
+                api(compose.preview)
+                api(compose.material)
                 api("androidx.appcompat:appcompat:1.5.1")
                 api("androidx.core:core-ktx:1.9.0")
                 api("androidx.activity:activity-compose:1.6.1")
@@ -46,9 +45,21 @@ kotlin {
         }
         val desktopMain by getting {
             dependencies {
+                api(compose.uiTooling)
                 api(compose.preview)
-                api("org.jetbrains.compose.ui:ui-util:1.2.2")
-                api("org.jetbrains.compose.ui:ui-text:1.2.2")
+                api(compose.material)
+
+                val lwjglVersion = "3.3.1"
+                listOf("lwjgl", "lwjgl-nfd").forEach { lwjglDep ->
+                    implementation("org.lwjgl:${lwjglDep}:${lwjglVersion}")
+                    listOf(
+                        "natives-windows", "natives-windows-x86", "natives-windows-arm64",
+                        "natives-macos", "natives-macos-arm64",
+                        "natives-linux", "natives-linux-arm64", "natives-linux-arm32"
+                    ).forEach { native ->
+                        runtimeOnly("org.lwjgl:${lwjglDep}:${lwjglVersion}:${native}")
+                    }
+                }
             }
         }
         val desktopTest by getting
@@ -56,11 +67,11 @@ kotlin {
 }
 
 android {
-    compileSdkVersion(33)
+    compileSdk = 33
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {
-        minSdkVersion(24)
-        targetSdkVersion(33)
+        minSdk = 24
+        targetSdk = 33
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8

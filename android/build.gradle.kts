@@ -13,15 +13,15 @@ repositories {
 
 dependencies {
     implementation(project(":common"))
-    implementation("androidx.activity:activity-compose:1.5.0")
+    implementation("androidx.activity:activity-compose:1.6.1")
 }
 
 android {
-    compileSdkVersion(33)
+    compileSdk = 33
     defaultConfig {
         applicationId = "com.darkrockstudios.libraries.mpfilepicker.android"
-        minSdkVersion(24)
-        targetSdkVersion(33)
+        minSdk = 24
+        targetSdk = 33
         versionCode = 1
         versionName = "1.0-SNAPSHOT"
     }
