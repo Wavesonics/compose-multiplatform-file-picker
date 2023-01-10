@@ -14,7 +14,7 @@ group = "com.darkrockstudios.libraries.mpfilepicker"
 version = "1.0-SNAPSHOT"
 
 val readableName = "Multiplatform File Picker"
-val repoUrl = "https://github.com/Wavesonics/ComposeMultiplatformFilePicker"
+val repoUrl = "https://github.com/Wavesonics/compose-multiplatform-file-picker"
 group = "com.darkrockstudios"
 description = "A multiplatform compose widget for picking files"
 version = library_version
@@ -134,9 +134,9 @@ kotlin {
                         }
                     }
                     scm {
-                        connection.set("scm:git:git://github.com/Wavesonics/ComposeMultiplatformFilePicker.git")
-                        developerConnection.set("scm:git:ssh://git@github.com/Wavesonics/ComposeMultiplatformFilePicker.git")
-                        url.set("https://github.com/Wavesonics/ComposeMultiplatformFilePicker")
+                        connection.set("scm:git:git://github.com/Wavesonics/compose-multiplatform-file-picker.git")
+                        developerConnection.set("scm:git:ssh://git@github.com/Wavesonics/compose-multiplatform-file-picker.git")
+                        url.set("https://github.com/Wavesonics/compose-multiplatform-file-picker")
                     }
                 }
             }
