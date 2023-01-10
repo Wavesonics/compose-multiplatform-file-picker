@@ -1,14 +1,32 @@
+import java.net.URI
+
 plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
     id("com.android.library")
+    id("maven-publish")
+    id("signing")
 }
+
+val library_version: String by extra
 
 group = "com.darkrockstudios.libraries.mpfilepicker"
 version = "1.0-SNAPSHOT"
 
+val readableName = "Multiplatform File Picker"
+val repoUrl = "https://github.com/Wavesonics/ComposeMultiplatformFilePicker"
+group = "com.darkrockstudios"
+description = "A multiplatform compose widget for picking files"
+version = library_version
+
+extra.apply {
+    set("isReleaseVersion", !(version as String).endsWith("SNAPSHOT"))
+}
+
 kotlin {
-    android()
+    android {
+        publishLibraryVariants("release")
+    }
     jvm("desktop") {
         compilations.all {
             kotlinOptions.jvmTarget = "11"
@@ -61,6 +79,87 @@ kotlin {
             }
         }
         val desktopTest by getting
+    }
+
+    val publicationsFromMainHost =
+        listOf(jvm("desktop"), android()).map { it.name } + "kotlinMultiplatform"
+
+    val javadocJar by tasks.registering(Jar::class) {
+        archiveClassifier.set("javadoc")
+    }
+
+    publishing {
+        repositories {
+            /*
+            maven {
+                name = "GitHubPackages"
+                url = URI("https://maven.pkg.github.com/wavesonics/richtext-compose-multiplatform")
+                credentials {
+                    username = System.getenv("GITHUB_ACTOR")
+                    password = System.getenv("GITHUB_TOKEN")
+                }
+            }
+            */
+            maven {
+                val releaseRepo =
+                    URI("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+                val snapshotRepo =
+                    URI("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+                url = if (extra["isReleaseVersion"] == true) releaseRepo else snapshotRepo
+                credentials {
+                    username = System.getenv("OSSRH_USERNAME") ?: "Unknown user"
+                    password = System.getenv("OSSRH_PASSWORD") ?: "Unknown password"
+                }
+            }
+        }
+        publications {
+            publications.withType<MavenPublication> {
+                artifact(javadocJar.get())
+
+                pom {
+                    name.set(readableName)
+                    description.set(project.description)
+                    inceptionYear.set("2023")
+                    url.set(repoUrl)
+                    developers {
+                        developer {
+                            name.set("Adam Brown")
+                            id.set("Wavesonics")
+                        }
+                    }
+                    licenses {
+                        license {
+                            name.set("MIT")
+                            url.set("https://opensource.org/licenses/MIT")
+                        }
+                    }
+                    scm {
+                        connection.set("scm:git:git://github.com/Wavesonics/ComposeMultiplatformFilePicker.git")
+                        developerConnection.set("scm:git:ssh://git@github.com/Wavesonics/ComposeMultiplatformFilePicker.git")
+                        url.set("https://github.com/Wavesonics/ComposeMultiplatformFilePicker")
+                    }
+                }
+            }
+
+            // Filter which targets get published
+            matching { it.name in publicationsFromMainHost }.all {
+                val targetPublication = this@all
+                tasks.withType<AbstractPublishToMaven>()
+                    .matching { it.publication == targetPublication }
+                //.configureEach { onlyIf { findProperty("isMainHost") == "true" } }*
+            }
+        }
+    }
+}
+
+signing {
+    val signingKey: String? = System.getenv("SIGNING_KEY")
+    val signingPassword: String? = System.getenv("SIGNING_PASSWORD")
+    if (signingKey != null && signingPassword != null) {
+        useInMemoryPgpKeys(null, signingKey, signingPassword)
+        sign(publishing.publications)
+    } else {
+        println("No signing credentials provided. Skipping Signing.")
     }
 }
 
