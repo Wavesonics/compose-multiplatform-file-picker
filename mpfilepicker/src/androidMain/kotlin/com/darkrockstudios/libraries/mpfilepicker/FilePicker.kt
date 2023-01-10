@@ -1,4 +1,4 @@
-package com.darkrockstudios.libraries.mpfilepicker.common
+package com.darkrockstudios.libraries.mpfilepicker
 
 import android.webkit.MimeTypeMap
 import androidx.activity.compose.rememberLauncherForActivityResult

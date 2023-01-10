@@ -11,8 +11,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.darkrockstudios.libraries.mpfilepicker.common.DirectoryPicker
-import com.darkrockstudios.libraries.mpfilepicker.common.FilePicker
+import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
+import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -1,5 +1,7 @@
 import java.net.URI
 
+val library_version: String by extra
+
 plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
@@ -7,11 +9,6 @@ plugins {
     id("maven-publish")
     id("signing")
 }
-
-val library_version: String by extra
-
-group = "com.darkrockstudios.libraries.mpfilepicker"
-version = "1.0-SNAPSHOT"
 
 val readableName = "Multiplatform File Picker"
 val repoUrl = "https://github.com/Wavesonics/compose-multiplatform-file-picker"
@@ -164,6 +161,7 @@ signing {
 }
 
 android {
+    namespace = "com.darkrockstudios.libraries.mpfilepicker"
     compileSdk = 33
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {

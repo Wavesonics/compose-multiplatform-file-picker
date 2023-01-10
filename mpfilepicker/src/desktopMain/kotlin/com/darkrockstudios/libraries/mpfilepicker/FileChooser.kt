@@ -1,4 +1,4 @@
-package com.darkrockstudios.libraries.mpfilepicker.common
+package com.darkrockstudios.libraries.mpfilepicker
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
