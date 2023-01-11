@@ -1,4 +1,4 @@
-# ComposeMultiplatformFilePicker
+# Compose Multiplatform File Picker
 
 A multiplatform compose widget for picking files with each platform's Native File Picker Dialog.
 
