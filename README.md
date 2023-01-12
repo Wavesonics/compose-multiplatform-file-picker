@@ -4,13 +4,13 @@ A multiplatform compose widget for picking files with each platform's Native Fil
 
 Currently supports: Desktop and Android.
 
-## Desktop/JVM Implementation
+#### Desktop/JVM Implementation
 
 The native desktop dialog implementation is derived from the Pacmc project: https://github.com/jakobkmar/pacmc
 
 See `FileChooser.kt` as well as the `lwjgl` gradle filter.
 
-### Include in your project:
+## Include in your project:
 
 ```kts
 implementation("com.darkrockstudios:mpfilepicker:1.0.0")
