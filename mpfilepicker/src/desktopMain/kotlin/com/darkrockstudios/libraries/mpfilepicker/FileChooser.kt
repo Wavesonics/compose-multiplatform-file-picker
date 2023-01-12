@@ -8,6 +8,10 @@ import javax.swing.JFileChooser
 import javax.swing.UIManager
 import javax.swing.filechooser.FileNameExtensionFilter
 
+/**
+ * This code is derived from the terrific PACMC project:
+ * https://github.com/jakobkmar/pacmc
+ */
 internal object FileChooser {
     private enum class CallType {
         FILE,

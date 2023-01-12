@@ -4,6 +4,12 @@ A multiplatform compose widget for picking files with each platform's Native Fil
 
 Currently supports: Desktop and Android.
 
+## Desktop/JVM Implementation
+
+The native desktop dialog implementation is derived from the Pacmc project: https://github.com/jakobkmar/pacmc
+
+See `FileChooser.kt` as well as the `lwjgl` gradle filter.
+
 ### Include in your project:
 
 ```kts
@@ -43,9 +49,13 @@ On each supported platform, it will update the platform native file picker dialo
 Swing file picker if the native one can't be use for some reason.
 
 ## Windows
+
 ![Windows native file picker](screenshot-desktop-windows.jpg "Windows native file picker")
 
 ## Android
+
 ![Android native file picker](screenshot-android.png "Android native file picker")
 
-One known bug right now is that setting the initial directory doesn't seem to effect Android's file picker at all, not sure why that is yet.
+## Known Bugs
+
+- Setting the initial directory doesn't seem to effect Android's file picker at all, not sure why that is yet.
