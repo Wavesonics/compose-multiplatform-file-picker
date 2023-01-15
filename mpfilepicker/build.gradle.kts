@@ -46,9 +46,10 @@ kotlin {
                 api(compose.uiTooling)
                 api(compose.preview)
                 api(compose.material)
-                api("androidx.appcompat:appcompat:1.5.1")
+                api("androidx.appcompat:appcompat:1.6.0")
                 api("androidx.core:core-ktx:1.9.0")
                 api("androidx.activity:activity-compose:1.6.1")
+                api("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
             }
         }
         val androidTest by getting {
@@ -61,6 +62,8 @@ kotlin {
                 api(compose.uiTooling)
                 api(compose.preview)
                 api(compose.material)
+
+                api("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.6.4")
 
                 val lwjglVersion = "3.3.1"
                 listOf("lwjgl", "lwjgl-nfd").forEach { lwjglDep ->
