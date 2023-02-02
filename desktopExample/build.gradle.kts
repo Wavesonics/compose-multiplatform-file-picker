@@ -34,6 +34,7 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "MultiplatformFilePicker"
             packageVersion = "1.0.0"
+            modules("jdk.unsupported")
         }
     }
 }
