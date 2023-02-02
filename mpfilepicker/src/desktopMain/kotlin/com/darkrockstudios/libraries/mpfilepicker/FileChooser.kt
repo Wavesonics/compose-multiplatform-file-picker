@@ -20,9 +20,9 @@ internal object FileChooser {
 
     suspend fun chooseFile(
         initialDirectory: String = System.getProperty("user.dir"),
-        fileExtension: String = ""
+        fileExtensions: String = ""
     ): String? {
-        return chooseFile(CallType.FILE, initialDirectory, fileExtension)
+        return chooseFile(CallType.FILE, initialDirectory, fileExtensions)
     }
 
     suspend fun chooseDirectory(
@@ -34,13 +34,13 @@ internal object FileChooser {
     private suspend fun chooseFile(
         type: CallType,
         initialDirectory: String,
-        fileExtension: String = ""
+        fileExtensions: String = ""
     ): String? {
-        return kotlin.runCatching { chooseFileNative(type, initialDirectory, fileExtension) }
+        return kotlin.runCatching { chooseFileNative(type, initialDirectory, fileExtensions) }
             .onFailure { nativeException ->
                 println("A call to chooseDirectoryNative failed: ${nativeException.message}")
 
-                return kotlin.runCatching { chooseFileSwing(type, initialDirectory, fileExtension) }
+                return kotlin.runCatching { chooseFileSwing(type, initialDirectory, fileExtensions) }
                     .onFailure { swingException ->
                         println("A call to chooseDirectorySwing failed ${swingException.message}")
                     }

@@ -11,17 +11,23 @@ import kotlinx.coroutines.withContext
 actual fun FilePicker(
     show: Boolean,
     initialDirectory: String?,
-    fileExtension: String?,
+    fileExtensions: List<String>,
     onFileSelected: (String?) -> Unit
 ) {
     val scope = rememberCoroutineScope()
     LaunchedEffect(show) {
         if(show) {
             scope.launch(Dispatchers.Default) {
+                val fileFilter = if (fileExtensions.isNotEmpty()) {
+                    fileExtensions.joinToString(",")
+                } else {
+                    ""
+                }
+
                 val initialDir = initialDirectory ?: System.getProperty("user.dir")
                 val fileChosen = FileChooser.chooseFile(
                     initialDirectory = initialDir,
-                    fileExtension = fileExtension ?: ""
+                    fileExtensions = fileFilter
                 )
                 withContext(Dispatchers.Main) {
                     onFileSelected(fileChosen)

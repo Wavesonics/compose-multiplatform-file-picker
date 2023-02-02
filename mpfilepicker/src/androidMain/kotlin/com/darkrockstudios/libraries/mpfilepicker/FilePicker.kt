@@ -8,36 +8,44 @@ import androidx.compose.runtime.LaunchedEffect
 
 @Composable
 actual fun FilePicker(
-    show: Boolean,
-    initialDirectory: String?,
-    fileExtension: String?,
-    onFileSelected: (String?) -> Unit
+	show: Boolean,
+	initialDirectory: String?,
+	fileExtensions: List<String>,
+	onFileSelected: (String?) -> Unit
 ) {
-    val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocument()) { result ->
-        onFileSelected(result?.toString())
-    }
+	val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocument()) { result ->
+		onFileSelected(result?.toString())
+	}
 
-    val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension)
-    LaunchedEffect(show) {
-        if(show) {
-            launcher.launch(arrayOf(mimeType ?: ""))
-        }
-    }
+	val mimeTypeMap = MimeTypeMap.getSingleton()
+	val mimeTypes = if (fileExtensions.isNotEmpty()) {
+		fileExtensions.mapNotNull { ext ->
+			mimeTypeMap.getMimeTypeFromExtension(ext)
+		}.toTypedArray()
+	} else {
+		emptyArray()
+	}
+
+	LaunchedEffect(show) {
+		if (show) {
+			launcher.launch(mimeTypes)
+		}
+	}
 }
 
 @Composable
 actual fun DirectoryPicker(
-    show: Boolean,
-    initialDirectory: String?,
-    onFileSelected: (String?) -> Unit
+	show: Boolean,
+	initialDirectory: String?,
+	onFileSelected: (String?) -> Unit
 ) {
-    val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocumentTree()) { result ->
-        onFileSelected(result?.toString())
-    }
+	val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocumentTree()) { result ->
+		onFileSelected(result?.toString())
+	}
 
-    LaunchedEffect(show) {
-        if(show) {
-            launcher.launch(null)
-        }
-    }
+	LaunchedEffect(show) {
+		if (show) {
+			launcher.launch(null)
+		}
+	}
 }
