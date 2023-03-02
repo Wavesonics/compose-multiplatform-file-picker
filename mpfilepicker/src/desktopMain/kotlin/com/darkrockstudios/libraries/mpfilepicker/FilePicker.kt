@@ -12,7 +12,7 @@ actual fun FilePicker(
     show: Boolean,
     initialDirectory: String?,
     fileExtensions: List<String>,
-    onFileSelected: (String?) -> Unit
+    onFileSelected: (MPFile?) -> Unit
 ) {
     val scope = rememberCoroutineScope()
     LaunchedEffect(show) {
@@ -25,12 +25,12 @@ actual fun FilePicker(
                 }
 
                 val initialDir = initialDirectory ?: System.getProperty("user.dir")
-                val fileChosen = FileChooser.chooseFile(
+                val filePath = FileChooser.chooseFile(
                     initialDirectory = initialDir,
                     fileExtensions = fileFilter
                 )
                 withContext(Dispatchers.Main) {
-                    onFileSelected(fileChosen)
+                    onFileSelected(MPFile.Other(filePath))
                 }
             }
         }

@@ -11,10 +11,10 @@ actual fun FilePicker(
 	show: Boolean,
 	initialDirectory: String?,
 	fileExtensions: List<String>,
-	onFileSelected: (String?) -> Unit
+	onFileSelected: (MPFile?) -> Unit
 ) {
 	val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocument()) { result ->
-		onFileSelected(result?.toString())
+		onFileSelected(MPFile.Other(result?.toString()))
 	}
 
 	val mimeTypeMap = MimeTypeMap.getSingleton()

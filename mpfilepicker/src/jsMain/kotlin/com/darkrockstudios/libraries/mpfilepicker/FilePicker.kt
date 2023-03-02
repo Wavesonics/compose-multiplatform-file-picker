@@ -2,17 +2,12 @@ package com.darkrockstudios.libraries.mpfilepicker
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.browser.document
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.w3c.dom.Document
 import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.ItemArrayLike
 import org.w3c.dom.asList
 import org.w3c.files.File
-import org.w3c.files.FileReader
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -20,14 +15,14 @@ import kotlin.coroutines.suspendCoroutine
 actual fun FilePicker(
     show: Boolean,
     initialDirectory: String?,
-    fileExtensions: List<String>,
-    onFileSelected: (String?) -> Unit
+    fileExtensions: List<String>, // TODO add support for multiple filters
+    onFileSelected: (MPFile?) -> Unit
 ) {
     LaunchedEffect(show) {
         if(show) {
-            document.selectFilesFromDisk(fileExtensions.first(), true)
+            val file = document.selectFilesFromDisk(fileExtensions.first(), true)
+            onFileSelected(MPFile.Web(file.first().name)) // TODO support multiple files
         }
-        onFileSelected(null) // TODO decide how to pass data
     }
 }
 
@@ -37,7 +32,7 @@ actual fun DirectoryPicker(
     initialDirectory: String?,
     onFileSelected: (String?) -> Unit
 ) {
-    // TODO
+    // in a browser we can not pick directories
 }
 
 //suspend fun selectAndParseFilesFromDisk(): List<HistoryFile> {
