@@ -8,6 +8,7 @@ import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.ItemArrayLike
 import org.w3c.dom.asList
 import org.w3c.files.File
+import org.w3c.files.FileReader
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -21,7 +22,9 @@ actual fun FilePicker(
     LaunchedEffect(show) {
         if(show) {
             val file = document.selectFilesFromDisk(fileExtensions.first(), true)
-            onFileSelected(MPFile.Web(file.first().name)) // TODO support multiple files
+            onFileSelected(MPFile.Web(file.first().name) {
+                readFileAsText(file.first())
+            }) // TODO support multiple files
         }
     }
 }
@@ -34,10 +37,6 @@ actual fun DirectoryPicker(
 ) {
     // in a browser we can not pick directories
 }
-
-//suspend fun selectAndParseFilesFromDisk(): List<HistoryFile> {
-//    return document.selectFilesFromDisk(".json").map { readFileAsText(it) }
-//}
 
 private suspend fun Document.selectFilesFromDisk(
     accept: String,
@@ -60,11 +59,11 @@ private suspend fun Document.selectFilesFromDisk(
     tempInput.remove()
 }
 
-//private suspend fun readFileAsText(file: File) = suspendCoroutine {
-//    val reader = FileReader()
-//    reader.onload = { loadEvt ->
-//        val content = loadEvt.target.asDynamic().result as String
-//        it.resumeWith(Result.success(HistoryFile(file.name, content)))
-//    }
-//    reader.readAsText(file, "UTF-8")
-//}
+private suspend fun readFileAsText(file: File) = suspendCoroutine {
+    val reader = FileReader()
+    reader.onload = { loadEvt ->
+        val content = loadEvt.target.asDynamic().result as String
+        it.resumeWith(Result.success(content))
+    }
+    reader.readAsText(file, "UTF-8")
+}
