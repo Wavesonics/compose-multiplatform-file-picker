@@ -26,7 +26,7 @@ fun main() {
         Br()
         Text("File content: $fileContents")
 
-        FilePicker(show, fileExtensions = listOf(".txt", ".png")) { file ->
+        FilePicker(show, fileExtensions = listOf("txt", "md")) { file ->
             if(file is WebFile) {
                 fileName = file.path ?: "none selected"
                 scope.launch {

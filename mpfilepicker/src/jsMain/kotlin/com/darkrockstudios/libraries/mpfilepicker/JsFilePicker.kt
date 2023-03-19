@@ -28,7 +28,8 @@ actual fun FilePicker(
 ) {
     LaunchedEffect(show) {
         if(show) {
-            val file: List<File> = document.selectFilesFromDisk(fileExtensions.first(), true)
+            val fixedExtensions = fileExtensions.map { ".$it" }
+            val file: List<File> = document.selectFilesFromDisk(fixedExtensions.first(), true)
             onFileSelected(WebFile(file.first().name, file.first())) // TODO support multiple files
         }
     }
