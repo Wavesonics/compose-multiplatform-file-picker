@@ -2,12 +2,20 @@ package com.darkrockstudios.libraries.mpfilepicker
 
 import androidx.compose.runtime.Composable
 
+interface MPFile<out T: Any> {
+    // on JS this will be a file name, on other platforms it will be a file path
+    val path: String
+    val platfromFile: T
+}
+
+typealias FileSelected = (MPFile<Any>?) -> Unit
+
 @Composable
 expect fun FilePicker(
     show: Boolean,
     initialDirectory: String? = null,
     fileExtensions: List<String> = emptyList(),
-    onFileSelected: (MPFile?) -> Unit
+    onFileSelected: FileSelected
 )
 
 @Composable
@@ -16,18 +24,3 @@ expect fun DirectoryPicker(
     initialDirectory: String? = null,
     onFileSelected: (String?) -> Unit
 )
-
-sealed interface MPFile {
-
-    // on JS this will be a file name, on other platforms it will be a file path
-    val fileNameOrPath: String?
-
-    data class Web(
-        override val fileNameOrPath: String,
-        private val fileReader: suspend () -> String
-    ) : MPFile {
-        suspend fun getFileContents() = fileReader()
-    }
-
-    data class Other(override val fileNameOrPath: String?) : MPFile
-}

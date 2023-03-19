@@ -6,13 +6,19 @@ import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
+
+data class JvmFile(
+    override val path: String,
+    override val platfromFile: File,
+) : MPFile<File>
 
 @Composable
 actual fun FilePicker(
     show: Boolean,
     initialDirectory: String?,
     fileExtensions: List<String>,
-    onFileSelected: (MPFile?) -> Unit
+    onFileSelected: FileSelected
 ) {
     val scope = rememberCoroutineScope()
     LaunchedEffect(show) {
@@ -30,7 +36,11 @@ actual fun FilePicker(
                     fileExtensions = fileFilter
                 )
                 withContext(Dispatchers.Main) {
-                    onFileSelected(MPFile.Other(filePath))
+                    if(filePath != null) {
+                        onFileSelected(JvmFile(filePath, File(filePath)))
+                    } else {
+                        onFileSelected(null)
+                    }
                 }
             }
         }

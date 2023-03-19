@@ -1,6 +1,7 @@
 import androidx.compose.runtime.*
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
-import com.darkrockstudios.libraries.mpfilepicker.MPFile
+import com.darkrockstudios.libraries.mpfilepicker.WebFile
+import com.darkrockstudios.libraries.mpfilepicker.readFileAsText
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.web.dom.Br
 import org.jetbrains.compose.web.dom.Button
@@ -25,12 +26,13 @@ fun main() {
         Br()
         Text("File content: $fileContents")
 
-        FilePicker(show, fileExtensions = listOf(".txt", ".png")) { path ->
-            fileName = path?.fileNameOrPath ?: "none selected"
-            scope.launch {
-                fileContents = (path as MPFile.Web).getFileContents()
+        FilePicker(show, fileExtensions = listOf(".txt", ".png")) { file ->
+            if(file is WebFile) {
+                fileName = file.path ?: "none selected"
+                scope.launch {
+                    fileContents = readFileAsText(file.platfromFile)
+                }
             }
-            show = false
         }
     }
 }

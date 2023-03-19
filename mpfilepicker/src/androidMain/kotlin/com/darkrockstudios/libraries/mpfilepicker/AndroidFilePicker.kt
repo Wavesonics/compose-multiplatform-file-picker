@@ -1,20 +1,30 @@
 package com.darkrockstudios.libraries.mpfilepicker
 
+import android.net.Uri
 import android.webkit.MimeTypeMap
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 
+data class AndroidFile(
+	override val path: String,
+	override val platfromFile: Uri,
+) : MPFile<Uri>
+
 @Composable
 actual fun FilePicker(
 	show: Boolean,
 	initialDirectory: String?,
 	fileExtensions: List<String>,
-	onFileSelected: (MPFile?) -> Unit
+	onFileSelected: FileSelected
 ) {
 	val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocument()) { result ->
-		onFileSelected(MPFile.Other(result?.toString()))
+		if(result != null) {
+			onFileSelected(AndroidFile(result.toString(), result))
+		} else {
+			onFileSelected(null)
+		}
 	}
 
 	val mimeTypeMap = MimeTypeMap.getSingleton()

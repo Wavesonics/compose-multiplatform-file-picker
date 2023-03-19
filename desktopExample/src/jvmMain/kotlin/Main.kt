@@ -39,7 +39,7 @@ fun main() = application {
     }
 
     FilePicker(show, fileExtensions = listOf("jpg", "png")) { file ->
-        pathChosen = file?.fileNameOrPath ?: "none selected"
+        pathChosen = file?.path ?: "none selected"
         show = false
     }
 
