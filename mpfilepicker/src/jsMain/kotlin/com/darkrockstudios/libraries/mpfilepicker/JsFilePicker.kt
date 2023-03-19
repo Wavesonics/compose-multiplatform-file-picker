@@ -41,6 +41,7 @@ actual fun DirectoryPicker(
     onFileSelected: (String?) -> Unit
 ) {
     // in a browser we can not pick directories
+    throw NotImplementedError("DirectoryPicker is not supported on the web")
 }
 
 private suspend fun Document.selectFilesFromDisk(
