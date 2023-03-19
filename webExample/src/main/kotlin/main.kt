@@ -30,7 +30,7 @@ fun main() {
             if(file is WebFile) {
                 fileName = file.path ?: "none selected"
                 scope.launch {
-                    fileContents = readFileAsText(file.platfromFile)
+                    fileContents = readFileAsText(file.platformFile)
                 }
             }
         }

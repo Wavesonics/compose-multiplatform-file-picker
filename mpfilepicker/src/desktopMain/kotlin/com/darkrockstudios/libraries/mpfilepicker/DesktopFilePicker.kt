@@ -10,7 +10,7 @@ import java.io.File
 
 data class JvmFile(
     override val path: String,
-    override val platfromFile: File,
+    override val platformFile: File,
 ) : MPFile<File>
 
 @Composable

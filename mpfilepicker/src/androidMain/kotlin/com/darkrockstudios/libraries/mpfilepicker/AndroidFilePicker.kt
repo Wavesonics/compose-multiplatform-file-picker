@@ -9,7 +9,7 @@ import androidx.compose.runtime.LaunchedEffect
 
 data class AndroidFile(
 	override val path: String,
-	override val platfromFile: Uri,
+	override val platformFile: Uri,
 ) : MPFile<Uri>
 
 @Composable

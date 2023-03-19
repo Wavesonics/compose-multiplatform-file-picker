@@ -14,9 +14,9 @@ import kotlin.coroutines.suspendCoroutine
 
 data class WebFile(
     override val path: String,
-    override val platfromFile: File,
+    override val platformFile: File,
 ) : MPFile<File> {
-    suspend fun getFileContents() = readFileAsText(platfromFile)
+    suspend fun getFileContents() = readFileAsText(platformFile)
 }
 
 @Composable
