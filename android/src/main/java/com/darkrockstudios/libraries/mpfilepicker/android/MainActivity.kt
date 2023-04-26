@@ -30,10 +30,11 @@ class MainActivity : AppCompatActivity() {
                     }
                     Text("File Chosen: $pathChosen")
 
-
                     val fileType = listOf("jpg", "png")
-                    FilePicker(showFilePicker, fileExtensions = fileType) { path ->
-                        pathChosen = path ?: "none selected"
+                    FilePicker(showFilePicker, fileExtensions = fileType) { mpFile ->
+                        if(mpFile != null) {
+                            pathChosen = mpFile.path
+                        }
                         showFilePicker = false
                     }
 
