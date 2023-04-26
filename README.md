@@ -17,7 +17,7 @@ See `FileChooser.kt` as well as the `lwjgl` gradle filter.
 ## Include in your project:
 
 ```kts
-implementation("com.darkrockstudios:mpfilepicker:1.0.0")
+implementation("com.darkrockstudios:mpfilepicker:1.1.0")
 ```
 
 ## How to use
