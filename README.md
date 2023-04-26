@@ -1,5 +1,7 @@
 # Compose Multiplatform File Picker
 
+![MIT License](https://img.shields.io/github/license/Wavesonics/compose-multiplatform-file-picker) ![Latest Release](https://img.shields.io/github/v/release/Wavesonics/compose-multiplatform-file-picker?include_prereleases)
+
 ![badge-kotlin]
 
 A multiplatform compose widget for picking files with each platform's Native File Picker Dialog.
