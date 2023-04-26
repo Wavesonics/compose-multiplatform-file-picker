@@ -1,5 +1,7 @@
 # Compose Multiplatform File Picker
 
+![badge-kotlin]
+
 A multiplatform compose widget for picking files with each platform's Native File Picker Dialog.
 
 Currently supports: Desktop and Android.
@@ -59,3 +61,5 @@ Swing file picker if the native one can't be use for some reason.
 ## Known Bugs
 
 - Setting the initial directory doesn't seem to effect Android's file picker at all, not sure why that is yet.
+
+[badge-kotlin]: https://img.shields.io/badge/kotlin-1.8.20-blue.svg?logo=kotlin
