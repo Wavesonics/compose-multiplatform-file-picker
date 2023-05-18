@@ -10,7 +10,11 @@ kotlin {
         }
     }
 
-    macosX64()
+    macosX64 {
+        binaries.executable {
+            entryPoint = "main"
+        }
+    }
     macosArm64()
     linuxX64()
     linuxArm64()
