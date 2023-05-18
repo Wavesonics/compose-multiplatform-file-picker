@@ -16,9 +16,3 @@ kotlin {
     linuxArm64()
 
 }
-group = "org.example"
-version = "unspecified"
-
-//                         "natives-windows", "natives-windows-x86", "natives-windows-arm64",
-//                        "natives-macos", "natives-macos-arm64",
-//                        "natives-linux", "natives-linux-arm64", "natives-linux-arm32"
