@@ -1,7 +1,5 @@
 import kotlinx.cinterop.*
-import platform.posix.IID
 import platform.windows.*
-import kotlin.native.concurrent.freeze
 
 fun main(args: Array<String>) {
     memScoped {
@@ -15,7 +13,7 @@ fun main(args: Array<String>) {
 
         result.apply {
             lStructSize = sizeOf<tagOFNA>().toUInt()
-            hwndOwner = null
+            hwndOwner = GetForegroundWindow()
             lpstrFile = pinnedSzFile.addressOf(0)
             nMaxFile = szFile.size.toUInt()
             lpstrFilter = filter.addressOf(0)
