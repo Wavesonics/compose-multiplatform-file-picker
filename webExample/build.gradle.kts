@@ -1,6 +1,9 @@
+@file:Suppress("DSL_SCOPE_VIOLATION")
+
+// TODO remove this when Gradle is updated 8.1 https://github.com/gradle/gradle/issues/22797
 plugins {
     kotlin("js")
-    id("org.jetbrains.compose")
+    alias(libs.plugins.kotlin.compose)
 }
 
 kotlin {
