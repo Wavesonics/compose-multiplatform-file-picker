@@ -1,5 +1,6 @@
-group "com.darkrockstudios.libraries.mpfilepicker"
-version "1.0-SNAPSHOT"
+@file:Suppress("DSL_SCOPE_VIOLATION")
+
+// TODO remove this when Gradle is updated 8.1 https://github.com/gradle/gradle/issues/22797
 
 allprojects {
     repositories {
@@ -12,7 +13,6 @@ allprojects {
 plugins {
     kotlin("multiplatform") apply false
     kotlin("android") apply false
-    id("com.android.application") apply false
-    id("com.android.library") apply false
-//    id("org.jetbrains.compose") apply false
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.android.library) apply false
 }

@@ -6,10 +6,10 @@ val library_version: String by extra
 
 plugins {
     kotlin("multiplatform")
-    id("com.android.library")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.compose)
     id("maven-publish")
     id("signing")
-    alias(libs.plugins.kotlin.compose)
 }
 
 val readableName = "Multiplatform File Picker"
