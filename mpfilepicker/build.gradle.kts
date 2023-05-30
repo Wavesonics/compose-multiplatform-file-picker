@@ -2,8 +2,6 @@
 
 import java.net.URI
 
-val library_version: String by extra
-
 plugins {
     kotlin("multiplatform")
     alias(libs.plugins.android.library)
@@ -16,7 +14,7 @@ val readableName = "Multiplatform File Picker"
 val repoUrl = "https://github.com/Wavesonics/compose-multiplatform-file-picker"
 group = "com.darkrockstudios"
 description = "A multiplatform compose widget for picking files"
-version = library_version
+version = libs.versions.library.get()
 
 extra.apply {
     set("isReleaseVersion", !(version as String).endsWith("SNAPSHOT"))
