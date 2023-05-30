@@ -3,6 +3,13 @@ library = "1.1.0"
 kotlin = "1.8.0"
 
 [libraries]
+compose-activity = "androidx.activity:activity-compose:1.6.1"
+androidx-appcompat = "androidx.appcompat:appcompat:1.6.0"
+androidx-coreKtx = "androidx.core:core-ktx:1.9.0"
+kotlinx-coroutines-android = "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
+kotlinx-coroutines-swing = "org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.6.4"
+kotlinx-html = "org.jetbrains.kotlinx:kotlinx-html:0.8.1"
+junit = "junit:junit:4.13.2"
 
 [plugins]
 kotlin-compose = "org.jetbrains.compose:1.3.0"
