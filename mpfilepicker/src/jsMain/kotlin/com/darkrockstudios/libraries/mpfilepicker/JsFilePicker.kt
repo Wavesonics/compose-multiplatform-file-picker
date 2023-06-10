@@ -12,22 +12,22 @@ import org.w3c.files.FileReader
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-data class WebFile(
+public data class WebFile(
     override val path: String,
     override val platformFile: File,
 ) : MPFile<File> {
-    suspend fun getFileContents() = readFileAsText(platformFile)
+    public suspend fun getFileContents(): String = readFileAsText(platformFile)
 }
 
 @Composable
-actual fun FilePicker(
+public actual fun FilePicker(
     show: Boolean,
     initialDirectory: String?,
     fileExtensions: List<String>,
     onFileSelected: FileSelected
 ) {
     LaunchedEffect(show) {
-        if(show) {
+        if (show) {
             val fixedExtensions = fileExtensions.map { ".$it" }
             val file: List<File> = document.selectFilesFromDisk(fixedExtensions.first(), true)
             onFileSelected(WebFile(file.first().name, file.first())) // TODO support multiple files
@@ -36,7 +36,7 @@ actual fun FilePicker(
 }
 
 @Composable
-actual fun DirectoryPicker(
+public actual fun DirectoryPicker(
     show: Boolean,
     initialDirectory: String?,
     onFileSelected: (String?) -> Unit
@@ -66,7 +66,7 @@ private suspend fun Document.selectFilesFromDisk(
     tempInput.remove()
 }
 
-suspend fun readFileAsText(file: File) = suspendCoroutine {
+public suspend fun readFileAsText(file: File): String = suspendCoroutine {
     val reader = FileReader()
     reader.onload = { loadEvt ->
         val content = loadEvt.target.asDynamic().result as String

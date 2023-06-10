@@ -8,13 +8,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 
-data class JvmFile(
+public data class JvmFile(
     override val path: String,
     override val platformFile: File,
 ) : MPFile<File>
 
 @Composable
-actual fun FilePicker(
+public actual fun FilePicker(
     show: Boolean,
     initialDirectory: String?,
     fileExtensions: List<String>,
@@ -22,7 +22,7 @@ actual fun FilePicker(
 ) {
     val scope = rememberCoroutineScope()
     LaunchedEffect(show) {
-        if(show) {
+        if (show) {
             scope.launch(Dispatchers.Default) {
                 val fileFilter = if (fileExtensions.isNotEmpty()) {
                     fileExtensions.joinToString(",")
@@ -48,14 +48,14 @@ actual fun FilePicker(
 }
 
 @Composable
-actual fun DirectoryPicker(
+public actual fun DirectoryPicker(
     show: Boolean,
     initialDirectory: String?,
     onFileSelected: (String?) -> Unit
 ) {
     val scope = rememberCoroutineScope()
     LaunchedEffect(show) {
-        if(show) {
+        if (show) {
             scope.launch(Dispatchers.Default) {
                 val initialDir = initialDirectory ?: System.getProperty("user.dir")
                 val fileChosen = FileChooser.chooseDirectory(initialDir)
