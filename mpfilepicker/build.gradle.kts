@@ -21,6 +21,7 @@ extra.apply {
 }
 
 kotlin {
+    explicitApi()
     android {
         publishLibraryVariants("release")
     }

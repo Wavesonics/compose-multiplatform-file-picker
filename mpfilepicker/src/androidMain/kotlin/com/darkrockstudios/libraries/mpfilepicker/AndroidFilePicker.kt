@@ -7,20 +7,20 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 
-data class AndroidFile(
+public data class AndroidFile(
 	override val path: String,
 	override val platformFile: Uri,
 ) : MPFile<Uri>
 
 @Composable
-actual fun FilePicker(
+public actual fun FilePicker(
 	show: Boolean,
 	initialDirectory: String?,
 	fileExtensions: List<String>,
 	onFileSelected: FileSelected
 ) {
 	val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocument()) { result ->
-		if(result != null) {
+		if (result != null) {
 			onFileSelected(AndroidFile(result.toString(), result))
 		} else {
 			onFileSelected(null)
@@ -44,7 +44,7 @@ actual fun FilePicker(
 }
 
 @Composable
-actual fun DirectoryPicker(
+public actual fun DirectoryPicker(
 	show: Boolean,
 	initialDirectory: String?,
 	onFileSelected: (String?) -> Unit
