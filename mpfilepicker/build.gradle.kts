@@ -29,6 +29,9 @@ kotlin {
         compilations.all {
             kotlinOptions.jvmTarget = "11"
         }
+//        dependencies {
+//            implementation("org.lwjgl.lwjgl-tinyfd:3.1.2")
+//        }
     }
     js(IR) {
         browser()
@@ -71,7 +74,7 @@ kotlin {
                 api("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.6.4")
 
                 val lwjglVersion = "3.3.1"
-                listOf("lwjgl", "lwjgl-nfd").forEach { lwjglDep ->
+                listOf("lwjgl", "lwjgl-tinyfd").forEach { lwjglDep ->
                     implementation("org.lwjgl:${lwjglDep}:${lwjglVersion}")
                     listOf(
                         "natives-windows", "natives-windows-x86", "natives-windows-arm64",
