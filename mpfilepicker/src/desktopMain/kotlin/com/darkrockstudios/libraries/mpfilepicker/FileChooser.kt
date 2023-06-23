@@ -2,8 +2,8 @@ package com.darkrockstudios.libraries.mpfilepicker
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.lwjgl.system.MemoryUtil
-import org.lwjgl.util.nfd.NativeFileDialog
+import org.lwjgl.util.tinyfd.TinyFileDialogs.tinyfd_openFileDialog
+import org.lwjgl.util.tinyfd.TinyFileDialogs.tinyfd_selectFolderDialog
 import javax.swing.JFileChooser
 import javax.swing.UIManager
 import javax.swing.filechooser.FileNameExtensionFilter
@@ -53,26 +53,24 @@ internal object FileChooser {
         type: CallType,
         initialDirectory: String,
         fileExtension: String
-    ) = withContext(Dispatchers.IO) {
-        val pathPointer = MemoryUtil.memAllocPointer(1)
-        try {
-            return@withContext when (val code = when (type) {
-                CallType.FILE -> NativeFileDialog.NFD_OpenDialog(fileExtension, initialDirectory, pathPointer)
-                CallType.DIRECTORY -> NativeFileDialog.NFD_PickFolder(initialDirectory, pathPointer)
-            }) {
-                NativeFileDialog.NFD_OKAY -> {
-                    val path = pathPointer.stringUTF8
-                    NativeFileDialog.nNFD_Free(pathPointer[0])
-
-                    path
-                }
-
-                NativeFileDialog.NFD_CANCEL -> null
-                NativeFileDialog.NFD_ERROR -> error("An error occurred while executing NativeFileDialog.NFD_PickFolder")
-                else -> error("Unknown return code '${code}' from NativeFileDialog.NFD_PickFolder")
+    ): String? = withContext(Dispatchers.IO) {
+        when (type) {
+            CallType.FILE -> {
+                tinyfd_openFileDialog(
+                    "Choose File",
+                    initialDirectory,
+                    null, // TODO also pass filter
+                    null,
+                    false
+                )
             }
-        } finally {
-            MemoryUtil.memFree(pathPointer)
+
+            CallType.DIRECTORY -> {
+                tinyfd_selectFolderDialog(
+                    "Choose Directory",
+                    initialDirectory
+                )
+            }
         }
     }
 
