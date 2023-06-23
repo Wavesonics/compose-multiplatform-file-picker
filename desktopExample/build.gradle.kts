@@ -5,10 +5,6 @@ plugins {
     id("org.jetbrains.compose")
 }
 
-group = "com.darkrockstudios.libraries.mpfilepicker"
-version = "1.0-SNAPSHOT"
-
-
 kotlin {
     jvm {
         compilations.all {

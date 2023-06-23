@@ -1,6 +1,3 @@
-group "com.darkrockstudios.libraries.mpfilepicker"
-version "1.0-SNAPSHOT"
-
 allprojects {
     repositories {
         google()
