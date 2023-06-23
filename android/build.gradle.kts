@@ -1,6 +1,10 @@
+// TODO remove this when Gradle is updated 8.1 https://github.com/gradle/gradle/issues/22797
+@file:Suppress("DSL_SCOPE_VIOLATION")
+
+
 plugins {
-    id("org.jetbrains.compose")
-    id("com.android.application")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.compose)
     kotlin("android")
 }
 
@@ -10,7 +14,7 @@ repositories {
 
 dependencies {
     implementation(project(":mpfilepicker"))
-    implementation("androidx.activity:activity-compose:1.6.1")
+    implementation(libs.compose.activity)
 }
 
 android {

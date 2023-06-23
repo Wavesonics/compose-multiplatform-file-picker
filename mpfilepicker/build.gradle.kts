@@ -1,11 +1,11 @@
-import java.net.URI
+@file:Suppress("DSL_SCOPE_VIOLATION") // TODO remove this when Gradle is updated 8.1 https://github.com/gradle/gradle/issues/22797
 
-val library_version: String by extra
+import java.net.URI
 
 plugins {
     kotlin("multiplatform")
-    id("org.jetbrains.compose")
-    id("com.android.library")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.compose)
     id("maven-publish")
     id("signing")
 }
@@ -14,7 +14,7 @@ val readableName = "Multiplatform File Picker"
 val repoUrl = "https://github.com/Wavesonics/compose-multiplatform-file-picker"
 group = "com.darkrockstudios"
 description = "A multiplatform compose widget for picking files"
-version = library_version
+version = libs.versions.library.get()
 
 extra.apply {
     set("isReleaseVersion", !(version as String).endsWith("SNAPSHOT"))
@@ -51,15 +51,15 @@ kotlin {
                 api(compose.uiTooling)
                 api(compose.preview)
                 api(compose.material)
-                api("androidx.appcompat:appcompat:1.6.0")
-                api("androidx.core:core-ktx:1.9.0")
-                api("androidx.activity:activity-compose:1.6.1")
-                api("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
+                api(libs.androidx.appcompat)
+                api(libs.androidx.coreKtx)
+                api(libs.compose.activity)
+                api(libs.kotlinx.coroutines.android)
             }
         }
         val androidTest by getting {
             dependencies {
-                implementation("junit:junit:4.13.2")
+                implementation(libs.junit)
             }
         }
         val desktopMain by getting {
@@ -67,16 +67,20 @@ kotlin {
                 api(compose.uiTooling)
                 api(compose.preview)
                 api(compose.material)
-
-                api("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.6.4")
+                api(libs.kotlinx.coroutines.swing)
 
                 val lwjglVersion = "3.3.1"
                 listOf("lwjgl", "lwjgl-nfd").forEach { lwjglDep ->
                     implementation("org.lwjgl:${lwjglDep}:${lwjglVersion}")
                     listOf(
-                        "natives-windows", "natives-windows-x86", "natives-windows-arm64",
-                        "natives-macos", "natives-macos-arm64",
-                        "natives-linux", "natives-linux-arm64", "natives-linux-arm32"
+                        "natives-windows",
+                        "natives-windows-x86",
+                        "natives-windows-arm64",
+                        "natives-macos",
+                        "natives-macos-arm64",
+                        "natives-linux",
+                        "natives-linux-arm64",
+                        "natives-linux-arm32"
                     ).forEach { native ->
                         runtimeOnly("org.lwjgl:${lwjglDep}:${lwjglVersion}:${native}")
                     }
@@ -87,8 +91,7 @@ kotlin {
         val jsMain by getting
     }
 
-    val publicationsFromMainHost =
-        listOf(jvm("desktop"), android()).map { it.name } + "kotlinMultiplatform"
+    val publicationsFromMainHost = listOf(jvm("desktop"), android()).map { it.name } + "kotlinMultiplatform"
 
     val javadocJar by tasks.registering(Jar::class) {
         archiveClassifier.set("javadoc")
@@ -107,10 +110,8 @@ kotlin {
             }
             */
             maven {
-                val releaseRepo =
-                    URI("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-                val snapshotRepo =
-                    URI("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+                val releaseRepo = URI("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+                val snapshotRepo = URI("https://s01.oss.sonatype.org/content/repositories/snapshots/")
                 url = if (extra["isReleaseVersion"] == true) releaseRepo else snapshotRepo
                 credentials {
                     username = System.getenv("OSSRH_USERNAME") ?: "Unknown user"
@@ -150,8 +151,7 @@ kotlin {
             // Filter which targets get published
             matching { it.name in publicationsFromMainHost }.all {
                 val targetPublication = this@all
-                tasks.withType<AbstractPublishToMaven>()
-                    .matching { it.publication == targetPublication }
+                tasks.withType<AbstractPublishToMaven>().matching { it.publication == targetPublication }
                 //.configureEach { onlyIf { findProperty("isMainHost") == "true" } }*
             }
         }
