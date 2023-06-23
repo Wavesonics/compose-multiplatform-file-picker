@@ -1,7 +1,6 @@
 // TODO remove this when Gradle is updated 8.1 https://github.com/gradle/gradle/issues/22797
 @file:Suppress("DSL_SCOPE_VIOLATION")
 
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -18,11 +17,11 @@ dependencies {
 }
 
 android {
-    compileSdk = 33
+    compileSdk = 34
     defaultConfig {
         applicationId = "com.darkrockstudios.libraries.mpfilepicker.android"
         minSdk = 24
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0-SNAPSHOT"
     }
@@ -35,4 +34,5 @@ android {
             isMinifyEnabled = false
         }
     }
+    namespace = "com.darkrockstudios.libraries.mpfilepicker.android"
 }

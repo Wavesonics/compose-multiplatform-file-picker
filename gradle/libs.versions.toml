@@ -1,6 +1,6 @@
 [versions]
-library = "1.1.0"
-kotlin = "1.8.0"
+library = "1.2.0"
+kotlin = "1.8.20"
 
 [libraries]
 compose-activity = "androidx.activity:activity-compose:1.6.1"
@@ -12,6 +12,6 @@ kotlinx-html = "org.jetbrains.kotlinx:kotlinx-html:0.8.1"
 junit = "junit:junit:4.13.2"
 
 [plugins]
-kotlin-compose = "org.jetbrains.compose:1.3.0"
-android-application = "com.android.application:7.3.0"
-android-library = "com.android.library:7.3.0"
+kotlin-compose = "org.jetbrains.compose:1.4.0"
+android-application = "com.android.application:7.4.1"
+android-library = "com.android.library:7.4.1"
