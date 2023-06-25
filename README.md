@@ -70,9 +70,14 @@ Swing file picker if the native one can't be use for some reason.
 
 <!-- PLATFORMS -->
 
-[badge-platform-linux]: http://img.shields.io/badge/platform-linux-2D3F6C.svg?style=flat
+[badge-platform-linux]: http://img.shields.io/badge/platform-jvm/linux-2D3F6C.svg?style=flat
+
 [badge-platform-android]: http://img.shields.io/badge/platform-android-6EDB8D.svg?style=flat
+
 [badge-platform-ios]: http://img.shields.io/badge/platform-ios-CDCDCD.svg?style=flat
-[badge-platform-windows]: http://img.shields.io/badge/platform-windows-4D76CD.svg?style=flat
-[badge-platform-macos]: http://img.shields.io/badge/platform-macos-111111.svg?style=flat
+
+[badge-platform-windows]: http://img.shields.io/badge/platform-jvm/windows-4D76CD.svg?style=flat
+
+[badge-platform-macos]: http://img.shields.io/badge/platform-jvm/macos-111111.svg?style=flat
+
 [badge-platform-js]: http://img.shields.io/badge/platform-js-34913c.svg?style=flat
