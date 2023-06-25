@@ -25,13 +25,10 @@ kotlin {
     android {
         publishLibraryVariants("release")
     }
-    jvm("desktop") {
+    jvm {
         compilations.all {
             kotlinOptions.jvmTarget = "11"
         }
-//        dependencies {
-//            implementation("org.lwjgl.lwjgl-tinyfd:3.1.2")
-//        }
     }
     js(IR) {
         browser()
@@ -65,7 +62,7 @@ kotlin {
                 implementation(libs.junit)
             }
         }
-        val desktopMain by getting {
+        val jvmMain by getting {
             dependencies {
                 api(compose.uiTooling)
                 api(compose.preview)
@@ -90,11 +87,11 @@ kotlin {
                 }
             }
         }
-        val desktopTest by getting
+        val jvmTest by getting
         val jsMain by getting
     }
 
-    val publicationsFromMainHost = listOf(jvm("desktop"), android()).map { it.name } + "kotlinMultiplatform"
+    val publicationsFromMainHost = listOf(jvm(), android()).map { it.name } + "kotlinMultiplatform"
 
     val javadocJar by tasks.registering(Jar::class) {
         archiveClassifier.set("javadoc")
