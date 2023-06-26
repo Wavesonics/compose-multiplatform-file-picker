@@ -5,8 +5,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import platform.AppKit.NSOpenPanel
+import platform.AppKit.setAllowedFileTypes
 import platform.Foundation.NSURL
 
 public data class MacOSFile(
@@ -24,29 +24,21 @@ public actual fun FilePicker(
 	val scope = rememberCoroutineScope()
 	LaunchedEffect(show) {
 		if (show) {
-			scope.launch(Dispatchers.Default) {
-				val fileFilter = if (fileExtensions.isNotEmpty()) {
-					fileExtensions.joinToString(",")
-				} else {
-					""
-				}
-
-				val initialDir = initialDirectory // TODO ?: System.getProperty("user.dir")
-
+			scope.launch(Dispatchers.Main) {
 				val openPanel = NSOpenPanel()
-//				openPanel.directoryURL = NSURL.fileURLWithPath("~/LauncherLogs", isDirectory: true) TODO set initial direcotry
-				openPanel.allowsMultipleSelection = false;
-				openPanel.canChooseDirectories = false;
-				openPanel.canChooseFiles = true;
+				if (initialDirectory != null)
+					openPanel.directoryURL = NSURL.fileURLWithPath(initialDirectory, true)
+				openPanel.allowsMultipleSelection = false
+				openPanel.setAllowedFileTypes(fileExtensions)
+				openPanel.allowsOtherFileTypes = true
+				openPanel.canChooseDirectories = false
+				openPanel.canChooseFiles = true
 				openPanel.runModal()
 
-				withContext(Dispatchers.Main) {
-//					NSFileHandle()
-					val fileURL = openPanel.URL
-					val filePath = fileURL?.path
-					if (filePath != null)
-						onFileSelected(MacOSFile(filePath, fileURL))
-				}
+				val fileURL = openPanel.URL
+				val filePath = fileURL?.path
+				if (filePath != null)
+					onFileSelected(MacOSFile(filePath, fileURL))
 			}
 		}
 	}
@@ -61,12 +53,19 @@ public actual fun DirectoryPicker(
 	val scope = rememberCoroutineScope()
 	LaunchedEffect(show) {
 		if (show) {
-			scope.launch(Dispatchers.Default) {
-//                val initialDir = initialDirectory ?: System.getProperty("user.dir")
+			scope.launch(Dispatchers.Main) {
+				val openPanel = NSOpenPanel()
+				if (initialDirectory != null)
+					openPanel.directoryURL = NSURL.fileURLWithPath(initialDirectory, true)
+				openPanel.allowsMultipleSelection = false
+				openPanel.canChooseDirectories = true
+				openPanel.canChooseFiles = false
+				openPanel.runModal()
 
-				withContext(Dispatchers.Main) {
-//					onFileSelected(fileChosen)
-				}
+				val fileURL = openPanel.URL
+				val filePath = fileURL?.path
+				if (filePath != null)
+					onFileSelected(filePath)
 			}
 		}
 	}
