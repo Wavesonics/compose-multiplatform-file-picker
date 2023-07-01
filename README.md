@@ -2,7 +2,7 @@
 
 ![MIT License](https://img.shields.io/github/license/Wavesonics/compose-multiplatform-file-picker) ![Latest Release](https://img.shields.io/github/v/release/Wavesonics/compose-multiplatform-file-picker?include_prereleases)
 
-![badge-platform-windows] ![badge-platform-linux] ![badge-platform-macos] ![badge-platform-android] ![badge-platform-js]
+![badge-platform-windows] ![badge-platform-linux] ![badge-platform-macos] ![badge-platform-android] ![badge-platform-js] ![badge-platform-macosX64]
 
 ![badge-kotlin]
 
@@ -81,3 +81,5 @@ Swing file picker if the native one can't be use for some reason.
 [badge-platform-macos]: http://img.shields.io/badge/platform-jvm/macos-111111.svg?style=flat
 
 [badge-platform-js]: http://img.shields.io/badge/platform-js-34913c.svg?style=flat
+
+[badge-platform-macosX64]: http://img.shields.io/badge/platform-macosX64-34913c.svg?style=flat

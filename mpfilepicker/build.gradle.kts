@@ -24,26 +24,33 @@ kotlin {
     explicitApi()
     android {
         publishLibraryVariants("release")
-    }
-    jvm {
-        compilations.all {
-            kotlinOptions.jvmTarget = "11"
-        }
-    }
-    js(IR) {
-        browser()
-        binaries.executable()
-    }
-    sourceSets {
-        val commonMain by getting {
-            dependencies {
-                api(compose.runtime)
-                api(compose.foundation)
-            }
-        }
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test"))
+	}
+	jvm {
+		compilations.all {
+			kotlinOptions.jvmTarget = "11"
+		}
+	}
+	js(IR) {
+		browser()
+		binaries.executable()
+	}
+	macosX64 {
+		binaries {
+			executable {
+				entryPoint = "main"
+			}
+		}
+	}
+	sourceSets {
+		val commonMain by getting {
+			dependencies {
+				api(compose.runtime)
+				api(compose.foundation)
+			}
+		}
+		val commonTest by getting {
+			dependencies {
+				implementation(kotlin("test"))
             }
         }
         val androidMain by getting {
