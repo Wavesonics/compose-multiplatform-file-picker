@@ -98,7 +98,7 @@ kotlin {
         val jsMain by getting
     }
 
-    val publicationsFromMainHost = listOf(jvm(), android()).map { it.name } + "kotlinMultiplatform"
+    val publicationsFromMainHost = listOf(jvm(), android(), js(IR), macosX64()).map { it.name } + "kotlinMultiplatform"
 
     val javadocJar by tasks.registering(Jar::class) {
         archiveClassifier.set("javadoc")
@@ -188,4 +188,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+}
+
+afterEvaluate {
+	tasks.named("publishAndroidReleasePublicationToMavenRepository").configure {
+		dependsOn("signJsPublication")
+	}
 }
