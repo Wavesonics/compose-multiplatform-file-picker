@@ -18,20 +18,20 @@ internal object FileChooser {
 		DIRECTORY
 	}
 
-	suspend fun chooseFile(
+	fun chooseFile(
 		initialDirectory: String = System.getProperty("user.dir"),
 		fileExtensions: String = ""
 	): String? {
 		return chooseFile(CallType.FILE, initialDirectory, fileExtensions)
 	}
 
-	suspend fun chooseDirectory(
+	fun chooseDirectory(
 		initialDirectory: String = System.getProperty("user.dir"),
 	): String? {
 		return chooseFile(CallType.DIRECTORY, initialDirectory)
 	}
 
-	private suspend fun chooseFile(
+	private fun chooseFile(
 		type: CallType,
 		initialDirectory: String,
 		fileExtensions: String = ""
@@ -49,7 +49,7 @@ internal object FileChooser {
 			.getOrNull()
 	}
 
-	private suspend fun chooseFileNative(
+	private fun chooseFileNative(
 		type: CallType,
 		initialDirectory: String,
 		fileExtension: String
@@ -57,7 +57,7 @@ internal object FileChooser {
 		return when (type) {
 			CallType.FILE -> {
 				MemoryStack.stackPush().use { stack ->
-					val filters = fileExtension.split(",")
+					val filters = if (fileExtension.isNotEmpty()) fileExtension.split(",") else emptyList()
 					val aFilterPatterns = stack.mallocPointer(filters.size)
 					filters.forEach {
 						aFilterPatterns.put(stack.UTF8("*.$it"))
