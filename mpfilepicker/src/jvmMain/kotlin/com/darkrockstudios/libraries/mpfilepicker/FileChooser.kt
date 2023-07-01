@@ -86,7 +86,7 @@ internal object FileChooser {
 		type: CallType,
 		initialDirectory: String,
 		fileExtension: String
-	) {
+	): String? {
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
 
 		val chooser = when (type) {
@@ -107,7 +107,7 @@ internal object FileChooser {
 			}
 		}
 
-		when (val code = chooser.showOpenDialog(null)) {
+		return when (val code = chooser.showOpenDialog(null)) {
 			JFileChooser.APPROVE_OPTION -> chooser.selectedFile.absolutePath
 			JFileChooser.CANCEL_OPTION -> null
 			JFileChooser.ERROR_OPTION -> error("An error occurred while executing JFileChooser::showOpenDialog")
