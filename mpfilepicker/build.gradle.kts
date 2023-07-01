@@ -178,11 +178,11 @@ signing {
 
 android {
     namespace = "com.darkrockstudios.libraries.mpfilepicker"
-    compileSdk = 34
+    compileSdk = libs.versions.android.compile.sdk.get().toInt()
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {
-        minSdk = 24
-        targetSdk = 34
+        minSdk = libs.versions.android.min.sdk.get().toInt()
+        targetSdk = libs.versions.android.target.sdk.get().toInt()
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8

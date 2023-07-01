@@ -17,11 +17,11 @@ dependencies {
 }
 
 android {
-    compileSdk = 34
+    compileSdk = libs.versions.android.compile.sdk.get().toInt()
     defaultConfig {
         applicationId = "com.darkrockstudios.libraries.mpfilepicker.android"
-        minSdk = 24
-        targetSdk = 34
+        minSdk = libs.versions.android.min.sdk.get().toInt()
+        targetSdk = libs.versions.android.target.sdk.get().toInt()
         versionCode = 1
         versionName = "1.0-SNAPSHOT"
     }
