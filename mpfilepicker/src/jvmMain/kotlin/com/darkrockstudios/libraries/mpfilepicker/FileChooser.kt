@@ -1,11 +1,7 @@
 package com.darkrockstudios.libraries.mpfilepicker
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import org.lwjgl.BufferUtils
-import org.lwjgl.PointerBuffer
-import org.lwjgl.system.MemoryUtil
-import org.lwjgl.util.tinyfd.TinyFileDialogs.tinyfd_openFileDialog
+import org.lwjgl.system.MemoryStack
+import org.lwjgl.util.tinyfd.TinyFileDialogs
 import org.lwjgl.util.tinyfd.TinyFileDialogs.tinyfd_selectFolderDialog
 import javax.swing.JFileChooser
 import javax.swing.UIManager
@@ -22,20 +18,20 @@ internal object FileChooser {
 		DIRECTORY
 	}
 
-	suspend fun chooseFile(
+	fun chooseFile(
 		initialDirectory: String = System.getProperty("user.dir"),
 		fileExtensions: String = ""
 	): String? {
 		return chooseFile(CallType.FILE, initialDirectory, fileExtensions)
 	}
 
-	suspend fun chooseDirectory(
+	fun chooseDirectory(
 		initialDirectory: String = System.getProperty("user.dir"),
 	): String? {
 		return chooseFile(CallType.DIRECTORY, initialDirectory)
 	}
 
-	private suspend fun chooseFile(
+	private fun chooseFile(
 		type: CallType,
 		initialDirectory: String,
 		fileExtensions: String = ""
@@ -53,27 +49,27 @@ internal object FileChooser {
 			.getOrNull()
 	}
 
-	private suspend fun chooseFileNative(
+	private fun chooseFileNative(
 		type: CallType,
 		initialDirectory: String,
 		fileExtension: String
-	): String? = withContext(Dispatchers.IO) {
-
-		when (type) {
+	): String? {
+		return when (type) {
 			CallType.FILE -> {
-				val exts = fileExtension.split(",").map { "*.$it" }
-				val extsBuff = createBuffer(exts.toTypedArray())
-
-				try {
-					tinyfd_openFileDialog(
+				MemoryStack.stackPush().use { stack ->
+					val filters = if (fileExtension.isNotEmpty()) fileExtension.split(",") else emptyList()
+					val aFilterPatterns = stack.mallocPointer(filters.size)
+					filters.forEach {
+						aFilterPatterns.put(stack.UTF8("*.$it"))
+					}
+					aFilterPatterns.flip()
+					TinyFileDialogs.tinyfd_openFileDialog(
 						"Choose File",
 						initialDirectory,
-						extsBuff,
+						aFilterPatterns,
 						null,
 						false
 					)
-				} finally {
-					MemoryUtil.memFree(extsBuff)
 				}
 			}
 
@@ -86,11 +82,11 @@ internal object FileChooser {
 		}
 	}
 
-	private suspend fun chooseFileSwing(
+	private fun chooseFileSwing(
 		type: CallType,
 		initialDirectory: String,
 		fileExtension: String
-	) = withContext(Dispatchers.IO) {
+	): String? {
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
 
 		val chooser = when (type) {
@@ -111,26 +107,11 @@ internal object FileChooser {
 			}
 		}
 
-		when (val code = chooser.showOpenDialog(null)) {
+		return when (val code = chooser.showOpenDialog(null)) {
 			JFileChooser.APPROVE_OPTION -> chooser.selectedFile.absolutePath
 			JFileChooser.CANCEL_OPTION -> null
 			JFileChooser.ERROR_OPTION -> error("An error occurred while executing JFileChooser::showOpenDialog")
 			else -> error("Unknown return code '${code}' from JFileChooser::showOpenDialog")
 		}
 	}
-}
-
-private fun createBuffer(list: Array<String>): PointerBuffer {
-	val p = PointerBuffer.allocateDirect(list.size)
-	p.rewind()
-	for (s in list) {
-		val bytes = s.toByteArray()
-		val buffer: java.nio.ByteBuffer = BufferUtils.createByteBuffer(s.length * Character.BYTES)
-		buffer.rewind()
-		buffer.put(bytes)
-		buffer.flip()
-		p.put(MemoryUtil.memAddress(buffer))
-	}
-	p.flip()
-	return p
 }
