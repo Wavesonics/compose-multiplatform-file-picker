@@ -2,10 +2,8 @@ package com.darkrockstudios.libraries.mpfilepicker
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.lwjgl.BufferUtils
-import org.lwjgl.PointerBuffer
-import org.lwjgl.system.MemoryUtil
-import org.lwjgl.util.tinyfd.TinyFileDialogs.tinyfd_openFileDialog
+import org.lwjgl.system.MemoryStack
+import org.lwjgl.util.tinyfd.TinyFileDialogs
 import org.lwjgl.util.tinyfd.TinyFileDialogs.tinyfd_selectFolderDialog
 import javax.swing.JFileChooser
 import javax.swing.UIManager
@@ -57,23 +55,23 @@ internal object FileChooser {
 		type: CallType,
 		initialDirectory: String,
 		fileExtension: String
-	): String? = withContext(Dispatchers.IO) {
-
-		when (type) {
+	): String? {
+		return when (type) {
 			CallType.FILE -> {
-				val exts = fileExtension.split(",").map { "*.$it" }
-				val extsBuff = createBuffer(exts.toTypedArray())
-
-				try {
-					tinyfd_openFileDialog(
+				MemoryStack.stackPush().use { stack ->
+					val filters = fileExtension.split(",")
+					val aFilterPatterns = stack.mallocPointer(filters.size)
+					filters.forEach {
+						aFilterPatterns.put(stack.UTF8("*.$it"))
+					}
+					aFilterPatterns.flip()
+					TinyFileDialogs.tinyfd_openFileDialog(
 						"Choose File",
 						initialDirectory,
-						extsBuff,
+						aFilterPatterns,
 						null,
 						false
 					)
-				} finally {
-					MemoryUtil.memFree(extsBuff)
 				}
 			}
 
@@ -118,19 +116,4 @@ internal object FileChooser {
 			else -> error("Unknown return code '${code}' from JFileChooser::showOpenDialog")
 		}
 	}
-}
-
-private fun createBuffer(list: Array<String>): PointerBuffer {
-	val p = PointerBuffer.allocateDirect(list.size)
-	p.rewind()
-	for (s in list) {
-		val bytes = s.toByteArray()
-		val buffer: java.nio.ByteBuffer = BufferUtils.createByteBuffer(s.length * Character.BYTES)
-		buffer.rewind()
-		buffer.put(bytes)
-		buffer.flip()
-		p.put(MemoryUtil.memAddress(buffer))
-	}
-	p.flip()
-	return p
 }
