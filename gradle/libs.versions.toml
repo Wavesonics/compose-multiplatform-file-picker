@@ -12,6 +12,6 @@ kotlinx-html = "org.jetbrains.kotlinx:kotlinx-html:0.8.1"
 junit = "junit:junit:4.13.2"
 
 [plugins]
-kotlin-compose = "org.jetbrains.compose:1.4.0"
+kotlin-compose = "org.jetbrains.compose:1.4.1"
 android-application = "com.android.application:7.4.1"
 android-library = "com.android.library:7.4.1"
