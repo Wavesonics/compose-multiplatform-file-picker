@@ -1,7 +1,5 @@
 package com.darkrockstudios.libraries.mpfilepicker
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.lwjgl.system.MemoryStack
 import org.lwjgl.util.tinyfd.TinyFileDialogs
 import org.lwjgl.util.tinyfd.TinyFileDialogs.tinyfd_selectFolderDialog
@@ -84,11 +82,11 @@ internal object FileChooser {
 		}
 	}
 
-	private suspend fun chooseFileSwing(
+	private fun chooseFileSwing(
 		type: CallType,
 		initialDirectory: String,
 		fileExtension: String
-	) = withContext(Dispatchers.IO) {
+	) {
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
 
 		val chooser = when (type) {
