@@ -193,4 +193,5 @@ android {
 
 project.afterEvaluate {
 	tasks.named("publishAndroidReleasePublicationToMavenRepository").dependsOn("signJsPublication")
+	tasks.named("signAndroidReleasePublication").dependsOn("publishJsPublicationToMavenRepository")
 }
