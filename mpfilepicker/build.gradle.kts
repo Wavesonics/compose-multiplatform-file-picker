@@ -1,5 +1,6 @@
 @file:Suppress("DSL_SCOPE_VIOLATION") // TODO remove this when Gradle is updated 8.1 https://github.com/gradle/gradle/issues/22797
 
+import com.android.build.gradle.internal.tasks.factory.dependsOn
 import java.net.URI
 
 plugins {
@@ -190,8 +191,6 @@ android {
     }
 }
 
-afterEvaluate {
-	tasks.named("publishAndroidReleasePublicationToMavenRepository").configure {
-		dependsOn("signJsPublication")
-	}
+project.afterEvaluate {
+	tasks.named("publishAndroidReleasePublicationToMavenRepository").dependsOn("signJsPublication")
 }
