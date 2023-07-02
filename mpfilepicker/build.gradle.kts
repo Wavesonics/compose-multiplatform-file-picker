@@ -30,6 +30,7 @@ kotlin {
 			kotlinOptions.jvmTarget = "17"
 		}
 	}
+	/*
 	js(IR) {
 		browser()
 		binaries.executable()
@@ -41,6 +42,7 @@ kotlin {
 			}
 		}
 	}
+	*/
 	sourceSets {
 		val commonMain by getting {
 			dependencies {
@@ -98,7 +100,8 @@ kotlin {
 		val jsMain by getting
 	}
 
-	val publicationsFromMainHost = listOf(jvm(), android()).map { it.name } + "kotlinMultiplatform"
+	val publicationsFromMainHost =
+		listOf(jvm(), android()/*, js(IR), macosX64()*/).map { it.name } + "kotlinMultiplatform"
 
 	val javadocJar by tasks.registering(Jar::class) {
 		archiveClassifier.set("javadoc")
