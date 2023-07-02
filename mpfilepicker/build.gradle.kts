@@ -160,7 +160,7 @@ kotlin {
 					tasks.withType<AbstractPublishToMaven>()
 						.matching { it.publication == targetPublication }
 						// Don't publish mac or JS just yet
-						.matching { it.name.contains("mac", true).not() && it.name.contains("js", true).not() }
+						//.matching { it.name.contains("mac", true).not() && it.name.contains("js", true).not() }
 						.configureEach { onlyIf { findProperty("isMainHost") == "true" } }
 
 					/*
