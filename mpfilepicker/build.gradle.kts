@@ -30,7 +30,6 @@ kotlin {
 			kotlinOptions.jvmTarget = "17"
 		}
 	}
-	/*
 	js(IR) {
 		browser()
 		binaries.executable()
@@ -42,7 +41,6 @@ kotlin {
 			}
 		}
 	}
-	*/
 	sourceSets {
 		val commonMain by getting {
 			dependencies {
