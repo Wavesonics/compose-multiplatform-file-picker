@@ -12,39 +12,39 @@ import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 
 
 fun main() = application {
-    var show by remember { mutableStateOf(false) }
-    var pathChosen by remember { mutableStateOf("") }
+	var show by remember { mutableStateOf(false) }
+	var pathChosen by remember { mutableStateOf("") }
 
-    var showDirPicker by remember { mutableStateOf(false) }
-    var dirChosen by remember { mutableStateOf("") }
+	var showDirPicker by remember { mutableStateOf(false) }
+	var dirChosen by remember { mutableStateOf("") }
 
-    Window(onCloseRequest = ::exitApplication) {
-        Column {
-            Button(onClick = {
-                show = true
-            }) {
-                Text("Choose File")
-            }
-            Text("File Chosen: $pathChosen")
+	Window(onCloseRequest = ::exitApplication) {
+		Column {
+			Button(onClick = {
+				show = true
+			}) {
+				Text("Choose File")
+			}
+			Text("File Chosen: $pathChosen")
 
-            /////////////////////////////////////////////////////////////////
+			/////////////////////////////////////////////////////////////////
 
-            Button(onClick = {
-                showDirPicker = true
-            }) {
-                Text("Choose Directory")
-            }
-            Text("Directory Chosen: $dirChosen")
-        }
-    }
+			Button(onClick = {
+				showDirPicker = true
+			}) {
+				Text("Choose Directory")
+			}
+			Text("Directory Chosen: $dirChosen")
+		}
+	}
 
-    FilePicker(show, fileExtensions = listOf("jpg", "png")) { file ->
-        pathChosen = file?.path ?: "none selected"
-        show = false
-    }
+	FilePicker(show, fileExtensions = listOf("jpg", "png")) { file ->
+		pathChosen = file?.path ?: "none selected"
+		show = false
+	}
 
-    DirectoryPicker(showDirPicker) { path ->
-        dirChosen = path ?: "none selected"
-        showDirPicker = false
-    }
+	DirectoryPicker(showDirPicker) { path ->
+		dirChosen = path ?: "none selected"
+		showDirPicker = false
+	}
 }

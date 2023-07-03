@@ -15,47 +15,47 @@ import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 
 class MainActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            MaterialTheme {
-                Column {
-                    var showFilePicker by remember { mutableStateOf(false) }
-                    var pathChosen by remember { mutableStateOf("") }
+	override fun onCreate(savedInstanceState: Bundle?) {
+		super.onCreate(savedInstanceState)
+		setContent {
+			MaterialTheme {
+				Column {
+					var showFilePicker by remember { mutableStateOf(false) }
+					var pathChosen by remember { mutableStateOf("") }
 
-                    Button(onClick = {
-                        showFilePicker = true
-                    }) {
-                        Text("Choose File")
-                    }
-                    Text("File Chosen: $pathChosen")
+					Button(onClick = {
+						showFilePicker = true
+					}) {
+						Text("Choose File")
+					}
+					Text("File Chosen: $pathChosen")
 
-                    val fileType = listOf("jpg", "png")
-                    FilePicker(showFilePicker, fileExtensions = fileType) { mpFile ->
-                        if(mpFile != null) {
-                            pathChosen = mpFile.path
-                        }
-                        showFilePicker = false
-                    }
+					val fileType = listOf("jpg", "png")
+					FilePicker(showFilePicker, fileExtensions = fileType) { mpFile ->
+						if (mpFile != null) {
+							pathChosen = mpFile.path
+						}
+						showFilePicker = false
+					}
 
-                    /////////////////////////////////////////////////////////////////
+					/////////////////////////////////////////////////////////////////
 
-                    var showDirPicker by remember { mutableStateOf(false) }
-                    var dirChosen by remember { mutableStateOf("") }
+					var showDirPicker by remember { mutableStateOf(false) }
+					var dirChosen by remember { mutableStateOf("") }
 
-                    Button(onClick = {
-                        showDirPicker = true
-                    }) {
-                        Text("Choose Directory")
-                    }
-                    Text("Directory Chosen: $dirChosen")
+					Button(onClick = {
+						showDirPicker = true
+					}) {
+						Text("Choose Directory")
+					}
+					Text("Directory Chosen: $dirChosen")
 
-                    DirectoryPicker(showDirPicker) { path ->
-                        dirChosen = path ?: "none selected"
-                        showDirPicker = false
-                    }
-                }
-            }
-        }
-    }
+					DirectoryPicker(showDirPicker) { path ->
+						dirChosen = path ?: "none selected"
+						showDirPicker = false
+					}
+				}
+			}
+		}
+	}
 }
