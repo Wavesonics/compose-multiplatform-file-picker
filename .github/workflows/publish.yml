@@ -12,7 +12,7 @@ env:
   SIGNING_USER: ${{ secrets.SIGNING_USER }}
 on:
   release:
-    types: [created]
+    types: [ created ]
 jobs:
   publish:
     runs-on: macos-latest
