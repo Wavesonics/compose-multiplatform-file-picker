@@ -10,7 +10,7 @@ plugins {
 kotlin {
 	jvm {
 		compilations.all {
-			kotlinOptions.jvmTarget = "11"
+			kotlinOptions.jvmTarget = "17"
 		}
 		withJava()
 	}
@@ -18,7 +18,7 @@ kotlin {
 		val jvmMain by getting {
 			dependencies {
 				implementation(project(":mpfilepicker"))
-				implementation(compose.desktop.currentOs)
+				implementation(compose.desktop.macos_x64)
 			}
 		}
 		val jvmTest by getting
