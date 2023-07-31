@@ -26,6 +26,6 @@ jobs:
       - name: Publish package
         uses: gradle/gradle-build-action@v2.7.0
         with:
-          arguments: mpfilepicker:publishAndroidReleasePublicationToMavenRepository
+          arguments: mpfilepicker:publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
