@@ -28,13 +28,16 @@ jobs:
         with:
           arguments: >
             mpfilepicker:publishAndroidReleasePublicationToMavenRepository
-            clean
+      - name: Publish package
+        uses: gradle/gradle-build-action@v2.7.0
+        with:
+          arguments: >
             mpfilepicker:publishJsPublicationToMavenRepository
-            clean
-            mpfilepicker:publishJvmPublicationToMavenRepository
-            clean
-            mpfilepicker:publishKotlinMultiplatformPublicationToMavenRepository
-            clean
-            mpfilepicker:publishMacosX64PublicationToMavenRepository
+        #            clean
+        #            mpfilepicker:publishJvmPublicationToMavenRepository
+        #            clean
+        #            mpfilepicker:publishKotlinMultiplatformPublicationToMavenRepository
+        #            clean
+        #            mpfilepicker:publishMacosX64PublicationToMavenRepository
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
