@@ -26,18 +26,22 @@ jobs:
       - name: Publish package
         uses: gradle/gradle-build-action@v2.7.0
         with:
-          arguments: >
-            mpfilepicker:publishAndroidReleasePublicationToMavenRepository
+          arguments: mpfilepicker:publishAndroidReleasePublicationToMavenRepository
       - name: Publish package
         uses: gradle/gradle-build-action@v2.7.0
         with:
-          arguments: >
-            mpfilepicker:publishJsPublicationToMavenRepository
-        #            clean
-        #            mpfilepicker:publishJvmPublicationToMavenRepository
-        #            clean
-        #            mpfilepicker:publishKotlinMultiplatformPublicationToMavenRepository
-        #            clean
-        #            mpfilepicker:publishMacosX64PublicationToMavenRepository
+          arguments: mpfilepicker:publishJsPublicationToMavenRepository
+      - name: Publish package
+        uses: gradle/gradle-build-action@v2.7.0
+        with:
+          arguments: mpfilepicker:publishJvmPublicationToMavenRepository
+      - name: Publish package
+        uses: gradle/gradle-build-action@v2.7.0
+        with:
+          arguments: mpfilepicker:publishKotlinMultiplatformPublicationToMavenRepository
+      - name: Publish package
+        uses: gradle/gradle-build-action@v2.7.0
+        with:
+          arguments: mpfilepicker:publishMacosX64PublicationToMavenRepository
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
