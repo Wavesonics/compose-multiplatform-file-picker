@@ -99,7 +99,7 @@ kotlin {
 	}
 
 	val publicationsFromMainHost =
-		listOf(jvm(), android()/*, js(IR), macosX64()*/).map { it.name } + "kotlinMultiplatform"
+		listOf(jvm(), android(), js(IR), macosX64()).map { it.name } + "kotlinMultiplatform"
 
 	val javadocJar by tasks.registering(Jar::class) {
 		archiveClassifier.set("javadoc")
