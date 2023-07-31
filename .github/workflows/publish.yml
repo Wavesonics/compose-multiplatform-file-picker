@@ -28,9 +28,13 @@ jobs:
         with:
           arguments: >
             mpfilepicker:publishAndroidReleasePublicationToMavenRepository
+            clean
             mpfilepicker:publishJsPublicationToMavenRepository
+            clean
             mpfilepicker:publishJvmPublicationToMavenRepository
+            clean
             mpfilepicker:publishKotlinMultiplatformPublicationToMavenRepository
+            clean
             mpfilepicker:publishMacosX64PublicationToMavenRepository
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
