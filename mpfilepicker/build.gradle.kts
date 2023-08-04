@@ -178,6 +178,11 @@ kotlin {
 	}
 }
 
+tasks.withType<AbstractPublishToMaven>().configureEach {
+	val signingTasks = tasks.withType<Sign>()
+	mustRunAfter(signingTasks)
+}
+
 signing {
 	val signingKey: String? = System.getenv("SIGNING_KEY")
 	val signingPassword: String? = System.getenv("SIGNING_PASSWORD")
