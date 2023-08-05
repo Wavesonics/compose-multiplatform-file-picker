@@ -26,4 +26,4 @@ jobs:
       - name: Publish package
         uses: gradle/gradle-build-action@v2.7.0
         with:
-          arguments: mpfilepicker:publish
+          arguments: mpfilepicker:publishAllPublicationsToMavenRepository
