@@ -1,6 +1,3 @@
-// TODO remove this when Gradle is updated 8.1 https://github.com/gradle/gradle/issues/22797
-@file:Suppress("DSL_SCOPE_VIOLATION")
-
 plugins {
 	kotlin("multiplatform")
 	alias(libs.plugins.kotlin.compose)
