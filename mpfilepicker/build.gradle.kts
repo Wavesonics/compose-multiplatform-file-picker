@@ -96,8 +96,8 @@ kotlin {
 		val jsMain by getting
 	}
 
-	val publicationsFromMainHost =
-		listOf(jvm(), android(), js(IR), macosX64()).map { it.name } + "kotlinMultiplatform"
+//	val publicationsFromMainHost =
+//		listOf(jvm(), android(), js(IR), macosX64()).map { it.name } + "kotlinMultiplatform"
 
 	val javadocJar by tasks.registering(Jar::class) {
 		archiveClassifier.set("javadoc")
@@ -153,24 +153,24 @@ kotlin {
 					}
 				}
 
-				matching { it.name in publicationsFromMainHost }.all {
-					val targetPublication = this@all
-					tasks.withType<AbstractPublishToMaven>()
-						.matching { it.publication == targetPublication }
-						// Don't publish mac or JS just yet
-						//.matching { it.name.contains("mac", true).not() && it.name.contains("js", true).not() }
-						.configureEach { onlyIf { findProperty("isMainHost") == "true" } }
-
-					/*
-					tasks.withType<AbstractPublishToMaven>()
-						.matching { it.publication == targetPublication }
-						.matching { it.name.contains("js") }
-						.map {
-							it.dependsOn("signJsPublication")
-							it
-						}
-					*/
-				}
+//				matching { it.name in publicationsFromMainHost }.all {
+//					val targetPublication = this@all
+//					tasks.withType<AbstractPublishToMaven>()
+//						.matching { it.publication == targetPublication }
+//						// Don't publish mac or JS just yet
+//						//.matching { it.name.contains("mac", true).not() && it.name.contains("js", true).not() }
+//						.configureEach { onlyIf { findProperty("isMainHost") == "true" } }
+//
+//					/*
+//					tasks.withType<AbstractPublishToMaven>()
+//						.matching { it.publication == targetPublication }
+//						.matching { it.name.contains("js") }
+//						.map {
+//							it.dependsOn("signJsPublication")
+//							it
+//						}
+//					*/
+//				}
 			}
 		}
 	}
