@@ -1,5 +1,3 @@
-@file:Suppress("DSL_SCOPE_VIOLATION") // TODO remove this when Gradle is updated 8.1 https://github.com/gradle/gradle/issues/22797
-
 import java.net.URI
 
 plugins {
@@ -98,25 +96,12 @@ kotlin {
 		val jsMain by getting
 	}
 
-	val publicationsFromMainHost =
-		listOf(jvm(), android()/*, js(IR), macosX64()*/).map { it.name } + "kotlinMultiplatform"
-
 	val javadocJar by tasks.registering(Jar::class) {
 		archiveClassifier.set("javadoc")
 	}
 
 	publishing {
 		repositories {
-			/*
-			maven {
-				name = "GitHubPackages"
-				url = URI("https://maven.pkg.github.com/wavesonics/richtext-compose-multiplatform")
-				credentials {
-					username = System.getenv("GITHUB_ACTOR")
-					password = System.getenv("GITHUB_TOKEN")
-				}
-			}
-			*/
 			maven {
 				val releaseRepo = URI("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
 				val snapshotRepo = URI("https://s01.oss.sonatype.org/content/repositories/snapshots/")
@@ -154,28 +139,14 @@ kotlin {
 						url.set("https://github.com/Wavesonics/compose-multiplatform-file-picker")
 					}
 				}
-
-				matching { it.name in publicationsFromMainHost }.all {
-					val targetPublication = this@all
-					tasks.withType<AbstractPublishToMaven>()
-						.matching { it.publication == targetPublication }
-						// Don't publish mac or JS just yet
-						//.matching { it.name.contains("mac", true).not() && it.name.contains("js", true).not() }
-						.configureEach { onlyIf { findProperty("isMainHost") == "true" } }
-
-					/*
-					tasks.withType<AbstractPublishToMaven>()
-						.matching { it.publication == targetPublication }
-						.matching { it.name.contains("js") }
-						.map {
-							it.dependsOn("signJsPublication")
-							it
-						}
-					*/
-				}
 			}
 		}
 	}
+}
+
+tasks.withType<AbstractPublishToMaven>().configureEach {
+	val signingTasks = tasks.withType<Sign>()
+	mustRunAfter(signingTasks)
 }
 
 signing {
