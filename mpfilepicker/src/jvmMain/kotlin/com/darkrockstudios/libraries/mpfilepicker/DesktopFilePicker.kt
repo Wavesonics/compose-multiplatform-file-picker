@@ -2,6 +2,10 @@ package com.darkrockstudios.libraries.mpfilepicker
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogState
+import kotlinx.coroutines.CoroutineScope
 import java.io.File
 
 public data class JvmFile(
@@ -14,28 +18,17 @@ public actual fun FilePicker(
 	show: Boolean,
 	initialDirectory: String?,
 	fileExtensions: List<String>,
-	onFileSelected: FileSelected
+	onFileSelected: FileSelected,
 ) {
-	LaunchedEffect(show) {
-		if (show) {
-			val fileFilter = if (fileExtensions.isNotEmpty()) {
-				fileExtensions.joinToString(",")
-			} else {
-				""
-			}
-
-			val initialDir = initialDirectory ?: System.getProperty("user.dir")
-			val filePath = FileChooser.chooseFile(
-				initialDirectory = initialDir,
-				fileExtensions = fileFilter
-			)
-			if (filePath != null) {
-				onFileSelected(JvmFile(filePath, File(filePath)))
-			} else {
-				onFileSelected(null)
-			}
-
-		}
+	Picker(show) {
+		val fileFilter = fileExtensions.joinToString(separator = ",")
+		val initialDir = initialDirectory ?: System.getProperty("user.dir")
+		val filePath = FileChooser.chooseFile(
+			initialDirectory = initialDir,
+			fileExtensions = fileFilter
+		)
+		val mpFile = filePath?.let { JvmFile(filePath, File(filePath)) }
+		onFileSelected(mpFile)
 	}
 }
 
@@ -43,13 +36,30 @@ public actual fun FilePicker(
 public actual fun DirectoryPicker(
 	show: Boolean,
 	initialDirectory: String?,
-	onFileSelected: (String?) -> Unit
+	onFileSelected: (String?) -> Unit,
 ) {
-	LaunchedEffect(show) {
-		if (show) {
-			val initialDir = initialDirectory ?: System.getProperty("user.dir")
-			val fileChosen = FileChooser.chooseDirectory(initialDir)
-			onFileSelected(fileChosen)
-		}
+	Picker(show) {
+		val initialDir = initialDirectory ?: System.getProperty("user.dir")
+		val dirPath = FileChooser.chooseDirectory(initialDir)
+		onFileSelected(dirPath)
+	}
+}
+
+
+/**
+ * Hack to make [FilePicker] and [DirectoryPicker] modal.
+ */
+@Composable
+private fun Picker(show: Boolean, content: suspend CoroutineScope.() -> Unit) {
+	if (show) {
+		Dialog(
+			onCloseRequest = {},
+			state = DialogState(size = DpSize.Zero),
+			undecorated = true,
+			resizable = false,
+			enabled = false,
+			focusable = false,
+			content = { LaunchedEffect(Unit, content) },
+		)
 	}
 }
