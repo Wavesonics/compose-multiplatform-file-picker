@@ -23,10 +23,7 @@ public actual fun FilePicker(
 	Picker(show) {
 		val fileFilter = fileExtensions.joinToString(separator = ",")
 		val initialDir = initialDirectory ?: System.getProperty("user.dir")
-		val filePath = FileChooser.chooseFile(
-			initialDirectory = initialDir,
-			fileExtensions = fileFilter
-		)
+		val filePath = FileChooser.chooseFile(initialDir, fileFilter)
 		val mpFile = filePath?.let { JvmFile(filePath, File(filePath)) }
 		onFileSelected(mpFile)
 	}
@@ -44,7 +41,6 @@ public actual fun DirectoryPicker(
 		onFileSelected(dirPath)
 	}
 }
-
 
 /**
  * Hack to make [FilePicker] and [DirectoryPicker] modal.
