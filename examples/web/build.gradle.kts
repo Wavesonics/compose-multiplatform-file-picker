@@ -22,7 +22,7 @@ repositories {
 dependencies {
 	implementation(libs.kotlinx.html)
 	implementation(kotlin("stdlib-js"))
-	implementation(compose.web.core)
+	implementation(compose.html.core)
 	implementation(compose.runtime)
 	implementation(project(":mpfilepicker"))
 }
