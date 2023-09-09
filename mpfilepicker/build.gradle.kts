@@ -62,11 +62,6 @@ kotlin {
 				api(libs.kotlinx.coroutines.android)
 			}
 		}
-		val androidTest by getting {
-			dependencies {
-				implementation(libs.junit)
-			}
-		}
 		val jvmMain by getting {
 			dependencies {
 				api(compose.uiTooling)
