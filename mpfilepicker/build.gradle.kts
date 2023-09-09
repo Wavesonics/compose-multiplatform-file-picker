@@ -47,6 +47,7 @@ kotlin {
 		}
 		val androidMain by getting {
 			dependencies {
+				api(compose.uiTooling)
 				api(compose.preview)
 				api(compose.material)
 				api(libs.androidx.appcompat)
