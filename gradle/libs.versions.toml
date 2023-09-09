@@ -15,5 +15,5 @@ junit = "junit:junit:4.13.2"
 
 [plugins]
 kotlin-compose = "org.jetbrains.compose:1.5.1"
-android-application = "com.android.application:8.2.0"
-android-library = "com.android.library:8.2.0"
+android-application = "com.android.application:8.1.1"
+android-library = "com.android.library:8.1.1"
