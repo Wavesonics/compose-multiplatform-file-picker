@@ -19,8 +19,6 @@ android {
         applicationId = "com.darkrockstudios.libraries.mpfilepicker.android"
         minSdk = libs.versions.android.min.sdk.get().toInt()
         targetSdk = libs.versions.android.target.sdk.get().toInt()
-        versionCode = 1
-        versionName = "1.0-SNAPSHOT"
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

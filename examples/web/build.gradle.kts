@@ -26,7 +26,3 @@ dependencies {
 	implementation(compose.runtime)
 	implementation(project(":mpfilepicker"))
 }
-
-rootProject.extensions.configure<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension> {
-	versions.webpackCli.version = "4.10.0"
-}
