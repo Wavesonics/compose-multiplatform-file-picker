@@ -11,7 +11,6 @@ import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import platform.AppKit.NSApp
 import platform.AppKit.NSApplication
 
-@OptIn(ExperimentalMaterial3Api::class)
 fun main() {
 	NSApplication.sharedApplication()
 	Window(title = "Youtube history") {

@@ -1,5 +1,5 @@
 plugins {
-	kotlin("js")
+	kotlin("multiplatform")
 	alias(libs.plugins.kotlin.compose)
 }
 
@@ -9,7 +9,15 @@ kotlin {
 		binaries.executable()
 	}
 	sourceSets {
-		val main by getting
+		val jsMain by getting {
+			dependencies {
+				implementation(libs.kotlinx.html)
+				implementation(kotlin("stdlib-js"))
+				implementation(compose.html.core)
+				implementation(compose.runtime)
+				implementation(project(":mpfilepicker"))
+			}
+		}
 	}
 }
 repositories {
@@ -17,12 +25,4 @@ repositories {
 	maven { url = uri("https://maven.pkg.jetbrains.space/public/p/kotlinx-html/maven") }
 	maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
 	google()
-}
-
-dependencies {
-	implementation(libs.kotlinx.html)
-	implementation(kotlin("stdlib-js"))
-	implementation(compose.html.core)
-	implementation(compose.runtime)
-	implementation(project(":mpfilepicker"))
 }
