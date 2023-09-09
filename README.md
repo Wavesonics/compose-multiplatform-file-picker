@@ -66,6 +66,24 @@ Swing file picker if the native one can't be use for some reason.
 
 - Setting the initial directory doesn't seem to effect Android's file picker at all, not sure why that is yet.
 
+## Building
+
+Intellij IDEA should be able to build the project except Android variant.
+To build and run Android examples, use Android Studio.
+
+### JS
+
+run `jsBrowserDevelopmentRun`, it will build JS example and open it in a browser.
+
+### MacOS and JVM
+
+Click on a green button next to main function in `examples/jvm/.../Main.kt` or `examples/macosX64/.../main.kt`
+
+### Android
+
+Open this project in Android Studio. Run configuration for Android should be added automatically,
+clicking on it will run it on an emulator
+
 [badge-kotlin]: https://img.shields.io/badge/kotlin-1.8.20-blue.svg?logo=kotlin
 
 <!-- PLATFORMS -->
