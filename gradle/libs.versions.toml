@@ -6,7 +6,7 @@ android-target-sdk = "34"
 android-min-sdk = "24"
 
 [libraries]
-compose-activity = "androidx.activity:activity-compose:1.6.1"
+compose-activity = "androidx.activity:activity-compose:1.7.2"
 androidx-appcompat = "androidx.appcompat:appcompat:1.6.0"
 androidx-coreKtx = "androidx.core:core-ktx:1.9.0"
 kotlinx-coroutines-android = "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
