@@ -16,3 +16,7 @@ jobs:
         uses: gradle/gradle-build-action@v2.8.0
         with:
           arguments: build
+      - name: Run Android lint
+        uses: gradle/gradle-build-action@v2.8.0
+        with:
+          arguments: lintDebug
