@@ -32,13 +32,7 @@ kotlin {
 		browser()
 		binaries.executable()
 	}
-	macosX64 {
-		binaries {
-			executable {
-				entryPoint = "main"
-			}
-		}
-	}
+	macosX64()
 	sourceSets {
 		val commonMain by getting {
 			dependencies {
