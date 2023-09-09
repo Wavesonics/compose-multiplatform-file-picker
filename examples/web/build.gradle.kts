@@ -22,11 +22,7 @@ repositories {
 dependencies {
 	implementation(libs.kotlinx.html)
 	implementation(kotlin("stdlib-js"))
-	implementation(compose.web.core)
+	implementation(compose.html.core)
 	implementation(compose.runtime)
 	implementation(project(":mpfilepicker"))
-}
-
-rootProject.extensions.configure<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension> {
-	versions.webpackCli.version = "4.10.0"
 }

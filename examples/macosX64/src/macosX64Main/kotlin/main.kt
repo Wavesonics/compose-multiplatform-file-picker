@@ -41,7 +41,7 @@ fun main() {
 					Text("Directory Chosen: $dirChosen")
 				}
 
-				FilePicker(show, fileExtensions = listOf("jpg", "png")) { file ->
+				FilePicker(show, fileExtensions = listOf("jpg", "png", "plist")) { file ->
 					pathChosen = file?.path ?: "none selected"
 					show = false
 				}
