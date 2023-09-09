@@ -12,7 +12,7 @@ jobs:
           distribution: 'adopt'
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@v1.1.0
-      - name: Publish package
+      - name: Build project
         uses: gradle/gradle-build-action@v2.8.0
         with:
           arguments: build
