@@ -20,7 +20,7 @@ extra.apply {
 
 kotlin {
 	explicitApi()
-	android {
+	androidTarget {
 		publishLibraryVariants("release")
 	}
 	jvm {
@@ -161,7 +161,6 @@ android {
 	sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
 	defaultConfig {
 		minSdk = libs.versions.android.min.sdk.get().toInt()
-		targetSdk = libs.versions.android.target.sdk.get().toInt()
 	}
 	compileOptions {
 		sourceCompatibility = JavaVersion.VERSION_17
