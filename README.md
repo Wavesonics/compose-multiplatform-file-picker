@@ -8,18 +8,10 @@
 
 A multiplatform compose widget for picking files with each platform's Native File Picker Dialog.
 
-Currently supports: Desktop and Android.
-
-#### Desktop/JVM Implementation
-
-The native desktop dialog implementation is derived from the [Pacmc project](https://github.com/jakobkmar/pacmc)
-
-See `FileChooser.kt` as well as the `lwjgl` gradle filter.
-
 ## Include in your project:
 
 ```kts
-implementation("com.darkrockstudios:mpfilepicker:1.2.0")
+implementation("com.darkrockstudios:mpfilepicker:2.1.0")
 ```
 
 ## How to use
@@ -33,10 +25,10 @@ To show the dialog, simply set the boolean state to true via a button or what ev
 ````kotlin
 var showFilePicker by remember { mutableStateOf(false) }
 
-val fileType = "jpg"
-FilePicker(showFilePicker, fileExtension = fileType) { path ->
+val fileType = listOf("jpg", "png")
+FilePicker(show, fileExtensions = fileType) { file ->
     showFilePicker = false
-    // do something with path
+    // do something with the file
 }
 ````
 
@@ -51,8 +43,12 @@ DirectoryPicker(showDirPicker) { path ->
 }
 ````
 
-On each supported platform, it will update the platform native file picker dialog. On desktop it will fall back to the
-Swing file picker if the native one can't be use for some reason.
+On each supported platform, it will update the platform native file picker dialog. On desktop, it will fall back to the
+Swing file picker if the native one can't be used for some reason.
+
+<details>
+
+<summary>Screenshots</summary>
 
 ## Windows
 
@@ -62,9 +58,31 @@ Swing file picker if the native one can't be use for some reason.
 
 ![Android native file picker](screenshot-android.png "Android native file picker")
 
-## Known Bugs
+</details>
 
-- Setting the initial directory doesn't seem to effect Android's file picker at all, not sure why that is yet.
+## Desktop/JVM Implementation
+
+The native desktop dialog implementation uses [TinyFileDialogs](https://github.com/LWJGL/lwjgl3/blob/master/modules/lwjgl/tinyfd/src/generated/java/org/lwjgl/util/tinyfd/TinyFileDialogs.java)
+
+See `FileChooser.kt` as well as the `lwjgl` gradle filter.
+
+## Building
+
+Intellij IDEA should be able to build the project except Android variant.
+To build and run Android examples, use Android Studio.
+
+### JS
+
+run `jsBrowserDevelopmentRun` via Gradle, it will build a JS example and open it in a browser.
+
+### MacOS and JVM
+
+Click on a green button next to the main function in `examples/jvm/.../Main.kt` or `examples/macosX64/.../main.kt`.
+
+### Android
+
+Open the project in Android Studio. A run configuration for Android should be added automatically.
+Clicking on it will run it on an emulator.
 
 [badge-kotlin]: https://img.shields.io/badge/kotlin-1.8.20-blue.svg?logo=kotlin
 

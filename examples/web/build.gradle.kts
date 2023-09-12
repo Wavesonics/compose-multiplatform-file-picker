@@ -1,8 +1,5 @@
-// TODO remove this when Gradle is updated 8.1 https://github.com/gradle/gradle/issues/22797
-@file:Suppress("DSL_SCOPE_VIOLATION")
-
 plugins {
-	kotlin("js")
+	kotlin("multiplatform")
 	alias(libs.plugins.kotlin.compose)
 }
 
@@ -12,7 +9,15 @@ kotlin {
 		binaries.executable()
 	}
 	sourceSets {
-		val main by getting
+		val jsMain by getting {
+			dependencies {
+				implementation(libs.kotlinx.html)
+				implementation(kotlin("stdlib-js"))
+				implementation(compose.html.core)
+				implementation(compose.runtime)
+				implementation(project(":mpfilepicker"))
+			}
+		}
 	}
 }
 repositories {
@@ -20,16 +25,4 @@ repositories {
 	maven { url = uri("https://maven.pkg.jetbrains.space/public/p/kotlinx-html/maven") }
 	maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
 	google()
-}
-
-dependencies {
-	implementation(libs.kotlinx.html)
-	implementation(kotlin("stdlib-js"))
-	implementation(compose.web.core)
-	implementation(compose.runtime)
-	implementation(project(":mpfilepicker"))
-}
-
-rootProject.extensions.configure<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension> {
-	versions.webpackCli.version = "4.10.0"
 }

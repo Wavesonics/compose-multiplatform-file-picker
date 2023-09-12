@@ -11,5 +11,4 @@ rootProject.name = "MultiplatformFilePicker"
 
 include(":mpfilepicker", ":examples:android", ":examples:jvm")
 include(":examples:web")
-include("examples:macosX64")
-findProject(":examples:macosX64")?.name = "macosX64"
+include(":examples:macosX64")

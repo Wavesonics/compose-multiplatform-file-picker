@@ -1,5 +1,3 @@
-@file:Suppress("DSL_SCOPE_VIOLATION") // TODO remove this when Gradle is updated 8.1 https://github.com/gradle/gradle/issues/22797
-
 import java.net.URI
 
 plugins {
@@ -22,7 +20,7 @@ extra.apply {
 
 kotlin {
 	explicitApi()
-	android {
+	androidTarget {
 		publishLibraryVariants("release")
 	}
 	jvm {
@@ -34,13 +32,7 @@ kotlin {
 		browser()
 		binaries.executable()
 	}
-	macosX64 {
-		binaries {
-			executable {
-				entryPoint = "main"
-			}
-		}
-	}
+	macosX64()
 	sourceSets {
 		val commonMain by getting {
 			dependencies {
@@ -62,11 +54,6 @@ kotlin {
 				api(libs.androidx.coreKtx)
 				api(libs.compose.activity)
 				api(libs.kotlinx.coroutines.android)
-			}
-		}
-		val androidTest by getting {
-			dependencies {
-				implementation(libs.junit)
 			}
 		}
 		val jvmMain by getting {
@@ -98,25 +85,12 @@ kotlin {
 		val jsMain by getting
 	}
 
-	val publicationsFromMainHost =
-		listOf(jvm(), android()/*, js(IR), macosX64()*/).map { it.name } + "kotlinMultiplatform"
-
 	val javadocJar by tasks.registering(Jar::class) {
 		archiveClassifier.set("javadoc")
 	}
 
 	publishing {
 		repositories {
-			/*
-			maven {
-				name = "GitHubPackages"
-				url = URI("https://maven.pkg.github.com/wavesonics/richtext-compose-multiplatform")
-				credentials {
-					username = System.getenv("GITHUB_ACTOR")
-					password = System.getenv("GITHUB_TOKEN")
-				}
-			}
-			*/
 			maven {
 				val releaseRepo = URI("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
 				val snapshotRepo = URI("https://s01.oss.sonatype.org/content/repositories/snapshots/")
@@ -154,28 +128,14 @@ kotlin {
 						url.set("https://github.com/Wavesonics/compose-multiplatform-file-picker")
 					}
 				}
-
-				matching { it.name in publicationsFromMainHost }.all {
-					val targetPublication = this@all
-					tasks.withType<AbstractPublishToMaven>()
-						.matching { it.publication == targetPublication }
-						// Don't publish mac or JS just yet
-						//.matching { it.name.contains("mac", true).not() && it.name.contains("js", true).not() }
-						.configureEach { onlyIf { findProperty("isMainHost") == "true" } }
-
-					/*
-					tasks.withType<AbstractPublishToMaven>()
-						.matching { it.publication == targetPublication }
-						.matching { it.name.contains("js") }
-						.map {
-							it.dependsOn("signJsPublication")
-							it
-						}
-					*/
-				}
 			}
 		}
 	}
+}
+
+tasks.withType<AbstractPublishToMaven>().configureEach {
+	val signingTasks = tasks.withType<Sign>()
+	mustRunAfter(signingTasks)
 }
 
 signing {
@@ -195,7 +155,6 @@ android {
 	sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
 	defaultConfig {
 		minSdk = libs.versions.android.min.sdk.get().toInt()
-		targetSdk = libs.versions.android.target.sdk.get().toInt()
 	}
 	compileOptions {
 		sourceCompatibility = JavaVersion.VERSION_17

@@ -11,7 +11,6 @@ import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import platform.AppKit.NSApp
 import platform.AppKit.NSApplication
 
-@OptIn(ExperimentalMaterial3Api::class)
 fun main() {
 	NSApplication.sharedApplication()
 	Window(title = "Youtube history") {
@@ -41,7 +40,7 @@ fun main() {
 					Text("Directory Chosen: $dirChosen")
 				}
 
-				FilePicker(show, fileExtensions = listOf("jpg", "png")) { file ->
+				FilePicker(show, fileExtensions = listOf("jpg", "png", "plist")) { file ->
 					pathChosen = file?.path ?: "none selected"
 					show = false
 				}

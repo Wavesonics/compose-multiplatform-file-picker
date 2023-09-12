@@ -10,7 +10,6 @@ import androidx.compose.ui.window.application
 import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 
-
 fun main() = application {
 	var show by remember { mutableStateOf(false) }
 	var pathChosen by remember { mutableStateOf("") }
