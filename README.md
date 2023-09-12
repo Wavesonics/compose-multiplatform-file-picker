@@ -27,8 +27,8 @@ var showFilePicker by remember { mutableStateOf(false) }
 
 val fileType = listOf("jpg", "png")
 FilePicker(show, fileExtensions = fileType) { file ->
-	showFilePicker = false
-	// do something with the file
+    showFilePicker = false
+    // do something with the file
 }
 ````
 
