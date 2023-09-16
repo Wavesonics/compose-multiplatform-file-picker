@@ -62,7 +62,8 @@ Swing file picker if the native one can't be used for some reason.
 
 ## Desktop/JVM Implementation
 
-The native desktop dialog implementation uses [TinyFileDialogs](https://github.com/LWJGL/lwjgl3/blob/master/modules/lwjgl/tinyfd/src/generated/java/org/lwjgl/util/tinyfd/TinyFileDialogs.java)
+The native desktop dialog implementation is derived from the [Pacmc project](https://github.com/jakobkmar/pacmc)
+but uses [TinyFileDialogs](https://github.com/LWJGL/lwjgl3/blob/master/modules/lwjgl/tinyfd/src/generated/java/org/lwjgl/util/tinyfd/TinyFileDialogs.java)
 
 See `FileChooser.kt` as well as the `lwjgl` gradle filter.
 
