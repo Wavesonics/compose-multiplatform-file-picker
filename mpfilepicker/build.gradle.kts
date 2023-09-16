@@ -61,7 +61,6 @@ kotlin {
 				api(compose.uiTooling)
 				api(compose.preview)
 				api(compose.material)
-//				api(libs.kotlinx.coroutines.swing)
 
 				val lwjglVersion = "3.3.1"
 				listOf("lwjgl", "lwjgl-tinyfd").forEach { lwjglDep ->
