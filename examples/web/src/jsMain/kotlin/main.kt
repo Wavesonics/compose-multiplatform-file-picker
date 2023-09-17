@@ -33,6 +33,7 @@ fun main() {
 					fileContents = readFileAsText(file.platformFile)
 				}
 			}
+			show = false
 		}
 	}
 }

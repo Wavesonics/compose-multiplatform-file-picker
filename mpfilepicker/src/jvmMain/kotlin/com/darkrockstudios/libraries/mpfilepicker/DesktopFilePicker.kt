@@ -25,9 +25,9 @@ public actual fun FilePicker(
 			}
 
 			val initialDir = initialDirectory ?: System.getProperty("user.dir")
-			val filePath = FileChooser.chooseFile(
+			val filePath = chooseFile(
 				initialDirectory = initialDir,
-				fileExtensions = fileFilter
+				fileExtension = fileFilter
 			)
 			if (filePath != null) {
 				onFileSelected(JvmFile(filePath, File(filePath)))
@@ -48,7 +48,7 @@ public actual fun DirectoryPicker(
 	LaunchedEffect(show) {
 		if (show) {
 			val initialDir = initialDirectory ?: System.getProperty("user.dir")
-			val fileChosen = FileChooser.chooseDirectory(initialDir)
+			val fileChosen = chooseDirectory(initialDir)
 			onFileSelected(fileChosen)
 		}
 	}
