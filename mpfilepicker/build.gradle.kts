@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import java.net.URI
 
 plugins {
@@ -18,8 +19,11 @@ extra.apply {
 	set("isReleaseVersion", !(version as String).endsWith("SNAPSHOT"))
 }
 
+@OptIn(ExperimentalKotlinGradlePluginApi::class)
 kotlin {
+    targetHierarchy.default()
 	explicitApi()
+
 	androidTarget {
 		publishLibraryVariants("release")
 	}
@@ -33,6 +37,16 @@ kotlin {
 		binaries.executable()
 	}
 	macosX64()
+	listOf(
+		iosX64(),
+		iosArm64(),
+		iosSimulatorArm64(),
+	).forEach {
+		it.binaries.framework {
+			baseName = "MPFilePicker"
+		}
+	}
+
 	sourceSets {
 		val commonMain by getting {
 			dependencies {
