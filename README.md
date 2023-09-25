@@ -85,6 +85,25 @@ Click on a green button next to the main function in `examples/jvm/.../Main.kt` 
 Open the project in Android Studio. A run configuration for Android should be added automatically.
 Clicking on it will run it on an emulator.
 
+### iOS
+
+Requirements:
+- MacOS
+- Xcode
+- Android Studio
+
+Setup your environment by following the [Official Multiplatform Mobile Guide](https://kotlinlang.org/docs/multiplatform-mobile-setup.html).
+To run iOS example app you also need to follow the [Set-up an environment to work with CocoaPods Guide](https://kotlinlang.org/docs/native-cocoapods.html#set-up-an-environment-to-work-with-cocoapods).  
+
+Open the project in Android Studio, install `Kotlin Multiplatform Mobile` plugin. Create an `iOS Application` run config
+and enter the ff.:
+- Xcode Project File: `<project_dir>/examples/iosApp/iosApp.xcworkspace`
+- Xcode Project Scheme: `iosApp`
+- Xcode Project Cinfiguration: `Debug`
+- Execution Target: choose any simulator you have already created
+
+Use it to launch a simulator and run/debug the example iOS App,
+
 [badge-kotlin]: https://img.shields.io/badge/kotlin-1.8.20-blue.svg?logo=kotlin
 
 <!-- PLATFORMS -->
