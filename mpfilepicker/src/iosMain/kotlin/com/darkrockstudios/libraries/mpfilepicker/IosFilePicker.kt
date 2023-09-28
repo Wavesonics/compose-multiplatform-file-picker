@@ -20,8 +20,8 @@ public actual fun FilePicker(
 	val launcher = remember {
 		FilePickerLauncher(
 			initialDirectory = initialDirectory,
-			fileExtensions = fileExtensions,
-			onFileSelected = onFileSelected
+			pickerMode = FilePickerLauncher.Mode.File(fileExtensions),
+			onFileSelected = onFileSelected,
 		)
 	}
 
@@ -41,6 +41,7 @@ public actual fun DirectoryPicker(
 	val launcher = remember {
 		FilePickerLauncher(
 			initialDirectory = initialDirectory,
+			pickerMode = FilePickerLauncher.Mode.Directory,
 			onFileSelected = { onFileSelected(it?.path) },
 		)
 	}

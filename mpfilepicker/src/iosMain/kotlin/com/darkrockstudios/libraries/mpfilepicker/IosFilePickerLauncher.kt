@@ -7,14 +7,26 @@ import platform.UIKit.UIDocumentPickerDelegateProtocol
 import platform.UIKit.UIDocumentPickerViewController
 import platform.UIKit.UIPresentationController
 import platform.UniformTypeIdentifiers.UTType
+import platform.UniformTypeIdentifiers.UTTypeContent
 import platform.UniformTypeIdentifiers.UTTypeFolder
 import platform.darwin.NSObject
 
-public actual class FilePickerLauncher actual constructor(
+/**
+ * Wraps platform specific implementation for launching a File Picker.
+ *
+ * @param initialDirectory Initial directory that the file picker should open to
+ * @param fileExtensions Target file extensions that can be selected. If `null`
+ *  only folders are selectable, if empty any file can be selected.
+ */
+public class FilePickerLauncher(
 	private val initialDirectory: String?,
-	private val fileExtensions: List<String>,
+	private val pickerMode: Mode,
 	private val onFileSelected: FileSelected,
 ) {
+	public sealed interface Mode {
+		public data object Directory : Mode
+		public data class File(val extensions: List<String>) : Mode
+	}
 
 	private val pickerDelegate = object : NSObject(),
 		UIDocumentPickerDelegateProtocol,
@@ -40,17 +52,22 @@ public actual class FilePickerLauncher actual constructor(
 		}
 	}
 
+	private val contentTypes: List<UTType>
+		get() = when (pickerMode) {
+			is Mode.Directory -> listOf(UTTypeFolder)
+			is Mode.File -> pickerMode.extensions
+				.mapNotNull { UTType.typeWithFilenameExtension(it) }
+				.ifEmpty { listOf(UTTypeContent) }
+		}
+
 	private fun createPicker() = UIDocumentPickerViewController(
-		forOpeningContentTypes = fileExtensions
-			.takeIf { it.isNotEmpty() }
-			?.map { UTType.typeWithFilenameExtension(it) }
-			?: listOf(UTTypeFolder)
+		forOpeningContentTypes = contentTypes
 	).apply {
 		delegate = pickerDelegate
 		initialDirectory?.let { directoryURL = NSURL(string = it) }
 	}
 
-	public actual fun launchFilePicker() {
+	public fun launchFilePicker() {
 		UIApplication.sharedApplication.keyWindow?.rootViewController?.presentViewController(
 			createPicker(),
 			animated = true,
