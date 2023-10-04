@@ -96,7 +96,7 @@ Setup your environment by following the [Official Multiplatform Mobile Guide](ht
 To run iOS example app you also need to follow the [Set-up an environment to work with CocoaPods Guide](https://kotlinlang.org/docs/native-cocoapods.html#set-up-an-environment-to-work-with-cocoapods).  
 
 Open the project in Android Studio, install `Kotlin Multiplatform Mobile` plugin. Create an `iOS Application` run config
-and enter the ff.:
+and enter the following:
 - Xcode Project File: `<project_dir>/examples/iosApp/iosApp.xcworkspace`
 - Xcode Project Scheme: `iosApp`
 - Xcode Project Cinfiguration: `Debug`
