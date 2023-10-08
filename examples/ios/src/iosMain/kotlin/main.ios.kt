@@ -9,6 +9,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.window.ComposeUIViewController
 import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
+import com.darkrockstudios.libraries.mpfilepicker.launchDirectoryPicker
+import com.darkrockstudios.libraries.mpfilepicker.launchFilePicker
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import platform.UIKit.UIViewController
 
 @Suppress("Unused", "FunctionName")
@@ -27,11 +31,24 @@ fun MainViewController(): UIViewController = ComposeUIViewController {
 
 			val fileType = listOf("jpg", "png", "md")
 			FilePicker(showFilePicker, fileExtensions = fileType) { mpFile ->
-				if (mpFile != null) {
-					pathChosen = mpFile.path
-				}
+				pathChosen = mpFile?.path ?: "none selected"
 				showFilePicker = false
 			}
+
+			/////////////////////////////////////////////////////////////////
+
+			var nonComposeFileChosen by remember { mutableStateOf("") }
+
+			Button(onClick = {
+				MainScope().launch {
+					nonComposeFileChosen = launchFilePicker(fileExtensions = fileType)
+						?.path ?: "none selected"
+				}
+			}) {
+
+				Text("Choose File Non-Compose")
+			}
+			Text("File Chosen: $nonComposeFileChosen")
 
 			/////////////////////////////////////////////////////////////////
 
@@ -49,6 +66,22 @@ fun MainViewController(): UIViewController = ComposeUIViewController {
 				dirChosen = path ?: "none selected"
 				showDirPicker = false
 			}
+
+			/////////////////////////////////////////////////////////////////
+
+			var nonComposeDirChosen by remember { mutableStateOf("") }
+
+			Button(onClick = {
+				MainScope().launch {
+					nonComposeDirChosen = launchDirectoryPicker()
+						?.path ?: "none selected"
+				}
+			}) {
+
+				Text("Choose Directory Non-Compose")
+			}
+			Text("Directory Chosen: $nonComposeDirChosen")
+
 		}
 	}
 }
