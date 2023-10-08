@@ -42,7 +42,7 @@ fun MainViewController(): UIViewController = ComposeUIViewController {
 			Button(onClick = {
 				MainScope().launch {
 					nonComposeFileChosen = launchFilePicker(fileExtensions = fileType)
-						?.path ?: "none selected"
+						.firstOrNull()?.path ?: "none selected"
 				}
 			}) {
 
@@ -74,7 +74,7 @@ fun MainViewController(): UIViewController = ComposeUIViewController {
 			Button(onClick = {
 				MainScope().launch {
 					nonComposeDirChosen = launchDirectoryPicker()
-						?.path ?: "none selected"
+						.firstOrNull()?.path ?: "none selected"
 				}
 			}) {
 

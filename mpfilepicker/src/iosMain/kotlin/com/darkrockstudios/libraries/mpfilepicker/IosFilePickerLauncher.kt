@@ -1,7 +1,14 @@
 package com.darkrockstudios.libraries.mpfilepicker
 
+import com.darkrockstudios.libraries.mpfilepicker.FilePickerLauncher.Mode
+import com.darkrockstudios.libraries.mpfilepicker.FilePickerLauncher.Mode.Directory
+import com.darkrockstudios.libraries.mpfilepicker.FilePickerLauncher.Mode.File
 import platform.Foundation.NSURL
-import platform.UIKit.*
+import platform.UIKit.UIAdaptivePresentationControllerDelegateProtocol
+import platform.UIKit.UIApplication
+import platform.UIKit.UIDocumentPickerDelegateProtocol
+import platform.UIKit.UIDocumentPickerViewController
+import platform.UIKit.UIPresentationController
 import platform.UniformTypeIdentifiers.UTType
 import platform.UniformTypeIdentifiers.UTTypeContent
 import platform.UniformTypeIdentifiers.UTTypeFolder
@@ -86,8 +93,8 @@ public class FilePickerLauncher(
 
 	private val contentTypes: List<UTType>
 		get() = when (pickerMode) {
-			is Mode.Directory -> listOf(UTTypeFolder)
-			is Mode.File -> pickerMode.extensions
+			is Directory -> listOf(UTTypeFolder)
+			is File -> pickerMode.extensions
 				.mapNotNull { UTType.typeWithFilenameExtension(it) }
 				.ifEmpty { listOf(UTTypeContent) }
 		}
@@ -115,16 +122,16 @@ public class FilePickerLauncher(
 public suspend fun launchFilePicker(
 	initialDirectory: String? = null,
 	fileExtensions: List<String>,
-): MPFile<Any>? = suspendCoroutine { cont ->
+): List<MPFile<Any>> = suspendCoroutine { cont ->
 	try {
 		FilePickerLauncher(
 			initialDirectory = initialDirectory,
-			pickerMode = FilePickerLauncher.Mode.File(fileExtensions),
-			onFileSelected = {
+			pickerMode = File(fileExtensions),
+			onFileSelected = { selected ->
 				// File selection has ended, no launcher is active anymore
 				// dereference it
 				FilePickerLauncher.activeLauncher = null
-				cont.resume(it)
+				cont.resume(selected?.let { listOf(it) }.orEmpty())
 			}
 		).also { launcher ->
 			// We're showing the file picker at this time so we set
@@ -141,16 +148,16 @@ public suspend fun launchFilePicker(
 
 public suspend fun launchDirectoryPicker(
 	initialDirectory: String? = null,
-): MPFile<Any>? = suspendCoroutine { cont ->
+): List<MPFile<Any>> = suspendCoroutine { cont ->
 	try {
 		FilePickerLauncher(
 			initialDirectory = initialDirectory,
-			pickerMode = FilePickerLauncher.Mode.Directory,
-			onFileSelected = {
+			pickerMode = Directory,
+			onFileSelected = { selected ->
 				// File selection has ended, no launcher is active anymore
 				// dereference it
 				FilePickerLauncher.activeLauncher = null
-				cont.resume(it)
+				cont.resume(selected?.let { listOf(it) }.orEmpty())
 			},
 		).also { launcher ->
 			// We're showing the file picker at this time so we set
