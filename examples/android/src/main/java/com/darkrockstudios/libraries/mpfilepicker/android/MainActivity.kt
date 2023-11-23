@@ -13,29 +13,50 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
+import com.darkrockstudios.libraries.mpfilepicker.MultipleFilePicker
 
 class MainActivity : AppCompatActivity() {
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContent {
 			MaterialTheme {
+				val fileType = listOf("jpg", "png")
+
 				Column {
-					var showFilePicker by remember { mutableStateOf(false) }
-					var pathChosen by remember { mutableStateOf("") }
+					var showSingleFilePicker by remember { mutableStateOf(false) }
+					var pathSingleChosen by remember { mutableStateOf("") }
 
 					Button(onClick = {
-						showFilePicker = true
+						showSingleFilePicker = true
 					}) {
 						Text("Choose File")
 					}
-					Text("File Chosen: $pathChosen")
+					Text("File Chosen: $pathSingleChosen")
 
-					val fileType = listOf("jpg", "png")
-					FilePicker(showFilePicker, fileExtensions = fileType) { mpFile ->
+					FilePicker(showSingleFilePicker, fileExtensions = fileType) { mpFile ->
 						if (mpFile != null) {
-							pathChosen = mpFile.path
+							pathSingleChosen = mpFile.path
 						}
-						showFilePicker = false
+						showSingleFilePicker = false
+					}
+
+					/////////////////////////////////////////////////////////////////
+
+					var showMultipleFilePicker by remember { mutableStateOf(false) }
+					var pathMultipleChosen by remember { mutableStateOf(listOf("")) }
+
+					Button(onClick = {
+						showMultipleFilePicker = true
+					}) {
+						Text("Multiple Choose File")
+					}
+					Text("Multiple File Chosen: $pathMultipleChosen")
+
+					MultipleFilePicker(showMultipleFilePicker, fileExtensions = fileType) { mpFiles ->
+						if (mpFiles != null) {
+							pathMultipleChosen = mpFiles.map { it.path }
+						}
+						showMultipleFilePicker = false
 					}
 
 					/////////////////////////////////////////////////////////////////
