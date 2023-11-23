@@ -2,7 +2,6 @@ import androidx.compose.runtime.*
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import com.darkrockstudios.libraries.mpfilepicker.MultipleFilePicker
 import com.darkrockstudios.libraries.mpfilepicker.WebFile
-import com.darkrockstudios.libraries.mpfilepicker.readFileAsByteArray
 import com.darkrockstudios.libraries.mpfilepicker.readFileAsText
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.web.dom.Br
@@ -22,10 +21,10 @@ fun main() {
 				showSingleFile = true
 			}
 		}) {
-			Text("Pick a file")
+			Text("Pick a text file")
 		}
 		Br()
-		Text("File path: $fileName")
+		Text("File name: $fileName")
 		Br()
 		Text("File content: $fileContents")
 
@@ -39,30 +38,26 @@ fun main() {
 			showSingleFile = false
 		}
 
+		Br()
+		Br()
+		Br()
+		Br()
+
 		var showMultipleFile by remember { mutableStateOf(false) }
-		var filesNames by remember { mutableStateOf(listOf("")) }
+		var filesNames by remember { mutableStateOf(emptyList<String>()) }
 		Button(attrs = {
 			onClick {
 				showMultipleFile = true
 			}
 		}) {
-			Text("Pick multiple files")
+			Text("Pick multiple image files")
 		}
 		Br()
-		Text("File path: $fileName")
+		Text("Files names: $filesNames")
 		Br()
-		Text("File content: $fileContents")
-
-		MultipleFilePicker(showMultipleFile, fileExtensions = listOf("txt", "md"), initialDirectory = null) { files ->
-			files?.map { file ->
-				if (file is WebFile) {
-					filesNames += file.path + "\n"
-					scope.launch {
-						fileContents = readFileAsText(file.platformFile)
-					}
-				}
-				showMultipleFile = false
-			}
+		MultipleFilePicker(showMultipleFile, fileExtensions = listOf("png", "jpeg", "jpg"), initialDirectory = null) { files ->
+			filesNames = files?.map { it.path } ?: listOf()
+			showMultipleFile = false
 		}
 	}
 }
