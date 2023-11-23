@@ -3,10 +3,12 @@ package com.darkrockstudios.libraries.mpfilepicker
 import com.darkrockstudios.libraries.mpfilepicker.FilePickerLauncher.Mode
 import com.darkrockstudios.libraries.mpfilepicker.FilePickerLauncher.Mode.Directory
 import com.darkrockstudios.libraries.mpfilepicker.FilePickerLauncher.Mode.File
+import com.darkrockstudios.libraries.mpfilepicker.FilePickerLauncher.Mode.MultipleFiles
 import platform.Foundation.NSURL
 import platform.UIKit.UIAdaptivePresentationControllerDelegateProtocol
 import platform.UIKit.UIApplication
 import platform.UIKit.UIDocumentPickerDelegateProtocol
+import platform.UIKit.UIDocumentPickerMode
 import platform.UIKit.UIDocumentPickerViewController
 import platform.UIKit.UIPresentationController
 import platform.UniformTypeIdentifiers.UTType
@@ -57,7 +59,16 @@ public class FilePickerLauncher(
 
 		/**
 		 * Use this mode to open a [FilePickerLauncher] for selecting
-		 * files.
+		 * multiple files.
+		 *
+		 * @param extensions List of file extensions that can be
+		 *  selected on this file picker.
+		 */
+		public data class MultipleFiles(val extensions: List<String>) : Mode
+
+		/**
+		 * Use this mode to open a [FilePickerLauncher] for selecting
+		 * a single file.
 		 *
 		 * @param extensions List of file extensions that can be
 		 *  selected on this file picker.
@@ -107,6 +118,9 @@ public class FilePickerLauncher(
 			is File -> pickerMode.extensions
 				.mapNotNull { UTType.typeWithFilenameExtension(it) }
 				.ifEmpty { listOf(UTTypeContent) }
+			is MultipleFiles -> pickerMode.extensions
+				.mapNotNull { UTType.typeWithFilenameExtension(it) }
+				.ifEmpty { listOf(UTTypeContent) }
 		}
 
 	private fun createPicker() = UIDocumentPickerViewController(
@@ -116,15 +130,19 @@ public class FilePickerLauncher(
 		initialDirectory?.let { directoryURL = NSURL(string = it) }
 	}
 
+
 	public fun launchFilePicker() {
 		activeLauncher = this
-
+		val picker = createPicker()
 		UIApplication.sharedApplication.keyWindow?.rootViewController?.presentViewController(
 			// Reusing a closed/dismissed picker causes problems with
 			// triggering delegate functions, launch with a new one.
-			createPicker(),
+			picker,
 			animated = true,
-			completion = null
+			completion = {
+				(picker as? UIDocumentPickerViewController)
+					?.allowsMultipleSelection = pickerMode is MultipleFiles
+			},
 		)
 	}
 }

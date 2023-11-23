@@ -59,7 +59,7 @@ public actual fun MultipleFilePicker(
 	val launcher = remember {
 		FilePickerLauncher(
 			initialDirectory = initialDirectory,
-			pickerMode = FilePickerLauncher.Mode.File(fileExtensions),
+			pickerMode = FilePickerLauncher.Mode.MultipleFiles(fileExtensions),
 			onFileSelected = onFileSelected,
 		)
 	}
