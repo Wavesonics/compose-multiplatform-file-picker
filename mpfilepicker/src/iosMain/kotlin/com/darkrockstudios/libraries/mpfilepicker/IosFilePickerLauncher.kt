@@ -150,11 +150,12 @@ public class FilePickerLauncher(
 public suspend fun launchFilePicker(
 	initialDirectory: String? = null,
 	fileExtensions: List<String>,
+	allowMultiple: Boolean? = false,
 ): List<MPFile<Any>> = suspendCoroutine { cont ->
 	try {
 		FilePickerLauncher(
 			initialDirectory = initialDirectory,
-			pickerMode = File(fileExtensions),
+			pickerMode = if (allowMultiple == true) MultipleFiles(fileExtensions) else File(fileExtensions),
 			onFileSelected = { selected ->
 				// File selection has ended, no launcher is active anymore
 				// dereference it
