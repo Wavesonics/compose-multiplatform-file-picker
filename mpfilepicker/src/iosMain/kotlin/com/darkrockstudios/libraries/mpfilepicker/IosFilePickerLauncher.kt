@@ -30,7 +30,7 @@ import kotlin.native.concurrent.ThreadLocal
 public class FilePickerLauncher(
 	private val initialDirectory: String?,
 	private val pickerMode: Mode,
-	private val onFileSelected: FileSelected,
+	private val onFileSelected: FilesSelected,
 ) {
 
 	@ThreadLocal
@@ -72,8 +72,18 @@ public class FilePickerLauncher(
 		override fun documentPicker(
 			controller: UIDocumentPickerViewController, didPickDocumentsAtURLs: List<*>
 		) {
-			(didPickDocumentsAtURLs.firstOrNull() as? NSURL).let { selected ->
-				onFileSelected(selected?.path?.let { IosFile(it, selected) })
+
+			(didPickDocumentsAtURLs as? List<*>)?.let { list ->
+				val files = list.map { file ->
+					(file as? NSURL)?.let { nsUrl ->
+						nsUrl.path?.let { path ->
+							IosFile(path, nsUrl)
+						}
+					} ?: return@let listOf<IosFile>()
+				}
+
+				onFileSelected(files)
+
 			}
 		}
 
@@ -131,7 +141,7 @@ public suspend fun launchFilePicker(
 				// File selection has ended, no launcher is active anymore
 				// dereference it
 				FilePickerLauncher.activeLauncher = null
-				cont.resume(selected?.let { listOf(it) }.orEmpty())
+				cont.resume(selected.orEmpty())
 			}
 		).also { launcher ->
 			// We're showing the file picker at this time so we set
@@ -157,7 +167,7 @@ public suspend fun launchDirectoryPicker(
 				// File selection has ended, no launcher is active anymore
 				// dereference it
 				FilePickerLauncher.activeLauncher = null
-				cont.resume(selected?.let { listOf(it) }.orEmpty())
+				cont.resume(selected.orEmpty())
 			},
 		).also { launcher ->
 			// We're showing the file picker at this time so we set
