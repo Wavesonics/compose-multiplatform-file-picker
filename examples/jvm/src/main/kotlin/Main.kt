@@ -33,6 +33,16 @@ fun main() = application {
 			/////////////////////////////////////////////////////////////////
 
 			Button(onClick = {
+				showMultiFile = true
+			}) {
+				Text("Choose Multiple File")
+			}
+			Text("Files Chosen: $pathMultiChosen")
+
+			/////////////////////////////////////////////////////////////////
+
+
+			Button(onClick = {
 				showDirPicker = true
 			}) {
 				Text("Choose Directory")
