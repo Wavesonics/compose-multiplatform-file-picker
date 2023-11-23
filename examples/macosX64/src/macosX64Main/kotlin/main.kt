@@ -8,6 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.window.Window
 import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
+import com.darkrockstudios.libraries.mpfilepicker.MultipleFilePicker
 import platform.AppKit.NSApp
 import platform.AppKit.NSApplication
 
@@ -17,7 +18,7 @@ fun main() {
 		MaterialTheme(colorScheme = if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme()) {
 			Scaffold {
 				var show by remember { mutableStateOf(false) }
-				var pathChosen by remember { mutableStateOf("") }
+				var pathChosen by remember { mutableStateOf(listOf("")) }
 
 				var showDirPicker by remember { mutableStateOf(false) }
 				var dirChosen by remember { mutableStateOf("") }
@@ -41,7 +42,12 @@ fun main() {
 				}
 
 				FilePicker(show, fileExtensions = listOf("jpg", "png", "plist")) { file ->
-					pathChosen = file?.path ?: "none selected"
+					pathChosen = listOf(file?.path ?: "none selected")
+					show = false
+				}
+
+				MultipleFilePicker(show, fileExtensions = listOf("jpg", "png", "plist")) { files ->
+					pathChosen = files?.map { it.path } ?: listOf()
 					show = false
 				}
 

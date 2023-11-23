@@ -9,10 +9,11 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
+import com.darkrockstudios.libraries.mpfilepicker.MultipleFilePicker
 
 fun main() = application {
 	var show by remember { mutableStateOf(false) }
-	var pathChosen by remember { mutableStateOf("") }
+	var pathChosen by remember { mutableStateOf(listOf("")) }
 
 	var showDirPicker by remember { mutableStateOf(false) }
 	var dirChosen by remember { mutableStateOf("") }
@@ -38,7 +39,12 @@ fun main() = application {
 	}
 
 	FilePicker(show, fileExtensions = listOf("jpg", "png")) { file ->
-		pathChosen = file?.path ?: "none selected"
+		pathChosen = listOf(file?.path ?: "none selected")
+		show = false
+	}
+
+	MultipleFilePicker(show, fileExtensions = listOf("jpg", "png")) { files ->
+		pathChosen = files?.map { it.path } ?: emptyList()
 		show = false
 	}
 
