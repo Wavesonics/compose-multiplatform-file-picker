@@ -12,8 +12,11 @@ import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import com.darkrockstudios.libraries.mpfilepicker.MultipleFilePicker
 
 fun main() = application {
-	var show by remember { mutableStateOf(false) }
-	var pathChosen by remember { mutableStateOf(listOf("")) }
+	var showSingleFile by remember { mutableStateOf(false) }
+	var pathSingleChosen by remember { mutableStateOf("") }
+
+	var showMultiFile by remember { mutableStateOf(false) }
+	var pathMultiChosen by remember { mutableStateOf(listOf("")) }
 
 	var showDirPicker by remember { mutableStateOf(false) }
 	var dirChosen by remember { mutableStateOf("") }
@@ -21,11 +24,11 @@ fun main() = application {
 	Window(onCloseRequest = ::exitApplication) {
 		Column {
 			Button(onClick = {
-				show = true
+				showSingleFile = true
 			}) {
 				Text("Choose File")
 			}
-			Text("File Chosen: $pathChosen")
+			Text("File Chosen: $pathSingleChosen")
 
 			/////////////////////////////////////////////////////////////////
 
@@ -38,14 +41,14 @@ fun main() = application {
 		}
 	}
 
-	FilePicker(show, fileExtensions = listOf("jpg", "png")) { file ->
-		pathChosen = listOf(file?.path ?: "none selected")
-		show = false
+	FilePicker(showSingleFile, fileExtensions = listOf("jpg", "png")) { file ->
+		pathSingleChosen = file?.path ?: "none selected"
+		showSingleFile = false
 	}
 
-	MultipleFilePicker(show, fileExtensions = listOf("jpg", "png")) { files ->
-		pathChosen = files?.map { it.path } ?: emptyList()
-		show = false
+	MultipleFilePicker(showMultiFile, fileExtensions = listOf("jpg", "png")) { files ->
+		pathMultiChosen = files?.map { it.path + "/n" } ?: emptyList()
+		showMultiFile = false
 	}
 
 	DirectoryPicker(showDirPicker) { path ->

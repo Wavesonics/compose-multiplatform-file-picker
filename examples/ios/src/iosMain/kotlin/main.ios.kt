@@ -50,7 +50,7 @@ fun MainViewController(): UIViewController = ComposeUIViewController {
 			Text("Files Chosen: $multiplePathChosen")
 
 			MultipleFilePicker(showMultipleFilePicker, fileExtensions = fileType) { mpFiles ->
-				multiplePathChosen = mpFiles?.map { it.path } ?: emptyList()
+				multiplePathChosen = mpFiles?.map { it.path + "\n" } ?: emptyList()
 				showMultipleFilePicker = false
 			}
 
@@ -68,6 +68,21 @@ fun MainViewController(): UIViewController = ComposeUIViewController {
 				Text("Choose File Non-Compose")
 			}
 			Text("File Chosen: $nonComposeFileChosen")
+
+			/////////////////////////////////////////////////////////////////
+
+			var nonComposeMultipleFileChosen by remember { mutableStateOf(listOf("")) }
+
+			Button(onClick = {
+				MainScope().launch {
+					nonComposeMultipleFileChosen = launchFilePicker(fileExtensions = fileType, allowMultiple = true)
+						.map { it.path + "/n" }
+				}
+			}) {
+
+				Text("Choose Multiple Files Non-Compose")
+			}
+			Text("Multiple File Chosen: $nonComposeMultipleFileChosen")
 
 			/////////////////////////////////////////////////////////////////
 

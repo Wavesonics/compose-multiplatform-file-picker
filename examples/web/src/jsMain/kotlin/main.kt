@@ -12,14 +12,14 @@ import org.jetbrains.compose.web.renderComposable
 
 fun main() {
 	renderComposable(rootElementId = "root") {
-		var show by remember { mutableStateOf(false) }
+		val scope = rememberCoroutineScope()
+
+		var showSingleFile by remember { mutableStateOf(false) }
 		var fileName by remember { mutableStateOf("No file chosen") }
 		var fileContents by remember { mutableStateOf("") }
-		var fileBytes by remember { mutableStateOf(byteArrayOf()) }
-		val scope = rememberCoroutineScope()
 		Button(attrs = {
 			onClick {
-				show = true
+				showSingleFile = true
 			}
 		}) {
 			Text("Pick a file")
@@ -29,27 +29,39 @@ fun main() {
 		Br()
 		Text("File content: $fileContents")
 
-		FilePicker(show, fileExtensions = listOf("txt", "md")) { file ->
+		FilePicker(showSingleFile, fileExtensions = listOf("txt", "md")) { file ->
 			if (file is WebFile) {
 				fileName = file.path
 				scope.launch {
 					fileContents = readFileAsText(file.platformFile)
-					fileBytes = readFileAsByteArray(file.platformFile)
 				}
 			}
-			show = false
+			showSingleFile = false
 		}
 
-		MultipleFilePicker(show, fileExtensions = listOf("txt", "md"), initialDirectory = null) { files ->
+		var showMultipleFile by remember { mutableStateOf(false) }
+		var filesNames by remember { mutableStateOf(listOf("")) }
+		Button(attrs = {
+			onClick {
+				showMultipleFile = true
+			}
+		}) {
+			Text("Pick multiple files")
+		}
+		Br()
+		Text("File path: $fileName")
+		Br()
+		Text("File content: $fileContents")
+
+		MultipleFilePicker(showMultipleFile, fileExtensions = listOf("txt", "md"), initialDirectory = null) { files ->
 			files?.map { file ->
 				if (file is WebFile) {
-					fileName = file.path
+					filesNames += file.path + "\n"
 					scope.launch {
 						fileContents = readFileAsText(file.platformFile)
-						fileBytes = readFileAsByteArray(file.platformFile)
 					}
 				}
-				show = false
+				showMultipleFile = false
 			}
 		}
 	}

@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity() {
 
 					MultipleFilePicker(showMultipleFilePicker, fileExtensions = fileType) { mpFiles ->
 						if (mpFiles != null) {
-							pathMultipleChosen = mpFiles.map { it.path }
+							pathMultipleChosen = mpFiles.map { it.path + "\n" }
 						}
 						showMultipleFilePicker = false
 					}
