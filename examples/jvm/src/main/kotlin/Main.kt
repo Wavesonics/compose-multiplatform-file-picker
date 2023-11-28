@@ -8,7 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
-import com.darkrockstudios.libraries.mpfilepicker.FilePicker
+import com.darkrockstudios.libraries.mpfilepicker.FilePickerJvm
 
 fun main() = application {
 	var show by remember { mutableStateOf(false) }
@@ -37,7 +37,7 @@ fun main() = application {
 		}
 	}
 
-	FilePicker(show, fileExtensions = listOf("jpg", "png")) { file ->
+	FilePickerJvm(show, fileExtensions = listOf("jpg", "png")) { file ->
 		pathChosen = file?.path ?: "none selected"
 		show = false
 	}

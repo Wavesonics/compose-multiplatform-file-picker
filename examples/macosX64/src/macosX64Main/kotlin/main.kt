@@ -7,7 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.window.Window
 import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
-import com.darkrockstudios.libraries.mpfilepicker.FilePicker
+import com.darkrockstudios.libraries.mpfilepicker.FilePickerMacOS
 import platform.AppKit.NSApp
 import platform.AppKit.NSApplication
 
@@ -40,7 +40,7 @@ fun main() {
 					Text("Directory Chosen: $dirChosen")
 				}
 
-				FilePicker(show, fileExtensions = listOf("jpg", "png", "plist")) { file ->
+				FilePickerMacOS(show, fileExtensions = listOf("jpg", "png", "plist")) { file ->
 					pathChosen = file?.path ?: "none selected"
 					show = false
 				}

@@ -1,6 +1,10 @@
-import androidx.compose.runtime.*
-import com.darkrockstudios.libraries.mpfilepicker.FilePicker
-import com.darkrockstudios.libraries.mpfilepicker.WebFile
+
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import com.darkrockstudios.libraries.mpfilepicker.FilePickerWeb
 import com.darkrockstudios.libraries.mpfilepicker.readFileAsText
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.web.dom.Br
@@ -26,8 +30,8 @@ fun main() {
 		Br()
 		Text("File content: $fileContents")
 
-		FilePicker(show, fileExtensions = listOf("txt", "md")) { file ->
-			if (file is WebFile) {
+		FilePickerWeb(show, fileExtensions = listOf("txt", "md")) { file ->
+			file?.let {
 				fileName = file.path ?: "none selected"
 				scope.launch {
 					fileContents = readFileAsText(file.platformFile)
