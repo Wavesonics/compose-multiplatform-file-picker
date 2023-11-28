@@ -10,11 +10,11 @@ public data class JvmFile(
 ) : MPFile<File>
 
 @Composable
-public actual fun FilePicker(
+public fun FilePickerJvm(
 	show: Boolean,
-	initialDirectory: String?,
-	fileExtensions: List<String>,
-	onFileSelected: FileSelected
+	initialDirectory: String? = null,
+	fileExtensions: List<String> = emptyList(),
+	onFileSelected: (JvmFile?) -> Unit
 ) {
 	LaunchedEffect(show) {
 		if (show) {
@@ -38,6 +38,14 @@ public actual fun FilePicker(
 		}
 	}
 }
+
+@Composable
+public actual fun FilePicker(
+	show: Boolean,
+	initialDirectory: String?,
+	fileExtensions: List<String>,
+	onFileSelected: FileSelected
+): Unit = FilePickerJvm(show, initialDirectory, fileExtensions, onFileSelected)
 
 @Composable
 public actual fun DirectoryPicker(

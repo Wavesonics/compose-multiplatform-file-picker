@@ -12,13 +12,17 @@ public data class MacOSFile(
 ) : MPFile<NSURL>
 
 @Composable
-public actual fun FilePicker(
-	show: Boolean, initialDirectory: String?, fileExtensions: List<String>, onFileSelected: FileSelected
+public fun FilePickerMacOS(
+	show: Boolean,
+	initialDirectory: String? = null,
+	fileExtensions: List<String> = emptyList(),
+	onFileSelected: (MacOSFile?) -> Unit
 ) {
 	LaunchedEffect(show) {
 		if (show) {
 			with(NSOpenPanel()) {
-				if (initialDirectory != null) directoryURL = NSURL.fileURLWithPath(initialDirectory, true)
+				if (initialDirectory != null) directoryURL =
+					NSURL.fileURLWithPath(initialDirectory, true)
 				allowsMultipleSelection = false
 				setAllowedFileTypes(fileExtensions)
 				allowsOtherFileTypes = true
@@ -36,13 +40,22 @@ public actual fun FilePicker(
 }
 
 @Composable
+public actual fun FilePicker(
+	show: Boolean,
+	initialDirectory: String?,
+	fileExtensions: List<String>,
+	onFileSelected: FileSelected
+): Unit = FilePickerMacOS(show, initialDirectory, fileExtensions, onFileSelected)
+
+@Composable
 public actual fun DirectoryPicker(
 	show: Boolean, initialDirectory: String?, onFileSelected: (String?) -> Unit
 ) {
 	LaunchedEffect(show) {
 		if (show) {
 			with(NSOpenPanel()) {
-				if (initialDirectory != null) directoryURL = NSURL.fileURLWithPath(initialDirectory, true)
+				if (initialDirectory != null) directoryURL =
+					NSURL.fileURLWithPath(initialDirectory, true)
 				allowsMultipleSelection = false
 				canChooseDirectories = true
 				canChooseFiles = false

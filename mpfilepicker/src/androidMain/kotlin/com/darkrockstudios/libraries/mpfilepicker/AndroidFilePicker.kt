@@ -13,10 +13,9 @@ public data class AndroidFile(
 ) : MPFile<Uri>
 
 @Composable
-public actual fun FilePicker(
+public fun FilePickerAndroid(
 	show: Boolean,
-	initialDirectory: String?,
-	fileExtensions: List<String>,
+	fileExtensions: List<String> = emptyList(),
 	onFileSelected: FileSelected
 ) {
 	val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocument()) { result ->
@@ -42,6 +41,14 @@ public actual fun FilePicker(
 		}
 	}
 }
+
+@Composable
+public actual fun FilePicker(
+	show: Boolean,
+	initialDirectory: String?,
+	fileExtensions: List<String>,
+	onFileSelected: FileSelected
+): Unit = FilePickerAndroid(show, fileExtensions, onFileSelected)
 
 @Composable
 public actual fun DirectoryPicker(

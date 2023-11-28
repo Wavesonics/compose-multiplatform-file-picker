@@ -30,7 +30,7 @@ import kotlin.native.concurrent.ThreadLocal
 public class FilePickerLauncher(
 	private val initialDirectory: String?,
 	private val pickerMode: Mode,
-	private val onFileSelected: FileSelected,
+	private val onFileSelected: (IosFile?) -> Unit,
 ) {
 
 	@ThreadLocal
@@ -122,7 +122,7 @@ public class FilePickerLauncher(
 public suspend fun launchFilePicker(
 	initialDirectory: String? = null,
 	fileExtensions: List<String>,
-): List<MPFile<Any>> = suspendCoroutine { cont ->
+): List<IosFile> = suspendCoroutine { cont ->
 	try {
 		FilePickerLauncher(
 			initialDirectory = initialDirectory,
@@ -148,7 +148,7 @@ public suspend fun launchFilePicker(
 
 public suspend fun launchDirectoryPicker(
 	initialDirectory: String? = null,
-): List<MPFile<Any>> = suspendCoroutine { cont ->
+): List<IosFile> = suspendCoroutine { cont ->
 	try {
 		FilePickerLauncher(
 			initialDirectory = initialDirectory,

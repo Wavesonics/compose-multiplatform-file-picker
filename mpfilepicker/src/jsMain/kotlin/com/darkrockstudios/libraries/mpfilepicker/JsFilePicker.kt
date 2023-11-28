@@ -20,11 +20,10 @@ public data class WebFile(
 }
 
 @Composable
-public actual fun FilePicker(
+public fun FilePickerWeb(
 	show: Boolean,
-	initialDirectory: String?,
-	fileExtensions: List<String>,
-	onFileSelected: FileSelected
+	fileExtensions: List<String> = emptyList(),
+	onFileSelected: (WebFile?) -> Unit
 ) {
 	LaunchedEffect(show) {
 		if (show) {
@@ -34,6 +33,14 @@ public actual fun FilePicker(
 		}
 	}
 }
+
+@Composable
+public actual fun FilePicker(
+	show: Boolean,
+	initialDirectory: String?,
+	fileExtensions: List<String>,
+	onFileSelected: FileSelected
+): Unit = FilePickerWeb(show, fileExtensions, onFileSelected)
 
 @Composable
 public actual fun DirectoryPicker(

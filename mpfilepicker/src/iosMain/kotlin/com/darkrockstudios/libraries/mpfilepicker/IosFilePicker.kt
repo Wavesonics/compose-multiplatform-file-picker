@@ -11,11 +11,11 @@ public data class IosFile(
 ) : MPFile<NSURL>
 
 @Composable
-public actual fun FilePicker(
+public fun FilePickerIOS(
 	show: Boolean,
-	initialDirectory: String?,
-	fileExtensions: List<String>,
-	onFileSelected: FileSelected
+	initialDirectory: String? = null,
+	fileExtensions: List<String> = emptyList(),
+	onFileSelected: (IosFile?) -> Unit
 ) {
 	val launcher = remember {
 		FilePickerLauncher(
@@ -31,6 +31,14 @@ public actual fun FilePicker(
 		}
 	}
 }
+
+@Composable
+public actual fun FilePicker(
+	show: Boolean,
+	initialDirectory: String?,
+	fileExtensions: List<String>,
+	onFileSelected: FileSelected
+): Unit = FilePickerIOS(show, initialDirectory, fileExtensions, onFileSelected)
 
 @Composable
 public actual fun DirectoryPicker(
