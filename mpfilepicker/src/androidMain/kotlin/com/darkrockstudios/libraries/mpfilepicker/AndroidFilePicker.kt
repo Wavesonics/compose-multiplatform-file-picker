@@ -52,7 +52,9 @@ public actual fun MultipleFilePicker(
 	fileExtensions: List<String>,
 	onFileSelected: FilesSelected
 ) {
-	val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenMultipleDocuments()) { result ->
+	val launcher = rememberLauncherForActivityResult(
+		contract = ActivityResultContracts.OpenMultipleDocuments()
+	) { result ->
 
 		val files = result.mapNotNull { uri ->
 			uri.path?.let {path ->
