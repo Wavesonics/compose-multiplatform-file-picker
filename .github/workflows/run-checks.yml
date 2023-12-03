@@ -1,6 +1,7 @@
 name: Run checks
-on:
-  pull_request
+# Temporarily disable due to https://github.com/Wavesonics/compose-multiplatform-file-picker/issues/94
+# on:
+#   pull_request
 jobs:
   build:
     runs-on: macos-latest
