@@ -26,7 +26,7 @@ To show the dialog, simply set the boolean state to true via a button or what ev
 var showFilePicker by remember { mutableStateOf(false) }
 
 val fileType = listOf("jpg", "png")
-FilePicker(show = showFilePicker, fileExtensions = fileType) { file ->
+FilePicker(show = showFilePicker, fileExtensions = fileType) { platformFile ->
     showFilePicker = false
     // do something with the file
 }
