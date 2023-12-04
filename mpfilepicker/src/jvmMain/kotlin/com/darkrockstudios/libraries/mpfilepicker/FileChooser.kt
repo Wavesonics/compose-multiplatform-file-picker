@@ -6,7 +6,8 @@ import org.lwjgl.util.tinyfd.TinyFileDialogs.tinyfd_selectFolderDialog
 
 internal fun chooseFile(
 	initialDirectory: String,
-	fileExtension: String
+	fileExtension: String,
+	title: String?
 ): String? = MemoryStack.stackPush().use { stack ->
 	val filters = if (fileExtension.isNotEmpty()) fileExtension.split(",") else emptyList()
 	val aFilterPatterns = stack.mallocPointer(filters.size)
@@ -15,7 +16,7 @@ internal fun chooseFile(
 	}
 	aFilterPatterns.flip()
 	TinyFileDialogs.tinyfd_openFileDialog(
-		"Choose File",
+		title,
 		initialDirectory,
 		aFilterPatterns,
 		null,
@@ -24,9 +25,10 @@ internal fun chooseFile(
 }
 
 internal fun chooseDirectory(
-	initialDirectory: String
+	initialDirectory: String,
+	title: String?
 ): String? = tinyfd_selectFolderDialog(
-	"Choose Directory",
+	title,
 	initialDirectory
 )
 

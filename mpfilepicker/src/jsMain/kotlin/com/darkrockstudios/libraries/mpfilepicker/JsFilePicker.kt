@@ -24,7 +24,8 @@ public actual fun FilePicker(
 	show: Boolean,
 	initialDirectory: String?,
 	fileExtensions: List<String>,
-	onFileSelected: FileSelected
+	title: String?,
+	onFileSelected: FileSelected,
 ) {
 	LaunchedEffect(show) {
 		if (show) {
@@ -39,7 +40,8 @@ public actual fun FilePicker(
 public actual fun DirectoryPicker(
 	show: Boolean,
 	initialDirectory: String?,
-	onFileSelected: (String?) -> Unit
+	title: String?,
+	onFileSelected: (String?) -> Unit,
 ) {
 	// in a browser we can not pick directories
 	throw NotImplementedError("DirectoryPicker is not supported on the web")

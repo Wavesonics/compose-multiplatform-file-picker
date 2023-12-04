@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
     spec.name                     = 'ios'
-    spec.version                  = '2.1.0'
+    spec.version                  = '3.0.0'
     spec.homepage                 = 'https://github.com/Wavesonics/compose-multiplatform-file-picker'
     spec.source                   = { :http=> ''}
     spec.authors                  = ''
@@ -35,5 +35,5 @@ Pod::Spec.new do |spec|
             SCRIPT
         }
     ]
-    spec.resources = ['build/compose/ios/ios/compose-resources']
+    spec.resources = ['build\compose\ios\ios\compose-resources']
 end

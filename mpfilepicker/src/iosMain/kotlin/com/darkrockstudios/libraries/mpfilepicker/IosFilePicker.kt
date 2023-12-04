@@ -15,7 +15,8 @@ public actual fun FilePicker(
 	show: Boolean,
 	initialDirectory: String?,
 	fileExtensions: List<String>,
-	onFileSelected: FileSelected
+	title: String?,
+	onFileSelected: FileSelected,
 ) {
 	val launcher = remember {
 		FilePickerLauncher(
@@ -36,7 +37,8 @@ public actual fun FilePicker(
 public actual fun DirectoryPicker(
 	show: Boolean,
 	initialDirectory: String?,
-	onFileSelected: (String?) -> Unit
+	title: String?,
+	onFileSelected: (String?) -> Unit,
 ) {
 	val launcher = remember {
 		FilePickerLauncher(

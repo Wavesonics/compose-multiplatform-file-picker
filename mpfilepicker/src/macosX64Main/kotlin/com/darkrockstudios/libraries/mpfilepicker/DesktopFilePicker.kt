@@ -13,7 +13,7 @@ public data class MacOSFile(
 
 @Composable
 public actual fun FilePicker(
-	show: Boolean, initialDirectory: String?, fileExtensions: List<String>, onFileSelected: FileSelected
+	show: Boolean, initialDirectory: String?, fileExtensions: List<String>, title: String?, onFileSelected: FileSelected
 ) {
 	LaunchedEffect(show) {
 		if (show) {
@@ -37,7 +37,7 @@ public actual fun FilePicker(
 
 @Composable
 public actual fun DirectoryPicker(
-	show: Boolean, initialDirectory: String?, onFileSelected: (String?) -> Unit
+	show: Boolean, initialDirectory: String?, title: String?, onFileSelected: (String?) -> Unit,
 ) {
 	LaunchedEffect(show) {
 		if (show) {

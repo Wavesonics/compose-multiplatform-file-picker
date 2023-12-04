@@ -15,12 +15,14 @@ public expect fun FilePicker(
 	show: Boolean,
 	initialDirectory: String? = null,
 	fileExtensions: List<String> = emptyList(),
-	onFileSelected: FileSelected
+	title: String? = null,
+	onFileSelected: FileSelected,
 )
 
 @Composable
 public expect fun DirectoryPicker(
 	show: Boolean,
 	initialDirectory: String? = null,
-	onFileSelected: (String?) -> Unit
+	title: String? = null,
+	onFileSelected: (String?) -> Unit,
 )
