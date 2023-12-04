@@ -9,7 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.window.ComposeUIViewController
 import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
-import com.darkrockstudios.libraries.mpfilepicker.FilePickerIOS
+import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import com.darkrockstudios.libraries.mpfilepicker.launchDirectoryPicker
 import com.darkrockstudios.libraries.mpfilepicker.launchFilePicker
 import kotlinx.coroutines.MainScope
@@ -31,8 +31,8 @@ fun MainViewController(): UIViewController = ComposeUIViewController {
 			Text("File Chosen: $pathChosen")
 
 			val fileType = listOf("jpg", "png", "md")
-			FilePickerIOS(showFilePicker, fileExtensions = fileType) { mpFile ->
-				pathChosen = mpFile?.path ?: "none selected"
+			FilePicker(showFilePicker, fileExtensions = fileType) { platformFile ->
+				pathChosen = platformFile?.nsUrl?.path ?: "none selected"
 				showFilePicker = false
 			}
 
@@ -43,7 +43,7 @@ fun MainViewController(): UIViewController = ComposeUIViewController {
 			Button(onClick = {
 				MainScope().launch {
 					nonComposeFileChosen = launchFilePicker(fileExtensions = fileType)
-						.firstOrNull()?.path ?: "none selected"
+						.firstOrNull()?.nsUrl?.path ?: "none selected"
 				}
 			}) {
 
@@ -75,7 +75,7 @@ fun MainViewController(): UIViewController = ComposeUIViewController {
 			Button(onClick = {
 				MainScope().launch {
 					nonComposeDirChosen = launchDirectoryPicker()
-						.firstOrNull()?.path ?: "none selected"
+						.firstOrNull()?.nsUrl?.path ?: "none selected"
 				}
 			}) {
 

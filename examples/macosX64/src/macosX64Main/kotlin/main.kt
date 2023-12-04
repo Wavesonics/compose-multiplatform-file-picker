@@ -1,13 +1,19 @@
+
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.window.Window
 import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
-import com.darkrockstudios.libraries.mpfilepicker.FilePickerMacOS
+import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import platform.AppKit.NSApp
 import platform.AppKit.NSApplication
 
@@ -40,8 +46,8 @@ fun main() {
 					Text("Directory Chosen: $dirChosen")
 				}
 
-				FilePickerMacOS(show, fileExtensions = listOf("jpg", "png", "plist")) { file ->
-					pathChosen = file?.path ?: "none selected"
+				FilePicker(show, fileExtensions = listOf("jpg", "png", "plist")) { platformFile ->
+					pathChosen = platformFile?.nsUrl?.path ?: "none selected"
 					show = false
 				}
 

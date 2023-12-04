@@ -1,3 +1,4 @@
+
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.Button
 import androidx.compose.material.Text
@@ -8,7 +9,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
-import com.darkrockstudios.libraries.mpfilepicker.FilePickerJvm
+import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 
 fun main() = application {
 	var show by remember { mutableStateOf(false) }
@@ -37,8 +38,11 @@ fun main() = application {
 		}
 	}
 
-	FilePickerJvm(show, fileExtensions = listOf("jpg", "png")) { file ->
-		pathChosen = file?.path ?: "none selected"
+	FilePicker(show, fileExtensions = listOf("jpg", "png")) { platformFile ->
+		if (platformFile != null) {
+			println("File chosen: ${platformFile.file.name}")
+		}
+		pathChosen = platformFile?.file?.path ?: "none selected"
 		show = false
 	}
 

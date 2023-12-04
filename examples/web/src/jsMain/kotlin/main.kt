@@ -4,7 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import com.darkrockstudios.libraries.mpfilepicker.FilePickerWeb
+import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import com.darkrockstudios.libraries.mpfilepicker.readFileAsText
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.web.dom.Br
@@ -30,13 +30,13 @@ fun main() {
 		Br()
 		Text("File content: $fileContents")
 
-		FilePickerWeb(show, fileExtensions = listOf("txt", "md")) { file ->
-			file?.let {
-				fileName = file.path ?: "none selected"
+		FilePicker(show, fileExtensions = listOf("txt", "md")) { platformFile ->
+			platformFile?.let {
 				scope.launch {
-					fileContents = readFileAsText(file.platformFile)
+					fileContents = readFileAsText(platformFile.file)
 				}
 			}
+			fileName = platformFile?.file?.name ?: "none selected"
 			show = false
 		}
 	}

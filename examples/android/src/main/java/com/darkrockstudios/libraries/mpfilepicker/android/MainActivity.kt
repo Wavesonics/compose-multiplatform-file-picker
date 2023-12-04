@@ -12,7 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
-import com.darkrockstudios.libraries.mpfilepicker.FilePickerAndroid
+import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 
 class MainActivity : AppCompatActivity() {
 	override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,9 +31,9 @@ class MainActivity : AppCompatActivity() {
 					Text("File Chosen: $pathChosen")
 
 					val fileType = listOf("jpg", "png")
-					FilePickerAndroid(showFilePicker, fileExtensions = fileType) { mpFile ->
-						if (mpFile != null) {
-							pathChosen = mpFile.path
+					FilePicker(showFilePicker, fileExtensions = fileType) { platformFile ->
+						if (platformFile != null) {
+							pathChosen = platformFile.uri.path ?: "none selected"
 						}
 						showFilePicker = false
 					}
