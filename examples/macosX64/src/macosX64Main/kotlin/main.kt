@@ -59,7 +59,7 @@ fun main() {
 				}
 
 				MultipleFilePicker(showMultipleFile, fileExtensions = listOf("jpg", "png", "plist")) { files ->
-					multipleFilesPathsChosen = files?.map { it.path + "/n" } ?: listOf()
+					multipleFilesPathsChosen = files?.map { it.path + "\n" } ?: listOf()
 					showMultipleFile = false
 				}
 
