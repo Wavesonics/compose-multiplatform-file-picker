@@ -5,17 +5,16 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import platform.Foundation.NSURL
 
-public data class IosFile(
-	override val path: String,
-	override val platformFile: NSURL,
-) : MPFile<NSURL>
+public actual data class PlatformFile(
+	val nsUrl: NSURL
+)
 
 @Composable
-public fun FilePickerIOS(
+public actual fun FilePicker(
 	show: Boolean,
-	initialDirectory: String? = null,
-	fileExtensions: List<String> = emptyList(),
-	onFileSelected: (IosFile?) -> Unit
+	initialDirectory: String?,
+	fileExtensions: List<String>,
+	onFileSelected: FileSelected
 ) {
 	val launcher = remember {
 		FilePickerLauncher(
@@ -33,14 +32,6 @@ public fun FilePickerIOS(
 }
 
 @Composable
-public actual fun FilePicker(
-	show: Boolean,
-	initialDirectory: String?,
-	fileExtensions: List<String>,
-	onFileSelected: FileSelected
-): Unit = FilePickerIOS(show, initialDirectory, fileExtensions, onFileSelected)
-
-@Composable
 public actual fun DirectoryPicker(
 	show: Boolean,
 	initialDirectory: String?,
@@ -50,7 +41,7 @@ public actual fun DirectoryPicker(
 		FilePickerLauncher(
 			initialDirectory = initialDirectory,
 			pickerMode = FilePickerLauncher.Mode.Directory,
-			onFileSelected = { onFileSelected(it?.path) },
+			onFileSelected = { onFileSelected(it?.nsUrl?.path) },
 		)
 	}
 

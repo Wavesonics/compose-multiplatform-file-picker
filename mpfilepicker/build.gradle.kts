@@ -1,4 +1,3 @@
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import java.net.URI
 
 plugins {
@@ -19,9 +18,7 @@ extra.apply {
 	set("isReleaseVersion", !(version as String).endsWith("SNAPSHOT"))
 }
 
-@OptIn(ExperimentalKotlinGradlePluginApi::class)
 kotlin {
-    targetHierarchy.default()
 	explicitApi()
 
 	androidTarget {
@@ -96,6 +93,11 @@ kotlin {
 		}
 		val jvmTest by getting
 		val jsMain by getting
+	}
+
+	@Suppress("OPT_IN_USAGE")
+	compilerOptions {
+		freeCompilerArgs = listOf("-Xexpect-actual-classes")
 	}
 
 	val javadocJar by tasks.registering(Jar::class) {

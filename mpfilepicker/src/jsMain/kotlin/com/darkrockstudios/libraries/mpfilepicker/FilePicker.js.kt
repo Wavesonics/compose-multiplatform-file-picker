@@ -12,27 +12,9 @@ import org.w3c.files.FileReader
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-public data class WebFile(
-	override val path: String,
-	override val platformFile: File,
-) : MPFile<File> {
-	public suspend fun getFileContents(): String = readFileAsText(platformFile)
-}
-
-@Composable
-public fun FilePickerWeb(
-	show: Boolean,
-	fileExtensions: List<String> = emptyList(),
-	onFileSelected: (WebFile?) -> Unit
-) {
-	LaunchedEffect(show) {
-		if (show) {
-			val fixedExtensions = fileExtensions.map { ".$it" }
-			val file: List<File> = document.selectFilesFromDisk(fixedExtensions.joinToString(","), true)
-			onFileSelected(WebFile(file.first().name, file.first())) // TODO support multiple files
-		}
-	}
-}
+public actual data class PlatformFile(
+	val file: File
+)
 
 @Composable
 public actual fun FilePicker(
@@ -40,7 +22,20 @@ public actual fun FilePicker(
 	initialDirectory: String?,
 	fileExtensions: List<String>,
 	onFileSelected: FileSelected
-): Unit = FilePickerWeb(show, fileExtensions, onFileSelected)
+) {
+	LaunchedEffect(show) {
+		if (show) {
+			val fixedExtensions = fileExtensions.map { ".$it" }
+			val file: List<File> = document.selectFilesFromDisk(fixedExtensions.joinToString(","), true)
+			if (file.firstOrNull() != null) {
+				val platformFile = PlatformFile(file.first())
+				onFileSelected(platformFile)
+			} else {
+				onFileSelected(null)
+			}
+		}
+	}
+}
 
 @Composable
 public actual fun DirectoryPicker(

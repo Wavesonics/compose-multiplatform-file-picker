@@ -4,17 +4,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import java.io.File
 
-public data class JvmFile(
-	override val path: String,
-	override val platformFile: File,
-) : MPFile<File>
+public actual data class PlatformFile(
+	val file: File
+)
 
 @Composable
-public fun FilePickerJvm(
+public actual fun FilePicker(
 	show: Boolean,
-	initialDirectory: String? = null,
-	fileExtensions: List<String> = emptyList(),
-	onFileSelected: (JvmFile?) -> Unit
+	initialDirectory: String?,
+	fileExtensions: List<String>,
+	onFileSelected: FileSelected
 ) {
 	LaunchedEffect(show) {
 		if (show) {
@@ -30,7 +29,9 @@ public fun FilePickerJvm(
 				fileExtension = fileFilter
 			)
 			if (filePath != null) {
-				onFileSelected(JvmFile(filePath, File(filePath)))
+				val file = File(filePath)
+				val platformFile = PlatformFile(file)
+				onFileSelected(platformFile)
 			} else {
 				onFileSelected(null)
 			}
@@ -38,14 +39,6 @@ public fun FilePickerJvm(
 		}
 	}
 }
-
-@Composable
-public actual fun FilePicker(
-	show: Boolean,
-	initialDirectory: String?,
-	fileExtensions: List<String>,
-	onFileSelected: FileSelected
-): Unit = FilePickerJvm(show, initialDirectory, fileExtensions, onFileSelected)
 
 @Composable
 public actual fun DirectoryPicker(

@@ -30,7 +30,7 @@ import kotlin.native.concurrent.ThreadLocal
 public class FilePickerLauncher(
 	private val initialDirectory: String?,
 	private val pickerMode: Mode,
-	private val onFileSelected: (IosFile?) -> Unit,
+	private val onFileSelected: (PlatformFile?) -> Unit,
 ) {
 
 	@ThreadLocal
@@ -73,7 +73,7 @@ public class FilePickerLauncher(
 			controller: UIDocumentPickerViewController, didPickDocumentsAtURLs: List<*>
 		) {
 			(didPickDocumentsAtURLs.firstOrNull() as? NSURL).let { selected ->
-				onFileSelected(selected?.path?.let { IosFile(it, selected) })
+				onFileSelected(selected?.path?.let { PlatformFile(selected) })
 			}
 		}
 
@@ -122,7 +122,7 @@ public class FilePickerLauncher(
 public suspend fun launchFilePicker(
 	initialDirectory: String? = null,
 	fileExtensions: List<String>,
-): List<IosFile> = suspendCoroutine { cont ->
+): List<PlatformFile> = suspendCoroutine { cont ->
 	try {
 		FilePickerLauncher(
 			initialDirectory = initialDirectory,
@@ -148,7 +148,7 @@ public suspend fun launchFilePicker(
 
 public suspend fun launchDirectoryPicker(
 	initialDirectory: String? = null,
-): List<IosFile> = suspendCoroutine { cont ->
+): List<PlatformFile> = suspendCoroutine { cont ->
 	try {
 		FilePickerLauncher(
 			initialDirectory = initialDirectory,

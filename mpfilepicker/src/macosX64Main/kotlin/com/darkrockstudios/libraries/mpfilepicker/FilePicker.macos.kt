@@ -6,17 +6,16 @@ import platform.AppKit.NSOpenPanel
 import platform.AppKit.setAllowedFileTypes
 import platform.Foundation.NSURL
 
-public data class MacOSFile(
-	override val path: String,
-	override val platformFile: NSURL,
-) : MPFile<NSURL>
+public actual data class PlatformFile(
+	val nsUrl: NSURL
+)
 
 @Composable
-public fun FilePickerMacOS(
+public actual fun FilePicker(
 	show: Boolean,
-	initialDirectory: String? = null,
-	fileExtensions: List<String> = emptyList(),
-	onFileSelected: (MacOSFile?) -> Unit
+	initialDirectory: String?,
+	fileExtensions: List<String>,
+	onFileSelected: FileSelected
 ) {
 	LaunchedEffect(show) {
 		if (show) {
@@ -32,20 +31,16 @@ public fun FilePickerMacOS(
 
 				val fileURL = URL
 				val filePath = fileURL?.path
-				if (filePath != null) onFileSelected(MacOSFile(filePath, fileURL))
-				else onFileSelected(null)
+				if (filePath != null)  {
+					val platformFile = PlatformFile(fileURL)
+					onFileSelected(platformFile)
+				} else {
+					onFileSelected(null)
+				}
 			}
 		}
 	}
 }
-
-@Composable
-public actual fun FilePicker(
-	show: Boolean,
-	initialDirectory: String?,
-	fileExtensions: List<String>,
-	onFileSelected: FileSelected
-): Unit = FilePickerMacOS(show, initialDirectory, fileExtensions, onFileSelected)
 
 @Composable
 public actual fun DirectoryPicker(
