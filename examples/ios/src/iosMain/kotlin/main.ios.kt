@@ -76,7 +76,7 @@ fun MainViewController(): UIViewController = ComposeUIViewController {
 			Button(onClick = {
 				MainScope().launch {
 					nonComposeMultipleFileChosen = launchFilePicker(fileExtensions = fileType, allowMultiple = true)
-						.map { it.path + "/n" }
+						.map { it.path + "\n" }
 				}
 			}) {
 
