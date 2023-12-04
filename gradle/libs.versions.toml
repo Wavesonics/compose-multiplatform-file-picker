@@ -5,7 +5,7 @@ android-target-sdk = "34"
 android-min-sdk = "21"
 
 [libraries]
-compose-activity = "androidx.activity:activity-compose:1.7.2"
+compose-activity = "androidx.activity:activity-compose:1.8.1"
 androidx-appcompat = "androidx.appcompat:appcompat:1.6.1"
 androidx-coreKtx = "androidx.core:core-ktx:1.12.0"
 kotlinx-coroutines-android = "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3"
@@ -14,6 +14,6 @@ kotlinx-html = "org.jetbrains.kotlinx:kotlinx-html:0.9.1"
 junit = "junit:junit:4.13.2"
 
 [plugins]
-kotlin-compose = "org.jetbrains.compose:1.5.1"
-android-application = "com.android.application:8.1.1"
-android-library = "com.android.library:8.1.1"
+kotlin-compose = "org.jetbrains.compose:1.5.11"
+android-application = "com.android.application:8.2.0"
+android-library = "com.android.library:8.2.0"
