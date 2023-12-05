@@ -7,7 +7,9 @@ import java.io.File
 public data class JvmFile(
 	override val path: String,
 	override val platformFile: File,
-) : MPFile<File>
+) : MPFile<File> {
+	override suspend fun getFileByteArray(): ByteArray = platformFile.readBytes()
+}
 
 @Composable
 public actual fun FilePicker(
@@ -31,6 +33,36 @@ public actual fun FilePicker(
 			)
 			if (filePath != null) {
 				onFileSelected(JvmFile(filePath, File(filePath)))
+			} else {
+				onFileSelected(null)
+			}
+
+		}
+	}
+}
+
+@Composable
+public actual fun MultipleFilePicker(
+	show: Boolean,
+	initialDirectory: String?,
+	fileExtensions: List<String>,
+	onFileSelected: FilesSelected
+) {
+	LaunchedEffect(show) {
+		if (show) {
+			val fileFilter = if (fileExtensions.isNotEmpty()) {
+				fileExtensions.joinToString(",")
+			} else {
+				""
+			}
+
+			val initialDir = initialDirectory ?: System.getProperty("user.dir")
+			val filePaths = chooseFiles(
+				initialDirectory = initialDir,
+				fileExtension = fileFilter
+			)
+			if (filePaths != null) {
+				onFileSelected(filePaths.map { JvmFile(it, File(it)) })
 			} else {
 				onFileSelected(null)
 			}

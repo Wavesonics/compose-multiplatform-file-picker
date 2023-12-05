@@ -9,6 +9,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.window.ComposeUIViewController
 import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
+import com.darkrockstudios.libraries.mpfilepicker.MultipleFilePicker
 import com.darkrockstudios.libraries.mpfilepicker.launchDirectoryPicker
 import com.darkrockstudios.libraries.mpfilepicker.launchFilePicker
 import kotlinx.coroutines.MainScope
@@ -17,22 +18,40 @@ import platform.UIKit.UIViewController
 
 @Suppress("Unused", "FunctionName")
 fun MainViewController(): UIViewController = ComposeUIViewController {
+	val fileType = listOf("jpg", "png", "md")
+
 	MaterialTheme {
 		Column {
-			var showFilePicker by remember { mutableStateOf(false) }
-			var pathChosen by remember { mutableStateOf("") }
+			var showSingleFilePicker by remember { mutableStateOf(false) }
+			var singlePathChosen by remember { mutableStateOf("") }
 
 			Button(onClick = {
-				showFilePicker = true
+				showSingleFilePicker = true
 			}) {
 				Text("Choose File")
 			}
-			Text("File Chosen: $pathChosen")
+			Text("File Chosen: $singlePathChosen")
 
-			val fileType = listOf("jpg", "png", "md")
-			FilePicker(showFilePicker, fileExtensions = fileType) { mpFile ->
-				pathChosen = mpFile?.path ?: "none selected"
-				showFilePicker = false
+			FilePicker(showSingleFilePicker, fileExtensions = fileType) { mpFile ->
+				singlePathChosen = mpFile?.path ?: "none selected"
+				showSingleFilePicker = false
+			}
+
+			/////////////////////////////////////////////////////////////////
+
+			var showMultipleFilePicker by remember { mutableStateOf(false) }
+			var multiplePathChosen by remember { mutableStateOf(listOf("")) }
+
+			Button(onClick = {
+				showMultipleFilePicker = true
+			}) {
+				Text("Choose Multiple Files")
+			}
+			Text("Files Chosen: $multiplePathChosen")
+
+			MultipleFilePicker(showMultipleFilePicker, fileExtensions = fileType) { mpFiles ->
+				multiplePathChosen = mpFiles?.map { it.path + "\n" } ?: emptyList()
+				showMultipleFilePicker = false
 			}
 
 			/////////////////////////////////////////////////////////////////
@@ -49,6 +68,21 @@ fun MainViewController(): UIViewController = ComposeUIViewController {
 				Text("Choose File Non-Compose")
 			}
 			Text("File Chosen: $nonComposeFileChosen")
+
+			/////////////////////////////////////////////////////////////////
+
+			var nonComposeMultipleFileChosen by remember { mutableStateOf(listOf("")) }
+
+			Button(onClick = {
+				MainScope().launch {
+					nonComposeMultipleFileChosen = launchFilePicker(fileExtensions = fileType, allowMultiple = true)
+						.map { it.path + "\n" }
+				}
+			}) {
+
+				Text("Choose Multiple Files Non-Compose")
+			}
+			Text("Multiple File Chosen: $nonComposeMultipleFileChosen")
 
 			/////////////////////////////////////////////////////////////////
 

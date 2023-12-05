@@ -3,6 +3,9 @@ package com.darkrockstudios.libraries.mpfilepicker
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import kotlinx.browser.document
+import org.khronos.webgl.ArrayBuffer
+import org.khronos.webgl.Uint8Array
+import org.khronos.webgl.get
 import org.w3c.dom.Document
 import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.ItemArrayLike
@@ -17,6 +20,7 @@ public data class WebFile(
 	override val platformFile: File,
 ) : MPFile<File> {
 	public suspend fun getFileContents(): String = readFileAsText(platformFile)
+	public override suspend fun getFileByteArray(): ByteArray = readFileAsByteArray(platformFile)
 }
 
 @Composable
@@ -29,8 +33,27 @@ public actual fun FilePicker(
 	LaunchedEffect(show) {
 		if (show) {
 			val fixedExtensions = fileExtensions.map { ".$it" }
+			val file: List<File> = document.selectFilesFromDisk(fixedExtensions.joinToString(","), false)
+			onFileSelected(WebFile(file.first().name, file.first()))
+		}
+	}
+}
+
+@Composable
+public actual fun MultipleFilePicker(
+	show: Boolean,
+	initialDirectory: String?,
+	fileExtensions: List<String>,
+	onFileSelected: FilesSelected
+) {
+	LaunchedEffect(show) {
+		if (show) {
+			val fixedExtensions = fileExtensions.map { ".$it" }
 			val file: List<File> = document.selectFilesFromDisk(fixedExtensions.joinToString(","), true)
-			onFileSelected(WebFile(file.first().name, file.first())) // TODO support multiple files
+			val webFiles = file.map {
+				WebFile(it.name, it)
+			}
+			onFileSelected(webFiles)
 		}
 	}
 }
@@ -73,4 +96,18 @@ public suspend fun readFileAsText(file: File): String = suspendCoroutine {
 		it.resumeWith(Result.success(content))
 	}
 	reader.readAsText(file, "UTF-8")
+}
+
+public suspend fun readFileAsByteArray(file: File): ByteArray = suspendCoroutine {
+	val reader = FileReader()
+	reader.onload = {loadEvt ->
+		val content = loadEvt.target.asDynamic().result as ArrayBuffer
+		val array = Uint8Array(content)
+		val fileByteArray = ByteArray(array.length)
+			for (i in 0 until array.length) {
+				fileByteArray[i] = array[i]
+			}
+		it.resumeWith(Result.success(fileByteArray))
+	}
+	reader.readAsArrayBuffer(file)
 }

@@ -1,5 +1,6 @@
 import androidx.compose.runtime.*
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
+import com.darkrockstudios.libraries.mpfilepicker.MultipleFilePicker
 import com.darkrockstudios.libraries.mpfilepicker.WebFile
 import com.darkrockstudios.libraries.mpfilepicker.readFileAsText
 import kotlinx.coroutines.launch
@@ -10,30 +11,53 @@ import org.jetbrains.compose.web.renderComposable
 
 fun main() {
 	renderComposable(rootElementId = "root") {
-		var show by remember { mutableStateOf(false) }
+		val scope = rememberCoroutineScope()
+
+		var showSingleFile by remember { mutableStateOf(false) }
 		var fileName by remember { mutableStateOf("No file chosen") }
 		var fileContents by remember { mutableStateOf("") }
-		val scope = rememberCoroutineScope()
 		Button(attrs = {
 			onClick {
-				show = true
+				showSingleFile = true
 			}
 		}) {
-			Text("Pick a file")
+			Text("Pick a text file")
 		}
 		Br()
-		Text("File path: $fileName")
+		Text("File name: $fileName")
 		Br()
 		Text("File content: $fileContents")
 
-		FilePicker(show, fileExtensions = listOf("txt", "md")) { file ->
+		FilePicker(showSingleFile, fileExtensions = listOf("txt", "md")) { file ->
 			if (file is WebFile) {
-				fileName = file.path ?: "none selected"
+				fileName = file.path
 				scope.launch {
 					fileContents = readFileAsText(file.platformFile)
 				}
 			}
-			show = false
+			showSingleFile = false
+		}
+
+		Br()
+		Br()
+		Br()
+		Br()
+
+		var showMultipleFile by remember { mutableStateOf(false) }
+		var filesNames by remember { mutableStateOf(emptyList<String>()) }
+		Button(attrs = {
+			onClick {
+				showMultipleFile = true
+			}
+		}) {
+			Text("Pick multiple image files")
+		}
+		Br()
+		Text("Files names: $filesNames")
+		Br()
+		MultipleFilePicker(showMultipleFile, fileExtensions = listOf("png", "jpeg", "jpg"), initialDirectory = null) { files ->
+			filesNames = files?.map { it.path } ?: listOf()
+			showMultipleFile = false
 		}
 	}
 }

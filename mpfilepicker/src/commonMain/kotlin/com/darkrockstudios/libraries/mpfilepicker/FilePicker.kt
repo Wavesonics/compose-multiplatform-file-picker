@@ -6,9 +6,12 @@ public interface MPFile<out T : Any> {
 	// on JS this will be a file name, on other platforms it will be a file path
 	public val path: String
 	public val platformFile: T
+	public suspend fun getFileByteArray(): ByteArray
 }
 
 public typealias FileSelected = (MPFile<Any>?) -> Unit
+
+public typealias FilesSelected = (List<MPFile<Any>>?) -> Unit
 
 @Composable
 public expect fun FilePicker(
@@ -16,6 +19,14 @@ public expect fun FilePicker(
 	initialDirectory: String? = null,
 	fileExtensions: List<String> = emptyList(),
 	onFileSelected: FileSelected
+)
+
+@Composable
+public expect fun MultipleFilePicker(
+	show: Boolean,
+	initialDirectory: String? = null,
+	fileExtensions: List<String> = emptyList(),
+	onFileSelected: FilesSelected
 )
 
 @Composable

@@ -3,10 +3,12 @@ package com.darkrockstudios.libraries.mpfilepicker
 import com.darkrockstudios.libraries.mpfilepicker.FilePickerLauncher.Mode
 import com.darkrockstudios.libraries.mpfilepicker.FilePickerLauncher.Mode.Directory
 import com.darkrockstudios.libraries.mpfilepicker.FilePickerLauncher.Mode.File
+import com.darkrockstudios.libraries.mpfilepicker.FilePickerLauncher.Mode.MultipleFiles
 import platform.Foundation.NSURL
 import platform.UIKit.UIAdaptivePresentationControllerDelegateProtocol
 import platform.UIKit.UIApplication
 import platform.UIKit.UIDocumentPickerDelegateProtocol
+import platform.UIKit.UIDocumentPickerMode
 import platform.UIKit.UIDocumentPickerViewController
 import platform.UIKit.UIPresentationController
 import platform.UniformTypeIdentifiers.UTType
@@ -30,7 +32,7 @@ import kotlin.native.concurrent.ThreadLocal
 public class FilePickerLauncher(
 	private val initialDirectory: String?,
 	private val pickerMode: Mode,
-	private val onFileSelected: FileSelected,
+	private val onFileSelected: FilesSelected,
 ) {
 
 	@ThreadLocal
@@ -57,7 +59,16 @@ public class FilePickerLauncher(
 
 		/**
 		 * Use this mode to open a [FilePickerLauncher] for selecting
-		 * files.
+		 * multiple files.
+		 *
+		 * @param extensions List of file extensions that can be
+		 *  selected on this file picker.
+		 */
+		public data class MultipleFiles(val extensions: List<String>) : Mode
+
+		/**
+		 * Use this mode to open a [FilePickerLauncher] for selecting
+		 * a single file.
 		 *
 		 * @param extensions List of file extensions that can be
 		 *  selected on this file picker.
@@ -72,8 +83,18 @@ public class FilePickerLauncher(
 		override fun documentPicker(
 			controller: UIDocumentPickerViewController, didPickDocumentsAtURLs: List<*>
 		) {
-			(didPickDocumentsAtURLs.firstOrNull() as? NSURL).let { selected ->
-				onFileSelected(selected?.path?.let { IosFile(it, selected) })
+
+			(didPickDocumentsAtURLs as? List<*>)?.let { list ->
+				val files = list.map { file ->
+					(file as? NSURL)?.let { nsUrl ->
+						nsUrl.path?.let { path ->
+							IosFile(path, nsUrl)
+						}
+					} ?: return@let listOf<IosFile>()
+				}
+
+				onFileSelected(files)
+
 			}
 		}
 
@@ -97,6 +118,9 @@ public class FilePickerLauncher(
 			is File -> pickerMode.extensions
 				.mapNotNull { UTType.typeWithFilenameExtension(it) }
 				.ifEmpty { listOf(UTTypeContent) }
+			is MultipleFiles -> pickerMode.extensions
+				.mapNotNull { UTType.typeWithFilenameExtension(it) }
+				.ifEmpty { listOf(UTTypeContent) }
 		}
 
 	private fun createPicker() = UIDocumentPickerViewController(
@@ -106,15 +130,19 @@ public class FilePickerLauncher(
 		initialDirectory?.let { directoryURL = NSURL(string = it) }
 	}
 
+
 	public fun launchFilePicker() {
 		activeLauncher = this
-
+		val picker = createPicker()
 		UIApplication.sharedApplication.keyWindow?.rootViewController?.presentViewController(
 			// Reusing a closed/dismissed picker causes problems with
 			// triggering delegate functions, launch with a new one.
-			createPicker(),
+			picker,
 			animated = true,
-			completion = null
+			completion = {
+				(picker as? UIDocumentPickerViewController)
+					?.allowsMultipleSelection = pickerMode is MultipleFiles
+			},
 		)
 	}
 }
@@ -122,16 +150,17 @@ public class FilePickerLauncher(
 public suspend fun launchFilePicker(
 	initialDirectory: String? = null,
 	fileExtensions: List<String>,
+	allowMultiple: Boolean? = false,
 ): List<MPFile<Any>> = suspendCoroutine { cont ->
 	try {
 		FilePickerLauncher(
 			initialDirectory = initialDirectory,
-			pickerMode = File(fileExtensions),
+			pickerMode = if (allowMultiple == true) MultipleFiles(fileExtensions) else File(fileExtensions),
 			onFileSelected = { selected ->
 				// File selection has ended, no launcher is active anymore
 				// dereference it
 				FilePickerLauncher.activeLauncher = null
-				cont.resume(selected?.let { listOf(it) }.orEmpty())
+				cont.resume(selected.orEmpty())
 			}
 		).also { launcher ->
 			// We're showing the file picker at this time so we set
@@ -157,7 +186,7 @@ public suspend fun launchDirectoryPicker(
 				// File selection has ended, no launcher is active anymore
 				// dereference it
 				FilePickerLauncher.activeLauncher = null
-				cont.resume(selected?.let { listOf(it) }.orEmpty())
+				cont.resume(selected.orEmpty())
 			},
 		).also { launcher ->
 			// We're showing the file picker at this time so we set

@@ -9,10 +9,14 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
+import com.darkrockstudios.libraries.mpfilepicker.MultipleFilePicker
 
 fun main() = application {
-	var show by remember { mutableStateOf(false) }
-	var pathChosen by remember { mutableStateOf("") }
+	var showSingleFile by remember { mutableStateOf(false) }
+	var pathSingleChosen by remember { mutableStateOf("") }
+
+	var showMultiFile by remember { mutableStateOf(false) }
+	var pathMultiChosen by remember { mutableStateOf(listOf("")) }
 
 	var showDirPicker by remember { mutableStateOf(false) }
 	var dirChosen by remember { mutableStateOf("") }
@@ -20,13 +24,23 @@ fun main() = application {
 	Window(onCloseRequest = ::exitApplication) {
 		Column {
 			Button(onClick = {
-				show = true
+				showSingleFile = true
 			}) {
 				Text("Choose File")
 			}
-			Text("File Chosen: $pathChosen")
+			Text("File Chosen: $pathSingleChosen")
 
 			/////////////////////////////////////////////////////////////////
+
+			Button(onClick = {
+				showMultiFile = true
+			}) {
+				Text("Choose Multiple File")
+			}
+			Text("Files Chosen: $pathMultiChosen")
+
+			/////////////////////////////////////////////////////////////////
+
 
 			Button(onClick = {
 				showDirPicker = true
@@ -37,9 +51,14 @@ fun main() = application {
 		}
 	}
 
-	FilePicker(show, fileExtensions = listOf("jpg", "png")) { file ->
-		pathChosen = file?.path ?: "none selected"
-		show = false
+	FilePicker(showSingleFile, fileExtensions = listOf("jpg", "png")) { file ->
+		pathSingleChosen = file?.path ?: "none selected"
+		showSingleFile = false
+	}
+
+	MultipleFilePicker(showMultiFile, fileExtensions = listOf("jpg", "png")) { files ->
+		pathMultiChosen = files?.map { it.path + "\n" } ?: emptyList()
+		showMultiFile = false
 	}
 
 	DirectoryPicker(showDirPicker) { path ->
