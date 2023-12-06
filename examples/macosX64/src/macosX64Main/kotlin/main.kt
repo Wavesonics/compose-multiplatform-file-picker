@@ -8,6 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.window.Window
 import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
+import com.darkrockstudios.libraries.mpfilepicker.MultipleFilePicker
 import platform.AppKit.NSApp
 import platform.AppKit.NSApplication
 
@@ -16,19 +17,31 @@ fun main() {
 	Window(title = "Youtube history") {
 		MaterialTheme(colorScheme = if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme()) {
 			Scaffold {
-				var show by remember { mutableStateOf(false) }
-				var pathChosen by remember { mutableStateOf("") }
+				var showSingleFile by remember { mutableStateOf(false) }
+				var showMultipleFile by remember { mutableStateOf(false) }
+				var singleFilePathChosen by remember { mutableStateOf("") }
+				var multipleFilesPathsChosen by remember { mutableStateOf(listOf("")) }
 
 				var showDirPicker by remember { mutableStateOf(false) }
 				var dirChosen by remember { mutableStateOf("") }
 
 				Column {
 					Button(onClick = {
-						show = true
+						showSingleFile = true
 					}) {
 						Text("Choose File")
 					}
-					Text("File Chosen: $pathChosen")
+					Text("File Chosen: $singleFilePathChosen")
+
+					/////////////////////////////////////////////////////////////////
+
+
+					Button(onClick = {
+						showMultipleFile = true
+					}) {
+						Text("Choose Multiple Files")
+					}
+					Text("File Chosen: $multipleFilesPathsChosen")
 
 					/////////////////////////////////////////////////////////////////
 
@@ -40,9 +53,14 @@ fun main() {
 					Text("Directory Chosen: $dirChosen")
 				}
 
-				FilePicker(show, fileExtensions = listOf("jpg", "png", "plist")) { file ->
-					pathChosen = file?.path ?: "none selected"
-					show = false
+				FilePicker(showSingleFile, fileExtensions = listOf("jpg", "png", "plist")) { file ->
+					singleFilePathChosen = file?.path ?: "none selected"
+					showSingleFile = false
+				}
+
+				MultipleFilePicker(showMultipleFile, fileExtensions = listOf("jpg", "png", "plist")) { files ->
+					multipleFilesPathsChosen = files?.map { it.path + "\n" } ?: listOf()
+					showMultipleFile = false
 				}
 
 				DirectoryPicker(showDirPicker) { path ->
