@@ -45,6 +45,7 @@ public actual fun MultipleFilePicker(
 	show: Boolean,
 	initialDirectory: String?,
 	fileExtensions: List<String>,
+	title: String?,
 	onFileSelected: FilesSelected
 ) {
 	LaunchedEffect(show) {

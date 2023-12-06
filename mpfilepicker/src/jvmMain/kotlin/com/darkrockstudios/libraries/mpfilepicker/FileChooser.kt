@@ -27,6 +27,7 @@ internal fun chooseFile(
 internal fun chooseFiles(
 	initialDirectory: String,
 	fileExtension: String,
+	title: String?,
 ): List<String>? = MemoryStack.stackPush().use { stack ->
 	val filters = if (fileExtension.isNotEmpty()) fileExtension.split(",") else emptyList()
 	val aFilterPatterns = stack.mallocPointer(filters.size)
@@ -35,7 +36,7 @@ internal fun chooseFiles(
 	}
 	aFilterPatterns.flip()
 	val t = TinyFileDialogs.tinyfd_openFileDialog(
-		/* aTitle = */ "Choose File",
+		/* aTitle = */ title,
 		/* aDefaultPathAndFile = */ initialDirectory,
 		/* aFilterPatterns = */ aFilterPatterns,
 		/* aSingleFilterDescription = */ null,

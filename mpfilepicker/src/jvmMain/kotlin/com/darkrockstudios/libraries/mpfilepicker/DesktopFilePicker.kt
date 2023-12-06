@@ -48,6 +48,7 @@ public actual fun MultipleFilePicker(
 	show: Boolean,
 	initialDirectory: String?,
 	fileExtensions: List<String>,
+	title: String?,
 	onFileSelected: FilesSelected
 ) {
 	LaunchedEffect(show) {
@@ -61,7 +62,8 @@ public actual fun MultipleFilePicker(
 			val initialDir = initialDirectory ?: System.getProperty("user.dir")
 			val filePaths = chooseFiles(
 				initialDirectory = initialDir,
-				fileExtension = fileFilter
+				fileExtension = fileFilter,
+				title = title
 			)
 			if (filePaths != null) {
 				onFileSelected(filePaths.map { JvmFile(it, File(it)) })

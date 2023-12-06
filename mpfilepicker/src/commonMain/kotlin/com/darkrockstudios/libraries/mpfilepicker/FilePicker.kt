@@ -27,6 +27,7 @@ public expect fun MultipleFilePicker(
 	show: Boolean,
 	initialDirectory: String? = null,
 	fileExtensions: List<String> = emptyList(),
+	title: String? = null,
 	onFileSelected: FilesSelected
 )
 

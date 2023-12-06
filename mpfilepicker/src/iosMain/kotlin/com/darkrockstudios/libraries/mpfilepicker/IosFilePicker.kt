@@ -8,8 +8,6 @@ import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
 import platform.Foundation.NSData
 import platform.Foundation.NSURL
-import platform.darwin.NSUInteger
-import platform.posix.malloc
 import platform.posix.memcpy
 
 public data class IosFile(
@@ -55,6 +53,7 @@ public actual fun MultipleFilePicker(
 	show: Boolean,
 	initialDirectory: String?,
 	fileExtensions: List<String>,
+	title: String?,
 	onFileSelected: FilesSelected
 ) {
 	val launcher = remember {
