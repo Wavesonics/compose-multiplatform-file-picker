@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
     spec.name                     = 'ios'
-    spec.version                  = '3.0.0'
+    spec.version                  = '3.1.0'
     spec.homepage                 = 'https://github.com/Wavesonics/compose-multiplatform-file-picker'
     spec.source                   = { :http=> ''}
     spec.authors                  = ''
