@@ -13,4 +13,5 @@
 6. Go to Staging Repository
 7. Close the library
 8. Release the library
-9. After library is available then update README.md and set the Github Release as the latest release
+9. After library is available for download then update README.md
+   and set the Github Release as the latest release
