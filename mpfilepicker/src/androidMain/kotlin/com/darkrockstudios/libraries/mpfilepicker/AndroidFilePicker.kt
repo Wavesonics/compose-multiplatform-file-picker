@@ -20,6 +20,7 @@ public actual fun FilePicker(
 	show: Boolean,
 	initialDirectory: String?,
 	fileExtensions: List<String>,
+	title: String?,
 	onFileSelected: FileSelected
 ) {
 	val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocument()) { result ->
@@ -50,6 +51,7 @@ public actual fun MultipleFilePicker(
 	show: Boolean,
 	initialDirectory: String?,
 	fileExtensions: List<String>,
+	title: String?,
 	onFileSelected: FilesSelected
 ) {
 	val launcher = rememberLauncherForActivityResult(
@@ -89,6 +91,7 @@ public actual fun MultipleFilePicker(
 public actual fun DirectoryPicker(
 	show: Boolean,
 	initialDirectory: String?,
+	title: String?,
 	onFileSelected: (String?) -> Unit
 ) {
 	val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocumentTree()) { result ->

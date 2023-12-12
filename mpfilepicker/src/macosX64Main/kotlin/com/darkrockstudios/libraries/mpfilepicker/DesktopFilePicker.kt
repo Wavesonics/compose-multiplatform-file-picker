@@ -29,17 +29,21 @@ public actual fun FilePicker(
 	show: Boolean,
 	initialDirectory: String?,
 	fileExtensions: List<String>,
+	title: String?,
 	onFileSelected: FileSelected,
 ) {
 	LaunchedEffect(show) {
 		if (show) {
 			with(NSOpenPanel()) {
-				if (initialDirectory != null) directoryURL = NSURL.fileURLWithPath(initialDirectory, true)
+				if (initialDirectory != null) directoryURL =
+					NSURL.fileURLWithPath(initialDirectory, true)
 				allowsMultipleSelection = false
 				setAllowedFileTypes(fileExtensions)
 				allowsOtherFileTypes = true
 				canChooseDirectories = false
 				canChooseFiles = true
+				if (title != null) message = title
+
 				runModal()
 
 				val fileURL = URL
@@ -56,6 +60,7 @@ public actual fun MultipleFilePicker(
 	show: Boolean,
 	initialDirectory: String?,
 	fileExtensions: List<String>,
+	title: String?,
 	onFileSelected: FilesSelected,
 ) {
 	LaunchedEffect(show) {
@@ -67,6 +72,7 @@ public actual fun MultipleFilePicker(
 				allowsOtherFileTypes = true
 				canChooseDirectories = false
 				canChooseFiles = true
+				if (title != null) message = title
 				runModal()
 
 				val filesUrls = URLs
@@ -90,6 +96,7 @@ public actual fun MultipleFilePicker(
 public actual fun DirectoryPicker(
 	show: Boolean,
 	initialDirectory: String?,
+	title: String?,
 	onFileSelected: (String?) -> Unit
 ) {
 	LaunchedEffect(show) {
@@ -100,6 +107,7 @@ public actual fun DirectoryPicker(
 				canChooseDirectories = true
 				canChooseFiles = false
 				canCreateDirectories = true
+				if (title != null) message = title
 				runModal()
 
 				val fileURL = URL

@@ -16,7 +16,8 @@ public actual fun FilePicker(
 	show: Boolean,
 	initialDirectory: String?,
 	fileExtensions: List<String>,
-	onFileSelected: FileSelected
+	title: String?,
+	onFileSelected: FileSelected,
 ) {
 	LaunchedEffect(show) {
 		if (show) {
@@ -29,7 +30,8 @@ public actual fun FilePicker(
 			val initialDir = initialDirectory ?: System.getProperty("user.dir")
 			val filePath = chooseFile(
 				initialDirectory = initialDir,
-				fileExtension = fileFilter
+				fileExtension = fileFilter,
+				title = title
 			)
 			if (filePath != null) {
 				onFileSelected(JvmFile(filePath, File(filePath)))
@@ -46,6 +48,7 @@ public actual fun MultipleFilePicker(
 	show: Boolean,
 	initialDirectory: String?,
 	fileExtensions: List<String>,
+	title: String?,
 	onFileSelected: FilesSelected
 ) {
 	LaunchedEffect(show) {
@@ -59,7 +62,8 @@ public actual fun MultipleFilePicker(
 			val initialDir = initialDirectory ?: System.getProperty("user.dir")
 			val filePaths = chooseFiles(
 				initialDirectory = initialDir,
-				fileExtension = fileFilter
+				fileExtension = fileFilter,
+				title = title
 			)
 			if (filePaths != null) {
 				onFileSelected(filePaths.map { JvmFile(it, File(it)) })
@@ -75,12 +79,13 @@ public actual fun MultipleFilePicker(
 public actual fun DirectoryPicker(
 	show: Boolean,
 	initialDirectory: String?,
-	onFileSelected: (String?) -> Unit
+	title: String?,
+	onFileSelected: (String?) -> Unit,
 ) {
 	LaunchedEffect(show) {
 		if (show) {
 			val initialDir = initialDirectory ?: System.getProperty("user.dir")
-			val fileChosen = chooseDirectory(initialDir)
+			val fileChosen = chooseDirectory(initialDir, title)
 			onFileSelected(fileChosen)
 		}
 	}
