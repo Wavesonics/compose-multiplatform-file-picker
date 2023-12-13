@@ -71,6 +71,22 @@ public actual fun DirectoryPicker(
 	throw NotImplementedError("DirectoryPicker is not supported on the web")
 }
 
+@Composable
+public actual fun SaveFilePicker(
+	show: Boolean,
+	initialDirectory: String?,
+	initialFileName: String,
+	title: String,
+	onFileSelected: FileSelected,
+) {
+	LaunchedEffect(show) {
+		if (show) {
+			val file: File = document.selectFilesFromDisk("", false).first()
+			onFileSelected(WebFile(file.name, file))
+		}
+	}
+}
+
 private suspend fun Document.selectFilesFromDisk(
 	accept: String,
 	isMultiple: Boolean

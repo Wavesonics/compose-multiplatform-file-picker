@@ -6,6 +6,7 @@ import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
 import platform.AppKit.NSOpenPanel
+import platform.AppKit.NSSavePanel
 import platform.AppKit.setAllowedFileTypes
 import platform.Foundation.NSData
 import platform.Foundation.NSURL
@@ -113,6 +114,33 @@ public actual fun DirectoryPicker(
 				val fileURL = URL
 				val filePath = fileURL?.path
 				onFileSelected(filePath)
+			}
+		}
+	}
+}
+
+@Composable
+public actual fun SaveFilePicker(
+	show: Boolean,
+	initialDirectory: String?,
+	initialFileName: String,
+	title: String,
+	onFileSelected: FileSelected,
+) {
+	// title, prompt, message, nameFieldLabel
+	LaunchedEffect(show) {
+		if (show) {
+			with(NSSavePanel()) {
+				if (initialDirectory != null) directoryURL = NSURL.fileURLWithPath(initialDirectory, true)
+				canCreateDirectories = true
+				nameFieldStringValue = initialFileName
+				if (title != null) message = title
+				runModal()
+
+				val fileURL = URL
+				val filePath = fileURL?.path
+				if (filePath != null) onFileSelected(MacOSFile(filePath, fileURL))
+				else onFileSelected(null)
 			}
 		}
 	}

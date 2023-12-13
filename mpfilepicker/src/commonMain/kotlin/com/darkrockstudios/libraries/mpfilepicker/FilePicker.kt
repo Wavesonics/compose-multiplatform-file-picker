@@ -38,3 +38,12 @@ public expect fun DirectoryPicker(
 	title: String? = null,
 	onFileSelected: (String?) -> Unit,
 )
+
+@Composable
+public expect fun SaveFilePicker(
+	show: Boolean,
+	initialDirectory: String? = null,
+	initialFileName: String = "",
+	title: String = "",
+	onFileSelected: FileSelected,
+)

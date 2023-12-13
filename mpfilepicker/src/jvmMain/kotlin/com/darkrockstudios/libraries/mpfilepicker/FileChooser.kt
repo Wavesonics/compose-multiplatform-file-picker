@@ -52,3 +52,22 @@ internal fun chooseDirectory(
 	title,
 	initialDirectory
 )
+
+internal fun chooseSaveFile(
+	initialDirectory: String,
+	initialFileName: String,
+	title: String?,
+) : String? = MemoryStack.stackPush().use { stack ->
+
+	val filters = emptyList<String>()
+	val aFilterPatterns = stack.mallocPointer(filters.size)
+	filters.forEach {
+		aFilterPatterns.put(stack.UTF8("*.$it"))
+	}
+	TinyFileDialogs.tinyfd_saveFileDialog(
+		title,
+		initialDirectory,
+		aFilterPatterns,
+		null,
+	)
+}

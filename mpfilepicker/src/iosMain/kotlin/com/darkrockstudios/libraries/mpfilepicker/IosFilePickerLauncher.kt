@@ -74,6 +74,14 @@ public class FilePickerLauncher(
 		 *  selected on this file picker.
 		 */
 		public data class File(val extensions: List<String>) : Mode
+
+		/**
+		 * Use this mode to open a [FilePickerLauncher] saving a file.
+		 *
+		 * @param initialFileName initial name given to the file when
+		 * opening the modal.
+		 */
+		public data class Save(val initialFileName: String) : Mode
 	}
 
 	private val pickerDelegate = object : NSObject(),
@@ -121,6 +129,7 @@ public class FilePickerLauncher(
 			is MultipleFiles -> pickerMode.extensions
 				.mapNotNull { UTType.typeWithFilenameExtension(it) }
 				.ifEmpty { listOf(UTTypeContent) }
+			is Mode.Save -> emptyList()
 		}
 
 	private fun createPicker() = UIDocumentPickerViewController(
@@ -192,6 +201,27 @@ public suspend fun launchDirectoryPicker(
 			// We're showing the file picker at this time so we set
 			// the activeLauncher here. This might be the last time
 			// there's an outside reference to the file picker.
+			FilePickerLauncher.activeLauncher = launcher
+			launcher.launchFilePicker()
+		}
+	} catch (e: Throwable) {
+		cont.resumeWithException(e)
+	}
+}
+
+public suspend fun launchSaveFilePicker(
+	initialDirectory: String? = null,
+	initialFileName: String = ""
+): List<MPFile<Any>> = suspendCoroutine { cont ->
+	try {
+		FilePickerLauncher(
+			initialDirectory = initialDirectory,
+			pickerMode = Mode.Save(initialFileName),
+			onFileSelected = { selected ->
+				FilePickerLauncher.activeLauncher = null
+				cont.resume(selected.orEmpty())
+			}
+		).also { launcher ->
 			FilePickerLauncher.activeLauncher = launcher
 			launcher.launchFilePicker()
 		}

@@ -104,3 +104,26 @@ public actual fun DirectoryPicker(
 		}
 	}
 }
+
+@Composable
+public actual fun SaveFilePicker(
+	show: Boolean,
+	initialDirectory: String?,
+	initialFileName: String,
+	title: String,
+	onFileSelected: FileSelected,
+) {
+	val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.CreateDocument()) { result ->
+		if (result != null) {
+			onFileSelected(AndroidFile(result.toString(), result))
+		} else {
+			onFileSelected(null)
+		}
+	}
+
+	LaunchedEffect(show) {
+		if (show) {
+			launcher.launch(initialFileName)
+		}
+	}
+}

@@ -92,3 +92,26 @@ public actual fun DirectoryPicker(
 		}
 	}
 }
+
+@Composable
+public actual fun SaveFilePicker(
+	show: Boolean,
+	initialDirectory: String?,
+	initialFileName: String,
+	title: String,
+	onFileSelected: FileSelected,
+) {
+	val launcher = remember {
+		FilePickerLauncher(
+			initialDirectory = initialDirectory,
+			pickerMode = FilePickerLauncher.Mode.Save(initialFileName),
+			onFileSelected = { onFileSelected(it?.firstOrNull()) },
+		)
+	}
+
+	LaunchedEffect(show) {
+		if (show) {
+			launcher.launchFilePicker()
+		}
+	}
+}
