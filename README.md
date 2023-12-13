@@ -11,7 +11,7 @@ A multiplatform compose widget for picking files with each platform's Native Fil
 ## Include in your project:
 
 ```kts
-implementation("com.darkrockstudios:mpfilepicker:3.0.0")
+implementation("com.darkrockstudios:mpfilepicker:3.1.0")
 ```
 
 ## How to use
