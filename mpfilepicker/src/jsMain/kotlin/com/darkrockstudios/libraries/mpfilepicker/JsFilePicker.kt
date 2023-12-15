@@ -7,6 +7,7 @@ import org.khronos.webgl.ArrayBuffer
 import org.khronos.webgl.Uint8Array
 import org.khronos.webgl.get
 import org.w3c.dom.Document
+import org.w3c.dom.HTMLAnchorElement
 import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.ItemArrayLike
 import org.w3c.dom.asList
@@ -71,18 +72,27 @@ public actual fun DirectoryPicker(
 	throw NotImplementedError("DirectoryPicker is not supported on the web")
 }
 
+/**
+ * NOTE: This only works for files that are same-origin. It won't for content hosted on other sites.
+ *
+ * @param filename the name to give the file when the user downloads it
+ * @param path ignored for web
+ * @param contents the url to download
+ * @param onComplete callback after contents are downloaded. This will always be called and receive
+ * true as the parameter when this function is called with show = true
+ */
 @Composable
 public actual fun SaveFilePicker(
 	show: Boolean,
-	initialDirectory: String?,
-	initialFileName: String,
-	title: String,
-	onFileSelected: FileSelected,
+	filename: String,
+	path: String?,
+	contents: String,
+	onComplete: (Boolean) -> Unit,
 ) {
 	LaunchedEffect(show) {
 		if (show) {
-			val file: File = document.selectFilesFromDisk("", false).first()
-			onFileSelected(WebFile(file.name, file))
+			document.saveFileToDisk(contents, filename)
+			onComplete(true)
 		}
 	}
 }
@@ -106,6 +116,20 @@ private suspend fun Document.selectFilesFromDisk(
 	body!!.append(tempInput)
 	tempInput.click()
 	tempInput.remove()
+}
+
+private fun Document.saveFileToDisk(
+	fileLink: String,
+	filename: String = "",
+) {
+	val downloadLink = (createElement("a") as HTMLAnchorElement).apply {
+		download = filename
+		href = fileLink
+	}
+
+	body!!.append(downloadLink)
+	downloadLink.click()
+	downloadLink.remove()
 }
 
 public suspend fun readFileAsText(file: File): String = suspendCoroutine {

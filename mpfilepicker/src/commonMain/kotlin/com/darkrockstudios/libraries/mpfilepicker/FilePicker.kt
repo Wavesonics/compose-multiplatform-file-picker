@@ -42,8 +42,8 @@ public expect fun DirectoryPicker(
 @Composable
 public expect fun SaveFilePicker(
 	show: Boolean,
-	initialDirectory: String? = null,
-	initialFileName: String = "",
-	title: String = "",
-	onFileSelected: FileSelected,
+	filename: String,
+	path: String?,
+	contents: String,
+	onComplete: (saved: Boolean) -> Unit,
 )

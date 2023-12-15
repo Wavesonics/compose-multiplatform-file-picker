@@ -1,6 +1,7 @@
 import androidx.compose.runtime.*
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import com.darkrockstudios.libraries.mpfilepicker.MultipleFilePicker
+import com.darkrockstudios.libraries.mpfilepicker.SaveFilePicker
 import com.darkrockstudios.libraries.mpfilepicker.WebFile
 import com.darkrockstudios.libraries.mpfilepicker.readFileAsText
 import kotlinx.coroutines.launch
@@ -55,9 +56,44 @@ fun main() {
 		Br()
 		Text("Files names: $filesNames")
 		Br()
-		MultipleFilePicker(showMultipleFile, fileExtensions = listOf("png", "jpeg", "jpg"), initialDirectory = null) { files ->
+		MultipleFilePicker(
+			showMultipleFile,
+			fileExtensions = listOf("png", "jpeg", "jpg"),
+			initialDirectory = null
+		) { files ->
 			filesNames = files?.map { it.path } ?: listOf()
 			showMultipleFile = false
 		}
+
+		Br()
+		Br()
+		Br()
+		Br()
+
+		val fileLink = "./logo.png"
+		val filename = "testImage"
+		var downloadFile by remember { mutableStateOf(false) }
+		var downloadedFile by remember { mutableStateOf(false) }
+
+		Button(attrs = {
+			onClick {
+				downloadFile = true
+			}
+		}) {
+			Text("Download file")
+		}
+
+		Br()
+		Text("Downloaded file? $downloadedFile")
+
+		SaveFilePicker(
+			show = downloadFile,
+			filename = filename,
+			path = null,
+			contents = fileLink,
+			onComplete = {
+				downloadedFile = it
+			}
+		)
 	}
 }
