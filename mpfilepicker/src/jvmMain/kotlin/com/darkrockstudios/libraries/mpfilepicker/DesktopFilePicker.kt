@@ -3,6 +3,7 @@ package com.darkrockstudios.libraries.mpfilepicker
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import java.io.File
+import java.io.IOException
 
 public data class JvmFile(
 	override val path: String,
@@ -94,25 +95,33 @@ public actual fun DirectoryPicker(
 @Composable
 public actual fun SaveFilePicker(
 	show: Boolean,
-	initialDirectory: String?,
-	initialFileName: String,
-	title: String,
-	onFileSelected: FileSelected,
+	title: String?,
+	path: String?,
+	filename: String,
+	fileExtension: String?,
+	contents: String,
+	onSavedFile: (saved: Result<Boolean>) -> Unit,
 ) {
 	LaunchedEffect(show) {
 		if (show) {
-			val initialDir = initialDirectory ?: System.getProperty("user.dir")
+			val initialDir = path ?: System.getProperty("user.dir")
 			val filePath = chooseSaveFile(
-				initialDirectory = initialDir,
-				initialFileName = initialFileName,
-				title = title
+				path = initialDir,
+				filename = filename,
+				title = title,
 			)
 			if (filePath != null) {
-				onFileSelected(JvmFile(filePath, File(filePath)))
+				try {
+					File(filePath).bufferedWriter().use { out ->
+						out.write(contents)
+					}
+					onSavedFile(Result.success(true))
+				} catch (e: IOException) {
+					onSavedFile(Result.failure(e))
+				}
 			} else {
-				onFileSelected(null)
+				onSavedFile(Result.success(false))
 			}
-
 		}
 	}
 }

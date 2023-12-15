@@ -10,6 +10,7 @@ import androidx.compose.ui.window.application
 import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import com.darkrockstudios.libraries.mpfilepicker.MultipleFilePicker
+import com.darkrockstudios.libraries.mpfilepicker.SaveFilePicker
 
 fun main() = application {
 	var showSingleFile by remember { mutableStateOf(false) }
@@ -20,6 +21,9 @@ fun main() = application {
 
 	var showDirPicker by remember { mutableStateOf(false) }
 	var dirChosen by remember { mutableStateOf("") }
+
+	var showSaveFile by remember { mutableStateOf(false) }
+	var hasSavedFiled by remember { mutableStateOf(false) }
 
 	Window(onCloseRequest = ::exitApplication) {
 		Column {
@@ -48,6 +52,16 @@ fun main() = application {
 				Text("Choose Directory")
 			}
 			Text("Directory Chosen: $dirChosen")
+
+			/////////////////////////////////////////////////////////////////
+
+
+			Button(onClick = {
+				showSaveFile = true
+			}) {
+				Text("Save File")
+			}
+			Text("Saved File: $hasSavedFiled")
 		}
 	}
 
@@ -64,5 +78,14 @@ fun main() = application {
 	DirectoryPicker(showDirPicker) { path ->
 		dirChosen = path ?: "none selected"
 		showDirPicker = false
+	}
+
+	SaveFilePicker(
+		showSaveFile,
+		path = "Downloads",
+		filename = "newFile.txt",
+		contents = "this is a new test file",
+	) {
+		hasSavedFiled = it.getOrNull() == true
 	}
 }

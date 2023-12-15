@@ -54,20 +54,14 @@ internal fun chooseDirectory(
 )
 
 internal fun chooseSaveFile(
-	initialDirectory: String,
-	initialFileName: String,
+	path: String,
+	filename: String,
 	title: String?,
-) : String? = MemoryStack.stackPush().use { stack ->
-
-	val filters = emptyList<String>()
-	val aFilterPatterns = stack.mallocPointer(filters.size)
-	filters.forEach {
-		aFilterPatterns.put(stack.UTF8("*.$it"))
-	}
+) : String? = MemoryStack.stackPush().use { _ ->
 	TinyFileDialogs.tinyfd_saveFileDialog(
 		title,
-		initialDirectory,
-		aFilterPatterns,
+		"$path${System.getProperty("file.separator")}$filename",
+		null,
 		null,
 	)
 }
