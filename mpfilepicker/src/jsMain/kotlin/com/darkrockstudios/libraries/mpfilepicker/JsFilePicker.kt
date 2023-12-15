@@ -78,21 +78,22 @@ public actual fun DirectoryPicker(
  * @param filename the name to give the file when the user downloads it
  * @param path ignored for web
  * @param contents the url to download
- * @param onComplete callback after contents are downloaded. This will always be called and receive
+ * @param onSavedFile callback after contents are downloaded. This will always be called and receive
  * true as the parameter when this function is called with show = true
  */
 @Composable
 public actual fun SaveFilePicker(
 	show: Boolean,
-	filename: String,
 	path: String?,
+	filename: String,
+	fileExtension: String?,
 	contents: String,
-	onComplete: (Boolean) -> Unit,
+	onSavedFile: (Result<Boolean>) -> Unit,
 ) {
 	LaunchedEffect(show) {
 		if (show) {
 			document.saveFileToDisk(contents, filename)
-			onComplete(true)
+			onSavedFile(Result.success(true))
 		}
 	}
 }

@@ -14,6 +14,7 @@ import androidx.compose.runtime.setValue
 import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import com.darkrockstudios.libraries.mpfilepicker.MultipleFilePicker
+import com.darkrockstudios.libraries.mpfilepicker.SaveFilePicker
 
 class MainActivity : AppCompatActivity() {
 	override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,6 +75,29 @@ class MainActivity : AppCompatActivity() {
 					DirectoryPicker(showDirPicker) { path ->
 						dirChosen = path ?: "none selected"
 						showDirPicker = false
+					}
+
+					/////////////////////////////////////////////////////////////////
+
+					var showSaveFilePicker by remember { mutableStateOf(false) }
+					var savedFile by remember { mutableStateOf(false) }
+
+					Button(onClick = {
+						showSaveFilePicker = true
+					}) {
+						Text("Choose Save")
+					}
+					Text("Saved File: $savedFile")
+
+					SaveFilePicker(
+						show = showSaveFilePicker,
+						path = null,
+						filename = "newFile.txt",
+						fileExtension = "plain/text",
+						contents = "this is a new test file",
+					) {
+						showSaveFilePicker = false
+						savedFile = true
 					}
 				}
 			}

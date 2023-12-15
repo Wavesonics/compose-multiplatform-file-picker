@@ -91,8 +91,9 @@ fun main() {
 			filename = filename,
 			path = null,
 			contents = fileLink,
-			onComplete = {
-				downloadedFile = it
+			onSavedFile = {
+				// We can ignore the result value, it will always be true for web
+				downloadedFile = true
 			}
 		)
 	}

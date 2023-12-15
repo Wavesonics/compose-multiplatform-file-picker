@@ -1,12 +1,17 @@
 package com.darkrockstudios.libraries.mpfilepicker
 
+import android.content.Context
 import android.net.Uri
 import android.webkit.MimeTypeMap
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.net.toFile
+import java.io.BufferedWriter
+import java.io.IOException
+import java.io.OutputStreamWriter
 
 public data class AndroidFile(
 	override val path: String,
@@ -108,22 +113,40 @@ public actual fun DirectoryPicker(
 @Composable
 public actual fun SaveFilePicker(
 	show: Boolean,
-	initialDirectory: String?,
-	initialFileName: String,
-	title: String,
-	onFileSelected: FileSelected,
+	path: String?,
+	filename: String,
+	fileExtension: String?,
+	contents: String,
+	onSavedFile: (saved: Result<Boolean>) -> Unit,
 ) {
-	val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.CreateDocument()) { result ->
+	val context = LocalContext.current
+	val launcher = rememberLauncherForActivityResult(
+		contract = ActivityResultContracts.CreateDocument(fileExtension ?: "*/*")
+	) { result ->
 		if (result != null) {
-			onFileSelected(AndroidFile(result.toString(), result))
+			try {
+				writeTextToUri(context, result, contents)
+				onSavedFile(Result.success(true))
+			} catch (e: IOException) {
+				onSavedFile(Result.failure(e))
+			}
 		} else {
-			onFileSelected(null)
+			onSavedFile(Result.success(false))
 		}
 	}
 
 	LaunchedEffect(show) {
 		if (show) {
-			launcher.launch(initialFileName)
+			launcher.launch(filename)
+		}
+	}
+}
+
+@Throws(IOException::class)
+private fun writeTextToUri(context: Context, uri: Uri, text: String) {
+	context.contentResolver.openOutputStream(uri)?.use { outputStream ->
+		BufferedWriter(OutputStreamWriter(outputStream)).use { writer ->
+			writer.write(text)
 		}
 	}
 }
