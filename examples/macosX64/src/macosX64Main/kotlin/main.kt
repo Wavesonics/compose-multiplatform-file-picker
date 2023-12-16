@@ -9,6 +9,7 @@ import androidx.compose.ui.window.Window
 import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import com.darkrockstudios.libraries.mpfilepicker.MultipleFilePicker
+import com.darkrockstudios.libraries.mpfilepicker.SaveFilePicker
 import platform.AppKit.NSApp
 import platform.AppKit.NSApplication
 
@@ -24,6 +25,9 @@ fun main() {
 
 				var showDirPicker by remember { mutableStateOf(false) }
 				var dirChosen by remember { mutableStateOf("") }
+
+				var showSaveFilePicker by remember { mutableStateOf(false) }
+				var savedFile by remember { mutableStateOf(false) }
 
 				Column {
 					Button(onClick = {
@@ -51,6 +55,15 @@ fun main() {
 						Text("Choose Directory")
 					}
 					Text("Directory Chosen: $dirChosen")
+
+					/////////////////////////////////////////////////////////////////
+
+					Button(onClick = {
+						showSaveFilePicker = true
+					}) {
+						Text("Choose Save File")
+					}
+					Text("Saved File: $savedFile")
 				}
 
 				FilePicker(showSingleFile, fileExtensions = listOf("jpg", "png", "plist")) { file ->
@@ -58,7 +71,10 @@ fun main() {
 					showSingleFile = false
 				}
 
-				MultipleFilePicker(showMultipleFile, fileExtensions = listOf("jpg", "png", "plist")) { files ->
+				MultipleFilePicker(
+					showMultipleFile,
+					fileExtensions = listOf("jpg", "png", "plist")
+				) { files ->
 					multipleFilesPathsChosen = files?.map { it.path + "\n" } ?: listOf()
 					showMultipleFile = false
 				}
@@ -67,8 +83,18 @@ fun main() {
 					dirChosen = path ?: "none selected"
 					showDirPicker = false
 				}
-			}
 
+				SaveFilePicker(
+					show = showSaveFilePicker,
+					title = "Some title",
+					filename = "newTextFile",
+					fileExtension = "txt",
+					contents = "some nice text for our file",
+				) { result ->
+					savedFile = result.getOrNull() == true
+					showSaveFilePicker = false
+				}
+			}
 		}
 	}
 	NSApp?.run()

@@ -2,14 +2,33 @@ package com.darkrockstudios.libraries.mpfilepicker
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import kotlinx.cinterop.BetaInteropApi
+import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.ObjCObjectVar
+import kotlinx.cinterop.StableRef
 import kotlinx.cinterop.addressOf
+import kotlinx.cinterop.alloc
+import kotlinx.cinterop.allocPointerTo
+import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.objcPtr
+import kotlinx.cinterop.pointed
+import kotlinx.cinterop.ptr
 import kotlinx.cinterop.usePinned
+import kotlinx.cinterop.value
 import platform.AppKit.NSOpenPanel
 import platform.AppKit.NSSavePanel
 import platform.AppKit.setAllowedFileTypes
 import platform.Foundation.NSData
+import platform.Foundation.NSError
+import platform.Foundation.NSFileHandle
+import platform.Foundation.NSString
 import platform.Foundation.NSURL
+import platform.Foundation.NSUTF8StringEncoding
+import platform.Foundation.closeFile
+import platform.Foundation.create
+import platform.Foundation.dataUsingEncoding
+import platform.Foundation.fileHandleForWritingAtPath
 import platform.posix.memcpy
 
 public data class MacOSFile(
@@ -119,28 +138,54 @@ public actual fun DirectoryPicker(
 	}
 }
 
+@OptIn(BetaInteropApi::class, ExperimentalForeignApi::class)
 @Composable
 public actual fun SaveFilePicker(
 	show: Boolean,
-	initialDirectory: String?,
-	initialFileName: String,
-	title: String,
-	onFileSelected: FileSelected,
+	title: String?,
+	path: String?,
+	filename: String,
+	fileExtension: String?,
+	contents: String,
+	onSavedFile: (saved: Result<Boolean>) -> Unit,
 ) {
 	// title, prompt, message, nameFieldLabel
 	LaunchedEffect(show) {
 		if (show) {
 			with(NSSavePanel()) {
-				if (initialDirectory != null) directoryURL = NSURL.fileURLWithPath(initialDirectory, true)
+				if (path != null) directoryURL = NSURL.fileURLWithPath(path, true)
 				canCreateDirectories = true
-				nameFieldStringValue = initialFileName
-				if (title != null) message = title
+				nameFieldStringValue = filename
+				if (fileExtension != null) message = fileExtension
 				runModal()
 
 				val fileURL = URL
 				val filePath = fileURL?.path
-				if (filePath != null) onFileSelected(MacOSFile(filePath, fileURL))
-				else onFileSelected(null)
+				if (filePath != null) {
+					val result = runCatching {
+						val fileHandle = NSFileHandle.fileHandleForWritingAtPath(filePath)
+							?: throw Throwable("couldn't open file handle")
+						try {
+							val contentsAsNsData = memScoped {
+								NSString
+									.create(string = contents)
+									.dataUsingEncoding(NSUTF8StringEncoding)
+							} ?: throw Throwable("contents should only include UTF8 values")
+							memScoped {
+								val errorPointer: CPointer<ObjCObjectVar<NSError?>> = alloc<ObjCObjectVar<NSError?>>().ptr
+								val success = fileHandle.writeData(contentsAsNsData, error = errorPointer)
+								if (success) true
+								else throw Throwable(errorPointer.pointed.value?.localizedDescription)
+							}
+						} finally {
+							fileHandle.closeFile()
+						}
+					}
+					onSavedFile(result)
+				}
+				else {
+					onSavedFile(Result.success(false))
+				}
 			}
 		}
 	}
