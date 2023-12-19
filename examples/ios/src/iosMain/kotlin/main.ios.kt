@@ -13,6 +13,7 @@ import com.darkrockstudios.libraries.mpfilepicker.MultipleFilePicker
 import com.darkrockstudios.libraries.mpfilepicker.SaveFilePicker
 import com.darkrockstudios.libraries.mpfilepicker.launchDirectoryPicker
 import com.darkrockstudios.libraries.mpfilepicker.launchFilePicker
+import com.darkrockstudios.libraries.mpfilepicker.launchSaveFilePicker
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import platform.UIKit.UIViewController
@@ -141,17 +142,19 @@ fun MainViewController(): UIViewController = ComposeUIViewController {
 
 			/////////////////////////////////////////////////////////////////
 
-			var nonComposeSaveFileChosen by remember { mutableStateOf("") }
+			var nonComposeSaveFileChosen by remember { mutableStateOf(false) }
 
-//			Button(onClick = {
-//				MainScope().launch {
-//					nonComposeSaveFileChosen = launchSaveFilePicker(initialFileName = "newFileName.txt")
-//						.firstOrNull()?.path ?: "none selected"
-//				}
-//			}) {
-//				Text("Choose Save Non-Compose")
-//			}
-//			Text("Save File Chosen: $nonComposeSaveFileChosen")
+			Button(onClick = {
+				MainScope().launch {
+					nonComposeSaveFileChosen = launchSaveFilePicker(
+						filename = "newNcFileName.txt",
+						contents = "Slick non-compose saving tech",
+					)
+				}
+			}) {
+				Text("Choose Save Non-Compose")
+			}
+			Text("Save File Chosen: $nonComposeSaveFileChosen")
 		}
 	}
 }
