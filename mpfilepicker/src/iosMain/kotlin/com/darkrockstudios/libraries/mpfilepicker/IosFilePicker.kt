@@ -19,17 +19,14 @@ import kotlinx.cinterop.value
 import platform.Foundation.NSData
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSError
-import platform.Foundation.NSFileHandle
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSSearchPathForDirectoriesInDomains
 import platform.Foundation.NSString
 import platform.Foundation.NSURL
 import platform.Foundation.NSUTF8StringEncoding
 import platform.Foundation.NSUserDomainMask
-import platform.Foundation.closeFile
 import platform.Foundation.create
 import platform.Foundation.dataUsingEncoding
-import platform.Foundation.fileHandleForWritingAtPath
 import platform.posix.memcpy
 import kotlin.random.Random
 
@@ -134,14 +131,15 @@ public actual fun SaveFilePicker(
 			NSUserDomainMask,
 			true
 		).first() as String
-	val randomFileName = "${filename.split('.').first()}${Random.nextInt()}.${filename.split('.')[1]}"
-	val filePath by remember { mutableStateOf("${path?.takeIf { it.isNotBlank() } ?: defaultPath}/$randomFileName") }
+	// We create a random directory so that we respect the filename given to the file
+	val randomDirPath by remember { mutableStateOf("${path?.takeIf { it.isNotBlank() } ?: defaultPath}/tmp${Random.nextInt()}") }
+	val filePath by remember(randomDirPath) { mutableStateOf("$randomDirPath/$filename") }
 	val launcher = remember {
 		FilePickerLauncher(
 			initialDirectory = path,
 			pickerMode = FilePickerLauncher.Mode.Save(filePath),
 			onFileSelected = {
-				println("onFileSelected")
+				tryDeleteTmpDir(randomDirPath)
 				onSavedFile(Result.success(it?.firstOrNull() != null))
 			},
 		)
@@ -149,48 +147,68 @@ public actual fun SaveFilePicker(
 
 	LaunchedEffect(show) {
 		if (show) {
-			val result = createTempFile(path = filePath, contents)
-//			val result = writeToFile(filePath, contents)
-			if (result.getOrNull() == true) launcher.launchFilePicker()
-			else onSavedFile(result)
+			val createDirResult = createTmpDir(randomDirPath)
+			if (createDirResult.getOrNull() != true) {
+				onSavedFile(createDirResult)
+			} else {
+				val createFileResult = createTmpFile(path = filePath, contents)
+				if (createFileResult.getOrNull() == true) launcher.launchFilePicker()
+				else {
+					tryDeleteTmpDir(randomDirPath)
+					onSavedFile(createFileResult)
+				}
+			}
 		}
 	}
 }
 
 @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
-private fun createTempFile(path: String, contents: String): Result<Boolean> = runCatching {
+private fun createTmpDir(path: String): Result<Boolean> = runCatching {
+	memScoped {
+		val errorPointer: CPointer<ObjCObjectVar<NSError?>> =
+			alloc<ObjCObjectVar<NSError?>>().ptr
+		val success = NSFileManager().createDirectoryAtPath(
+			path,
+			withIntermediateDirectories = false,
+			attributes = null,
+			errorPointer,
+		)
+		if (success) true
+		else throw Throwable(errorPointer.pointed.value?.localizedDescription)
+	}
+}
+
+@OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
+private fun createTmpFile(path: String, contents: String): Result<Boolean> = runCatching {
 	val contentsAsNsData = memScoped {
 		NSString
 			.create(string = contents)
 			.dataUsingEncoding(NSUTF8StringEncoding)
 	} ?: throw Throwable("contents should only include UTF8 values")
-	println("creating file at path $path")
 	NSFileManager().createFileAtPath(
 		path,
 		contentsAsNsData,
-		null/*emptyMap<Any?, Any>()*/
+		null,
 	)
 }
 
+private fun tryDeleteTmpDir(path: String) {
+	val deleted = deleteTmpDir(path)
+	if (deleted.getOrNull() != true) {
+		// Log the fact that we couldn't delete the tmp file. We don't pass an error
+		//  or false to onSavedFile because this doesn't affect the operation, it's
+		//  just some cleanup that failed
+		println("couldn't delete the tmp dir")
+	}
+}
 
 @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
-private fun writeToFile(filePath: String, contents: String): Result<Boolean> = runCatching {
-	val fileHandle = NSFileHandle.fileHandleForWritingAtPath(filePath)
-		?: throw Throwable("couldn't open file handle")
-	try {
-		val contentsAsNsData = memScoped {
-			NSString
-				.create(string = contents)
-				.dataUsingEncoding(NSUTF8StringEncoding)
-		} ?: throw Throwable("contents should only include UTF8 values")
-		memScoped {
-			val errorPointer: CPointer<ObjCObjectVar<NSError?>> =
-				alloc<ObjCObjectVar<NSError?>>().ptr
-			val success = fileHandle.writeData(contentsAsNsData, error = errorPointer)
-			if (success) true
-			else throw Throwable(errorPointer.pointed.value?.localizedDescription)
-		}
-	} finally {
-		fileHandle.closeFile()
+private fun deleteTmpDir(path: String): Result<Boolean> = runCatching {
+	memScoped {
+		val errorPointer: CPointer<ObjCObjectVar<NSError?>> =
+			alloc<ObjCObjectVar<NSError?>>().ptr
+		val success = NSFileManager().removeItemAtPath(path, errorPointer)
+		if (success) true
+		else throw Throwable(errorPointer.pointed.value?.localizedDescription)
 	}
 }

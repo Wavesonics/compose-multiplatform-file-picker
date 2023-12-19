@@ -8,7 +8,6 @@ import platform.Foundation.NSURL
 import platform.UIKit.UIAdaptivePresentationControllerDelegateProtocol
 import platform.UIKit.UIApplication
 import platform.UIKit.UIDocumentPickerDelegateProtocol
-import platform.UIKit.UIDocumentPickerMode
 import platform.UIKit.UIDocumentPickerViewController
 import platform.UIKit.UIPresentationController
 import platform.UniformTypeIdentifiers.UTType
@@ -91,7 +90,6 @@ public class FilePickerLauncher(
 		override fun documentPicker(
 			controller: UIDocumentPickerViewController, didPickDocumentsAtURLs: List<*>
 		) {
-
 			(didPickDocumentsAtURLs as? List<*>)?.let { list ->
 				val files = list.map { file ->
 					(file as? NSURL)?.let { nsUrl ->
@@ -102,7 +100,6 @@ public class FilePickerLauncher(
 				}
 
 				onFileSelected(files)
-
 			}
 		}
 
@@ -126,46 +123,27 @@ public class FilePickerLauncher(
 			is File -> pickerMode.extensions
 				.mapNotNull { UTType.typeWithFilenameExtension(it) }
 				.ifEmpty { listOf(UTTypeContent) }
+
 			is MultipleFiles -> pickerMode.extensions
 				.mapNotNull { UTType.typeWithFilenameExtension(it) }
 				.ifEmpty { listOf(UTTypeContent) }
+
 			is Mode.Save -> listOf(UTTypeFileURL)
 		}
 
 	private fun createPicker(): UIDocumentPickerViewController {
-		return if (pickerMode is Mode.Save) {
-			println("creating picker")
+	return (if (pickerMode is Mode.Save) {
 			val filepathAsNsUrl = NSURL(fileURLWithPath = pickerMode.filepath)
 			UIDocumentPickerViewController(
 				forExportingURLs = listOf(filepathAsNsUrl)
 			)
-//			IDocumentPickerViewController(
-//				documentTypes = contentTypes,
-//				inMode = UIDocumentPickerMode.UIDocumentPickerModeExportToService,
-//			).apply {
-//				delegate = pickerDelegate
-//				initialDirectory?.let { directoryURL = NSURL(string = it) }
-//			}
-//
-//			UIDocumentPickerViewController(
-//				forOpeningContentTypes = contentTypes,
-//				asCopy = false,
-//				).apply {
-//				delegate = pickerDelegate
-//				initialDirectory?.let { directoryURL = NSURL(string = it) }
-//			}
-//			UIDocumentPickerViewController(
-////				forExportingURLs = emptyList<UTType>(),
-//				documentTypes = contentTypes,
-//				inMode = UIDocumentPickerMode.UIDocumentPickerModeExportToService,
-//			)
 		} else {
 			UIDocumentPickerViewController(
 				forOpeningContentTypes = contentTypes,
-				).apply {
-				delegate = pickerDelegate
-				initialDirectory?.let { directoryURL = NSURL(string = it) }
-			}
+			)
+		}).apply {
+			delegate = pickerDelegate
+			initialDirectory?.let { directoryURL = NSURL(string = it) }
 		}
 	}
 
