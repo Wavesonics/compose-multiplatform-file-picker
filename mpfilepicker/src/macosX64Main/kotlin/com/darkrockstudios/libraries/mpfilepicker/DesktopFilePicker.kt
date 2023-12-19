@@ -6,12 +6,9 @@ import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.ObjCObjectVar
-import kotlinx.cinterop.StableRef
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.alloc
-import kotlinx.cinterop.allocPointerTo
 import kotlinx.cinterop.memScoped
-import kotlinx.cinterop.objcPtr
 import kotlinx.cinterop.pointed
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.usePinned
@@ -41,7 +38,9 @@ public data class MacOSFile(
 			memcpy(it.addressOf(0), this@toByteArray.bytes, this@toByteArray.length)
 		}
 	}
-	override suspend fun getFileByteArray(): ByteArray = platformFile.dataRepresentation.toByteArray()
+
+	override suspend fun getFileByteArray(): ByteArray =
+		platformFile.dataRepresentation.toByteArray()
 }
 
 @Composable
@@ -86,7 +85,8 @@ public actual fun MultipleFilePicker(
 	LaunchedEffect(show) {
 		if (show) {
 			with(NSOpenPanel()) {
-				if (initialDirectory != null) directoryURL = NSURL.fileURLWithPath(initialDirectory, true)
+				if (initialDirectory != null) directoryURL =
+					NSURL.fileURLWithPath(initialDirectory, true)
 				allowsMultipleSelection = true
 				setAllowedFileTypes(fileExtensions)
 				allowsOtherFileTypes = true
@@ -122,7 +122,8 @@ public actual fun DirectoryPicker(
 	LaunchedEffect(show) {
 		if (show) {
 			with(NSOpenPanel()) {
-				if (initialDirectory != null) directoryURL = NSURL.fileURLWithPath(initialDirectory, true)
+				if (initialDirectory != null) directoryURL =
+					NSURL.fileURLWithPath(initialDirectory, true)
 				allowsMultipleSelection = false
 				canChooseDirectories = true
 				canChooseFiles = false
@@ -138,7 +139,6 @@ public actual fun DirectoryPicker(
 	}
 }
 
-@OptIn(BetaInteropApi::class, ExperimentalForeignApi::class)
 @Composable
 public actual fun SaveFilePicker(
 	show: Boolean,
@@ -162,31 +162,34 @@ public actual fun SaveFilePicker(
 				val fileURL = URL
 				val filePath = fileURL?.path
 				if (filePath != null) {
-					val result = runCatching {
-						val fileHandle = NSFileHandle.fileHandleForWritingAtPath(filePath)
-							?: throw Throwable("couldn't open file handle")
-						try {
-							val contentsAsNsData = memScoped {
-								NSString
-									.create(string = contents)
-									.dataUsingEncoding(NSUTF8StringEncoding)
-							} ?: throw Throwable("contents should only include UTF8 values")
-							memScoped {
-								val errorPointer: CPointer<ObjCObjectVar<NSError?>> = alloc<ObjCObjectVar<NSError?>>().ptr
-								val success = fileHandle.writeData(contentsAsNsData, error = errorPointer)
-								if (success) true
-								else throw Throwable(errorPointer.pointed.value?.localizedDescription)
-							}
-						} finally {
-							fileHandle.closeFile()
-						}
-					}
+					val result = writeToFile(filePath, contents)
 					onSavedFile(result)
-				}
-				else {
+				} else {
 					onSavedFile(Result.success(false))
 				}
 			}
 		}
+	}
+}
+
+@OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
+private fun writeToFile(filePath: String, contents: String): Result<Boolean> = runCatching {
+	val fileHandle = NSFileHandle.fileHandleForWritingAtPath(filePath)
+		?: throw Throwable("couldn't open file handle")
+	try {
+		val contentsAsNsData = memScoped {
+			NSString
+				.create(string = contents)
+				.dataUsingEncoding(NSUTF8StringEncoding)
+		} ?: throw Throwable("contents should only include UTF8 values")
+		memScoped {
+			val errorPointer: CPointer<ObjCObjectVar<NSError?>> =
+				alloc<ObjCObjectVar<NSError?>>().ptr
+			val success = fileHandle.writeData(contentsAsNsData, error = errorPointer)
+			if (success) true
+			else throw Throwable(errorPointer.pointed.value?.localizedDescription)
+		}
+	} finally {
+		fileHandle.closeFile()
 	}
 }

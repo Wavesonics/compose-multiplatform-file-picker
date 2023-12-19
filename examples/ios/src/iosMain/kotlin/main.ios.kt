@@ -10,6 +10,7 @@ import androidx.compose.ui.window.ComposeUIViewController
 import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import com.darkrockstudios.libraries.mpfilepicker.MultipleFilePicker
+import com.darkrockstudios.libraries.mpfilepicker.SaveFilePicker
 import com.darkrockstudios.libraries.mpfilepicker.launchDirectoryPicker
 import com.darkrockstudios.libraries.mpfilepicker.launchFilePicker
 import kotlinx.coroutines.MainScope
@@ -116,6 +117,41 @@ fun MainViewController(): UIViewController = ComposeUIViewController {
 			}
 			Text("Directory Chosen: $nonComposeDirChosen")
 
+			/////////////////////////////////////////////////////////////////
+
+			var showSaveFilePicker by remember { mutableStateOf(false) }
+			var savedFile by remember { mutableStateOf(false) }
+
+			Button(onClick = {
+				showSaveFilePicker = true
+			}) {
+				Text("Choose Save")
+			}
+			Text("Save File Chosen: $savedFile")
+
+			SaveFilePicker(
+				showSaveFilePicker,
+				filename = "newFileName.txt",
+				contents = "Slick saving tech",
+				) { result ->
+				showSaveFilePicker = false
+				println("$result")
+				savedFile = result.getOrNull() == true
+			}
+
+			/////////////////////////////////////////////////////////////////
+
+			var nonComposeSaveFileChosen by remember { mutableStateOf("") }
+
+//			Button(onClick = {
+//				MainScope().launch {
+//					nonComposeSaveFileChosen = launchSaveFilePicker(initialFileName = "newFileName.txt")
+//						.firstOrNull()?.path ?: "none selected"
+//				}
+//			}) {
+//				Text("Choose Save Non-Compose")
+//			}
+//			Text("Save File Chosen: $nonComposeSaveFileChosen")
 		}
 	}
 }

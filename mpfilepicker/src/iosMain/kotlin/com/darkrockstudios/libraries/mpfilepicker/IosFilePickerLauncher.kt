@@ -13,6 +13,7 @@ import platform.UIKit.UIDocumentPickerViewController
 import platform.UIKit.UIPresentationController
 import platform.UniformTypeIdentifiers.UTType
 import platform.UniformTypeIdentifiers.UTTypeContent
+import platform.UniformTypeIdentifiers.UTTypeFileURL
 import platform.UniformTypeIdentifiers.UTTypeFolder
 import platform.darwin.NSObject
 import kotlin.coroutines.resume
@@ -78,10 +79,9 @@ public class FilePickerLauncher(
 		/**
 		 * Use this mode to open a [FilePickerLauncher] saving a file.
 		 *
-		 * @param initialFileName initial name given to the file when
-		 * opening the modal.
+		 * @param filepath of the file that is going to be saved
 		 */
-		public data class Save(val initialFileName: String) : Mode
+		public data class Save(val filepath: String) : Mode
 	}
 
 	private val pickerDelegate = object : NSObject(),
@@ -129,14 +129,44 @@ public class FilePickerLauncher(
 			is MultipleFiles -> pickerMode.extensions
 				.mapNotNull { UTType.typeWithFilenameExtension(it) }
 				.ifEmpty { listOf(UTTypeContent) }
-			is Mode.Save -> emptyList()
+			is Mode.Save -> listOf(UTTypeFileURL)
 		}
 
-	private fun createPicker() = UIDocumentPickerViewController(
-		forOpeningContentTypes = contentTypes
-	).apply {
-		delegate = pickerDelegate
-		initialDirectory?.let { directoryURL = NSURL(string = it) }
+	private fun createPicker(): UIDocumentPickerViewController {
+		return if (pickerMode is Mode.Save) {
+			println("creating picker")
+			val filepathAsNsUrl = NSURL(fileURLWithPath = pickerMode.filepath)
+			UIDocumentPickerViewController(
+				forExportingURLs = listOf(filepathAsNsUrl)
+			)
+//			IDocumentPickerViewController(
+//				documentTypes = contentTypes,
+//				inMode = UIDocumentPickerMode.UIDocumentPickerModeExportToService,
+//			).apply {
+//				delegate = pickerDelegate
+//				initialDirectory?.let { directoryURL = NSURL(string = it) }
+//			}
+//
+//			UIDocumentPickerViewController(
+//				forOpeningContentTypes = contentTypes,
+//				asCopy = false,
+//				).apply {
+//				delegate = pickerDelegate
+//				initialDirectory?.let { directoryURL = NSURL(string = it) }
+//			}
+//			UIDocumentPickerViewController(
+////				forExportingURLs = emptyList<UTType>(),
+//				documentTypes = contentTypes,
+//				inMode = UIDocumentPickerMode.UIDocumentPickerModeExportToService,
+//			)
+		} else {
+			UIDocumentPickerViewController(
+				forOpeningContentTypes = contentTypes,
+				).apply {
+				delegate = pickerDelegate
+				initialDirectory?.let { directoryURL = NSURL(string = it) }
+			}
+		}
 	}
 
 
@@ -209,23 +239,23 @@ public suspend fun launchDirectoryPicker(
 	}
 }
 
-public suspend fun launchSaveFilePicker(
-	initialDirectory: String? = null,
-	initialFileName: String = ""
-): List<MPFile<Any>> = suspendCoroutine { cont ->
-	try {
-		FilePickerLauncher(
-			initialDirectory = initialDirectory,
-			pickerMode = Mode.Save(initialFileName),
-			onFileSelected = { selected ->
-				FilePickerLauncher.activeLauncher = null
-				cont.resume(selected.orEmpty())
-			}
-		).also { launcher ->
-			FilePickerLauncher.activeLauncher = launcher
-			launcher.launchFilePicker()
-		}
-	} catch (e: Throwable) {
-		cont.resumeWithException(e)
-	}
-}
+//public suspend fun launchSaveFilePicker(
+//	initialDirectory: String? = null,
+//	initialFileName: String = ""
+//): List<MPFile<Any>> = suspendCoroutine { cont ->
+//	try {
+//		FilePickerLauncher(
+//			initialDirectory = initialDirectory,
+//			pickerMode = Mode.Save(initialFileName),
+//			onFileSelected = { selected ->
+//				FilePickerLauncher.activeLauncher = null
+//				cont.resume(selected.orEmpty())
+//			}
+//		).also { launcher ->
+//			FilePickerLauncher.activeLauncher = launcher
+//			launcher.launchFilePicker()
+//		}
+//	} catch (e: Throwable) {
+//		cont.resumeWithException(e)
+//	}
+//}
