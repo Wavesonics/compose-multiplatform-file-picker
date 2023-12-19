@@ -82,7 +82,6 @@ fun main() = application {
 
 	SaveFilePicker(
 		showSaveFile,
-		path = "Downloads",
 		filename = "newFile.txt",
 		contents = "this is a new test file",
 	) {
