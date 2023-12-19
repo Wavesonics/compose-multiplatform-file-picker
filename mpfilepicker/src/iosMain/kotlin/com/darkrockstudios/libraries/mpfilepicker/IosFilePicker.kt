@@ -3,8 +3,10 @@ package com.darkrockstudios.libraries.mpfilepicker
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
@@ -28,6 +30,7 @@ import platform.Foundation.NSUserDomainMask
 import platform.Foundation.create
 import platform.Foundation.dataUsingEncoding
 import platform.posix.memcpy
+import kotlin.math.absoluteValue
 import kotlin.random.Random
 
 public data class IosFile(
@@ -132,7 +135,8 @@ public actual fun SaveFilePicker(
 			true
 		).first() as String
 	// We create a random directory so that we respect the filename given to the file
-	val randomDirPath by remember { mutableStateOf("${path?.takeIf { it.isNotBlank() } ?: defaultPath}/tmp${Random.nextInt()}") }
+	var randomSuffix by remember { mutableIntStateOf(Random.nextInt()) }
+	val randomDirPath by remember(randomSuffix) { mutableStateOf("${path?.takeIf { it.isNotBlank() } ?: defaultPath}/tmp$randomSuffix") }
 	val filePath by remember(randomDirPath) { mutableStateOf("$randomDirPath/$filename") }
 	val launcher = remember {
 		FilePickerLauncher(
@@ -147,16 +151,20 @@ public actual fun SaveFilePicker(
 
 	LaunchedEffect(show) {
 		if (show) {
-			val createDirResult = createTmpDir(randomDirPath)
-			if (createDirResult.getOrNull() != true) {
-				onSavedFile(createDirResult)
-			} else {
-				val createFileResult = createTmpFile(path = filePath, contents)
-				if (createFileResult.getOrNull() == true) launcher.launchFilePicker()
-				else {
-					tryDeleteTmpDir(randomDirPath)
-					onSavedFile(createFileResult)
-				}
+			// We keep trying random values just in case there is a file called tmp7688958943 which
+			//  just happens to be the random value we generate. This should be extremely unlikely
+			//  and most times this loop will only run once
+			// TODO could this fail for an irrecoverable error? If yes, we should check for it
+			//  before retrying ad infinitum
+			do {
+				randomSuffix = Random.nextInt().absoluteValue
+				val createDirResult = createTmpDir(randomDirPath)
+			} while (createDirResult.getOrNull() != true)
+			val createFileResult = createTmpFile(path = filePath, contents)
+			if (createFileResult.getOrNull() == true) launcher.launchFilePicker()
+			else {
+				tryDeleteTmpDir(randomDirPath)
+				onSavedFile(createFileResult)
 			}
 		}
 	}

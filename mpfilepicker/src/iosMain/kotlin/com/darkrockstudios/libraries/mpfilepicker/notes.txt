@@ -1,2 +1,1 @@
-2. Try different random tmpDir files until one doesn't exist
 3. Uncomment the ios example code that uses the nonComposeSaveFile
