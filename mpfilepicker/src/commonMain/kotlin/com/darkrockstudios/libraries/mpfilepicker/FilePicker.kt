@@ -39,12 +39,6 @@ public expect fun DirectoryPicker(
 	onFileSelected: (String?) -> Unit,
 )
 
-/**
- *
- *
- * @param onSavedFile saved will be false if no file is selected by the user. If the user selects a
- * file, but we can't write to it then the function is called with a failure
- */
 @Composable
 public expect fun SaveFilePicker(
 	show: Boolean,
@@ -52,6 +46,5 @@ public expect fun SaveFilePicker(
 	path: String? = null,
 	filename: String = "",
 	fileExtension: String? = null,
-	contents: String,
-	onSavedFile: (saved: Result<Boolean>) -> Unit,
+	onFileSelected: FileSelected,
 )

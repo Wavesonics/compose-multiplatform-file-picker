@@ -239,8 +239,7 @@ public suspend fun launchDirectoryPicker(
 public suspend fun launchSaveFilePicker(
 	initialDirectory: String? = null,
 	filename: String,
-	contents: String,
-): Boolean = suspendCoroutine { cont ->
+): MPFile<Any>? = suspendCoroutine { cont ->
 	var hasCreatedDir = false
 	var randomDirPath = ""
 	try {
@@ -269,10 +268,12 @@ public suspend fun launchSaveFilePicker(
 		hasCreatedDir = true
 		val filePath = "$randomDirPath/$filename"
 
-		val createFileResult = createTmpFile(path = filePath, contents)
+		val createFileResult = createTmpFile(path = filePath, "")
 		if (createFileResult.getOrNull() != true) {
 			tryDeleteTmpDir(randomDirPath)
-			cont.resume(createFileResult.getOrThrow())
+			createFileResult.exceptionOrNull()?.let {
+				cont.resumeWithException(it)
+			} ?: cont.resume(null)
 		} else {
 			FilePickerLauncher(
 				initialDirectory = initialDirectory,
@@ -280,7 +281,7 @@ public suspend fun launchSaveFilePicker(
 				onFileSelected = { selected ->
 					FilePickerLauncher.activeLauncher = null
 					tryDeleteTmpDir(randomDirPath)
-					cont.resume(selected.orEmpty().isNotEmpty())
+					cont.resume(selected.orEmpty().firstOrNull())
 				}
 			).also { launcher ->
 				FilePickerLauncher.activeLauncher = launcher
@@ -294,7 +295,7 @@ public suspend fun launchSaveFilePicker(
 }
 
 @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
-private fun createTmpDir(path: String): Result<Boolean> = runCatching {
+internal fun createTmpDir(path: String): Result<Boolean> = runCatching {
 	memScoped {
 		val errorPointer: CPointer<ObjCObjectVar<NSError?>> =
 			alloc<ObjCObjectVar<NSError?>>().ptr
@@ -310,7 +311,7 @@ private fun createTmpDir(path: String): Result<Boolean> = runCatching {
 }
 
 @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
-private fun createTmpFile(path: String, contents: String): Result<Boolean> = runCatching {
+internal fun createTmpFile(path: String, contents: String): Result<Boolean> = runCatching {
 	val contentsAsNsData = memScoped {
 		NSString
 			.create(string = contents)
@@ -323,7 +324,7 @@ private fun createTmpFile(path: String, contents: String): Result<Boolean> = run
 	)
 }
 
-private fun tryDeleteTmpDir(path: String) {
+internal fun tryDeleteTmpDir(path: String) {
 	val deleted = deleteTmpDir(path)
 	if (deleted.getOrNull() != true) {
 		// Log the fact that we couldn't delete the tmp file. We don't pass an error
@@ -334,7 +335,7 @@ private fun tryDeleteTmpDir(path: String) {
 }
 
 @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
-private fun deleteTmpDir(path: String): Result<Boolean> = runCatching {
+internal fun deleteTmpDir(path: String): Result<Boolean> = runCatching {
 	memScoped {
 		val errorPointer: CPointer<ObjCObjectVar<NSError?>> =
 			alloc<ObjCObjectVar<NSError?>>().ptr

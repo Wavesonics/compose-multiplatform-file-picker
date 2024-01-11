@@ -64,37 +64,5 @@ fun main() {
 			filesNames = files?.map { it.path } ?: listOf()
 			showMultipleFile = false
 		}
-
-		Br()
-		Br()
-		Br()
-		Br()
-
-		val fileLink = "./logo.png"
-		val filename = "testImage"
-		var downloadFile by remember { mutableStateOf(false) }
-		var downloadedFile by remember { mutableStateOf(false) }
-
-		Button(attrs = {
-			onClick {
-				downloadFile = true
-			}
-		}) {
-			Text("Download file")
-		}
-
-		Br()
-		Text("Downloaded file? $downloadedFile")
-
-		SaveFilePicker(
-			show = downloadFile,
-			filename = filename,
-			path = null,
-			contents = fileLink,
-			onSavedFile = {
-				// We can ignore the result value, it will always be true for web
-				downloadedFile = true
-			}
-		)
 	}
 }

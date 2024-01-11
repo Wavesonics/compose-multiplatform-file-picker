@@ -10,8 +10,25 @@ import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import com.darkrockstudios.libraries.mpfilepicker.MultipleFilePicker
 import com.darkrockstudios.libraries.mpfilepicker.SaveFilePicker
+import kotlinx.cinterop.BetaInteropApi
+import kotlinx.cinterop.CPointer
+import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.ObjCObjectVar
+import kotlinx.cinterop.alloc
+import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.pointed
+import kotlinx.cinterop.ptr
+import kotlinx.cinterop.value
 import platform.AppKit.NSApp
 import platform.AppKit.NSApplication
+import platform.Foundation.NSError
+import platform.Foundation.NSFileHandle
+import platform.Foundation.NSString
+import platform.Foundation.NSUTF8StringEncoding
+import platform.Foundation.closeFile
+import platform.Foundation.create
+import platform.Foundation.dataUsingEncoding
+import platform.Foundation.fileHandleForWritingAtPath
 
 fun main() {
 	NSApplication.sharedApplication()
@@ -89,13 +106,37 @@ fun main() {
 					title = "Some title",
 					filename = "newTextFile",
 					fileExtension = "txt",
-					contents = "some nice text for our file",
-				) { result ->
-					savedFile = result.getOrNull() == true
+				) { selectedFile ->
+					savedFile = selectedFile?.path?.let { path ->
+						val result = writeToFile(path, "some nice text for our file")
+						result.getOrNull() == true
+					} ?: false
 					showSaveFilePicker = false
 				}
 			}
 		}
 	}
 	NSApp?.run()
+}
+
+@OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
+private fun writeToFile(filePath: String, contents: String): Result<Boolean> = runCatching {
+	val fileHandle = NSFileHandle.fileHandleForWritingAtPath(filePath)
+		?: throw Throwable("couldn't open file handle")
+	try {
+		val contentsAsNsData = memScoped {
+			NSString
+				.create(string = contents)
+				.dataUsingEncoding(NSUTF8StringEncoding)
+		} ?: throw Throwable("contents should only include UTF8 values")
+		memScoped {
+			val errorPointer: CPointer<ObjCObjectVar<NSError?>> =
+				alloc<ObjCObjectVar<NSError?>>().ptr
+			val success = fileHandle.writeData(contentsAsNsData, error = errorPointer)
+			if (success) true
+			else throw Throwable(errorPointer.pointed.value?.localizedDescription)
+		}
+	} finally {
+		fileHandle.closeFile()
+	}
 }

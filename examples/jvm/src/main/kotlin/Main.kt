@@ -11,6 +11,7 @@ import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import com.darkrockstudios.libraries.mpfilepicker.MultipleFilePicker
 import com.darkrockstudios.libraries.mpfilepicker.SaveFilePicker
+import java.io.File
 
 fun main() = application {
 	var showSingleFile by remember { mutableStateOf(false) }
@@ -83,8 +84,17 @@ fun main() = application {
 	SaveFilePicker(
 		showSaveFile,
 		filename = "newFile.txt",
-		contents = "this is a new test file",
-	) {
-		hasSavedFiled = it.getOrNull() == true
+	) { selectedFile ->
+		val contents = "this is a new test file"
+		hasSavedFiled = selectedFile?.path?.let { path ->
+			writeToFile(path, contents)
+			true
+		} ?: false
+	}
+}
+
+private fun writeToFile(path: String, contents: String) {
+	File(path).bufferedWriter().use { out ->
+		out.write(contents)
 	}
 }

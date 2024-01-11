@@ -7,7 +7,6 @@ import org.khronos.webgl.ArrayBuffer
 import org.khronos.webgl.Uint8Array
 import org.khronos.webgl.get
 import org.w3c.dom.Document
-import org.w3c.dom.HTMLAnchorElement
 import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.ItemArrayLike
 import org.w3c.dom.asList
@@ -35,7 +34,11 @@ public actual fun FilePicker(
 	LaunchedEffect(show) {
 		if (show) {
 			val fixedExtensions = fileExtensions.map { ".$it" }
-			val file: List<File> = document.selectFilesFromDisk(fixedExtensions.joinToString(","), false)
+			val file: List<File> = document.selectFilesFromDisk(
+				fixedExtensions.joinToString(","),
+				isMultiple = false,
+				isDirectory = false,
+			)
 			onFileSelected(WebFile(file.first().name, file.first()))
 		}
 	}
@@ -52,7 +55,11 @@ public actual fun MultipleFilePicker(
 	LaunchedEffect(show) {
 		if (show) {
 			val fixedExtensions = fileExtensions.map { ".$it" }
-			val file: List<File> = document.selectFilesFromDisk(fixedExtensions.joinToString(","), true)
+			val file: List<File> = document.selectFilesFromDisk(
+				fixedExtensions.joinToString(","),
+				isMultiple = true,
+				isDirectory = false,
+			)
 			val webFiles = file.map {
 				WebFile(it.name, it)
 			}
@@ -72,15 +79,6 @@ public actual fun DirectoryPicker(
 	throw NotImplementedError("DirectoryPicker is not supported on the web")
 }
 
-/**
- * NOTE: This only works for files that are same-origin. It won't for content hosted on other sites.
- *
- * @param filename the name to give the file when the user downloads it
- * @param path ignored for web
- * @param contents the url to download
- * @param onSavedFile callback after contents are downloaded. This will always be called and receive
- * true as the parameter when this function is called with show = true
- */
 @Composable
 public actual fun SaveFilePicker(
 	show: Boolean,
@@ -88,23 +86,19 @@ public actual fun SaveFilePicker(
 	path: String?,
 	filename: String,
 	fileExtension: String?,
-	contents: String,
-	onSavedFile: (Result<Boolean>) -> Unit,
+	onFileSelected: FileSelected,
 ) {
-	LaunchedEffect(show) {
-		if (show) {
-			document.saveFileToDisk(contents, filename)
-			onSavedFile(Result.success(true))
-		}
-	}
+	// in a browser we can not save files only download of an existing file is supported
+	throw NotImplementedError("SaveFilePicker is not supported on the web")
 }
 
 private suspend fun Document.selectFilesFromDisk(
 	accept: String,
-	isMultiple: Boolean
+	isMultiple: Boolean,
+	isDirectory: Boolean,
 ): List<File> = suspendCoroutine {
 	val tempInput = (createElement("input") as HTMLInputElement).apply {
-		type = "file"
+		type = if (isDirectory) "" else "file"
 		style.display = "none"
 		this.accept = accept
 		multiple = isMultiple
@@ -118,20 +112,6 @@ private suspend fun Document.selectFilesFromDisk(
 	body!!.append(tempInput)
 	tempInput.click()
 	tempInput.remove()
-}
-
-private fun Document.saveFileToDisk(
-	fileLink: String,
-	filename: String = "",
-) {
-	val downloadLink = (createElement("a") as HTMLAnchorElement).apply {
-		download = filename
-		href = fileLink
-	}
-
-	body!!.append(downloadLink)
-	downloadLink.click()
-	downloadLink.remove()
 }
 
 public suspend fun readFileAsText(file: File): String = suspendCoroutine {

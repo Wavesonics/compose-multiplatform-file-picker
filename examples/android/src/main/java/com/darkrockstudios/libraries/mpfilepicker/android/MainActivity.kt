@@ -1,5 +1,7 @@
 package com.darkrockstudios.libraries.mpfilepicker.android
 
+import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
@@ -15,6 +17,9 @@ import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import com.darkrockstudios.libraries.mpfilepicker.MultipleFilePicker
 import com.darkrockstudios.libraries.mpfilepicker.SaveFilePicker
+import java.io.BufferedWriter
+import java.io.IOException
+import java.io.OutputStreamWriter
 
 class MainActivity : AppCompatActivity() {
 	override fun onCreate(savedInstanceState: Bundle?) {
@@ -94,13 +99,30 @@ class MainActivity : AppCompatActivity() {
 						path = null,
 						filename = "newFile.txt",
 						fileExtension = "plain/text",
-						contents = "this is a new test file",
-					) {
-						showSaveFilePicker = false
-						savedFile = true
+					) { file ->
+						val contents = "this is a new test file"
+						savedFile = try {
+							(file?.platformFile as? Uri?)?.let { uri ->
+								writeTextToUri(this@MainActivity, uri, contents)
+								true
+							} ?: false
+						} catch (e: IOException) {
+							false
+						} finally {
+							showSaveFilePicker = false
+						}
 					}
 				}
 			}
+		}
+	}
+}
+
+@Throws(IOException::class)
+private fun writeTextToUri(context: Context, uri: Uri, text: String) {
+	context.contentResolver.openOutputStream(uri)?.use { outputStream ->
+		BufferedWriter(OutputStreamWriter(outputStream)).use { writer ->
+			writer.write(text)
 		}
 	}
 }

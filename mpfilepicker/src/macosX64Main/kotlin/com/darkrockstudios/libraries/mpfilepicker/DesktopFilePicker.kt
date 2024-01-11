@@ -146,8 +146,7 @@ public actual fun SaveFilePicker(
 	path: String?,
 	filename: String,
 	fileExtension: String?,
-	contents: String,
-	onSavedFile: (saved: Result<Boolean>) -> Unit,
+	onFileSelected: FileSelected,
 ) {
 	// title, prompt, message, nameFieldLabel
 	LaunchedEffect(show) {
@@ -161,35 +160,9 @@ public actual fun SaveFilePicker(
 
 				val fileURL = URL
 				val filePath = fileURL?.path
-				if (filePath != null) {
-					val result = writeToFile(filePath, contents)
-					onSavedFile(result)
-				} else {
-					onSavedFile(Result.success(false))
-				}
+				if (filePath != null) onFileSelected(MacOSFile(filePath, fileURL))
+				else onFileSelected(null)
 			}
 		}
-	}
-}
-
-@OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
-private fun writeToFile(filePath: String, contents: String): Result<Boolean> = runCatching {
-	val fileHandle = NSFileHandle.fileHandleForWritingAtPath(filePath)
-		?: throw Throwable("couldn't open file handle")
-	try {
-		val contentsAsNsData = memScoped {
-			NSString
-				.create(string = contents)
-				.dataUsingEncoding(NSUTF8StringEncoding)
-		} ?: throw Throwable("contents should only include UTF8 values")
-		memScoped {
-			val errorPointer: CPointer<ObjCObjectVar<NSError?>> =
-				alloc<ObjCObjectVar<NSError?>>().ptr
-			val success = fileHandle.writeData(contentsAsNsData, error = errorPointer)
-			if (success) true
-			else throw Throwable(errorPointer.pointed.value?.localizedDescription)
-		}
-	} finally {
-		fileHandle.closeFile()
 	}
 }

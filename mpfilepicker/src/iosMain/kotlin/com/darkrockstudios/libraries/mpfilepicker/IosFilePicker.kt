@@ -125,8 +125,7 @@ public actual fun SaveFilePicker(
 	path: String?,
 	filename: String,
 	fileExtension: String?,
-	contents: String,
-	onSavedFile: (saved: Result<Boolean>) -> Unit,
+	onFileSelected: FileSelected,
 ) {
 	val defaultPath =
 		NSSearchPathForDirectoriesInDomains(
@@ -144,7 +143,7 @@ public actual fun SaveFilePicker(
 			pickerMode = FilePickerLauncher.Mode.Save(filePath),
 			onFileSelected = {
 				tryDeleteTmpDir(randomDirPath)
-				onSavedFile(Result.success(it?.firstOrNull() != null))
+				onFileSelected(it?.firstOrNull())
 			},
 		)
 	}
@@ -154,69 +153,18 @@ public actual fun SaveFilePicker(
 			// We keep trying random values just in case there is a file called tmp7688958943 which
 			//  just happens to be the random value we generate. This should be extremely unlikely
 			//  and most times this loop will only run once
-			// TODO could this fail for an irrecoverable error? If yes, we should check for it
+			// TODO could this fail with an irrecoverable error? If yes, we should check for it
 			//  before retrying ad infinitum
 			do {
 				randomSuffix = Random.nextInt().absoluteValue
 				val createDirResult = createTmpDir(randomDirPath)
 			} while (createDirResult.getOrNull() != true)
-			val createFileResult = createTmpFile(path = filePath, contents)
+			val createFileResult = createTmpFile(path = filePath, contents = "")
 			if (createFileResult.getOrNull() == true) launcher.launchFilePicker()
 			else {
 				tryDeleteTmpDir(randomDirPath)
-				onSavedFile(createFileResult)
+				onFileSelected(null)
 			}
 		}
-	}
-}
-
-@OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
-private fun createTmpDir(path: String): Result<Boolean> = runCatching {
-	memScoped {
-		val errorPointer: CPointer<ObjCObjectVar<NSError?>> =
-			alloc<ObjCObjectVar<NSError?>>().ptr
-		val success = NSFileManager().createDirectoryAtPath(
-			path,
-			withIntermediateDirectories = false,
-			attributes = null,
-			errorPointer,
-		)
-		if (success) true
-		else throw Throwable(errorPointer.pointed.value?.localizedDescription)
-	}
-}
-
-@OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
-private fun createTmpFile(path: String, contents: String): Result<Boolean> = runCatching {
-	val contentsAsNsData = memScoped {
-		NSString
-			.create(string = contents)
-			.dataUsingEncoding(NSUTF8StringEncoding)
-	} ?: throw Throwable("contents should only include UTF8 values")
-	NSFileManager().createFileAtPath(
-		path,
-		contentsAsNsData,
-		null,
-	)
-}
-
-private fun tryDeleteTmpDir(path: String) {
-	val deleted = deleteTmpDir(path)
-	if (deleted.getOrNull() != true) {
-		// Log the fact that we couldn't delete the tmp file. We don't pass an error
-		//  or false to onSavedFile because this doesn't affect the operation, it's
-		//  just some cleanup that failed
-		println("couldn't delete the tmp dir")
-	}
-}
-
-@OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
-private fun deleteTmpDir(path: String): Result<Boolean> = runCatching {
-	memScoped {
-		val errorPointer: CPointer<ObjCObjectVar<NSError?>> =
-			alloc<ObjCObjectVar<NSError?>>().ptr
-		val success = NSFileManager().removeItemAtPath(path, errorPointer)
-		if (success) true
-		else throw Throwable(errorPointer.pointed.value?.localizedDescription)
 	}
 }

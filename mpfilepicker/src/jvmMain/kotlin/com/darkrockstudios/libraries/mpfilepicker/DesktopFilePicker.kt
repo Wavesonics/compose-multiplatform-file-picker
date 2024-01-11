@@ -99,8 +99,7 @@ public actual fun SaveFilePicker(
 	path: String?,
 	filename: String,
 	fileExtension: String?,
-	contents: String,
-	onSavedFile: (saved: Result<Boolean>) -> Unit,
+	onFileSelected: FileSelected,
 ) {
 	LaunchedEffect(show) {
 		if (show) {
@@ -111,16 +110,9 @@ public actual fun SaveFilePicker(
 				title = title,
 			)
 			if (filePath != null) {
-				try {
-					File(filePath).bufferedWriter().use { out ->
-						out.write(contents)
-					}
-					onSavedFile(Result.success(true))
-				} catch (e: IOException) {
-					onSavedFile(Result.failure(e))
-				}
+				onFileSelected(JvmFile(filePath, File(filePath)))
 			} else {
-				onSavedFile(Result.success(false))
+				onFileSelected(null)
 			}
 		}
 	}

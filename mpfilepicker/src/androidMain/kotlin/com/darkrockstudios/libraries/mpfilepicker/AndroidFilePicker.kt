@@ -1,17 +1,12 @@
 package com.darkrockstudios.libraries.mpfilepicker
 
-import android.content.Context
 import android.net.Uri
 import android.webkit.MimeTypeMap
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.LocalContext
 import androidx.core.net.toFile
-import java.io.BufferedWriter
-import java.io.IOException
-import java.io.OutputStreamWriter
 
 public data class AndroidFile(
 	override val path: String,
@@ -26,7 +21,7 @@ public actual fun FilePicker(
 	initialDirectory: String?,
 	fileExtensions: List<String>,
 	title: String?,
-	onFileSelected: FileSelected
+	onFileSelected: FileSelected,
 ) {
 	val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocument()) { result ->
 		if (result != null) {
@@ -117,37 +112,21 @@ public actual fun SaveFilePicker(
 	path: String?,
 	filename: String,
 	fileExtension: String?,
-	contents: String,
-	onSavedFile: (saved: Result<Boolean>) -> Unit,
+	onFileSelected: FileSelected,
 ) {
-	val context = LocalContext.current
 	val launcher = rememberLauncherForActivityResult(
 		contract = ActivityResultContracts.CreateDocument(fileExtension ?: "*/*")
 	) { result ->
 		if (result != null) {
-			try {
-				writeTextToUri(context, result, contents)
-				onSavedFile(Result.success(true))
-			} catch (e: IOException) {
-				onSavedFile(Result.failure(e))
-			}
+			onFileSelected(AndroidFile(result.toString(), result))
 		} else {
-			onSavedFile(Result.success(false))
+			onFileSelected(null)
 		}
 	}
 
 	LaunchedEffect(show) {
 		if (show) {
 			launcher.launch(filename)
-		}
-	}
-}
-
-@Throws(IOException::class)
-private fun writeTextToUri(context: Context, uri: Uri, text: String) {
-	context.contentResolver.openOutputStream(uri)?.use { outputStream ->
-		BufferedWriter(OutputStreamWriter(outputStream)).use { writer ->
-			writer.write(text)
 		}
 	}
 }
