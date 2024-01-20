@@ -1,9 +1,9 @@
 import java.net.URI
 
 plugins {
-	kotlin("multiplatform")
-	alias(libs.plugins.android.library)
-	alias(libs.plugins.kotlin.compose)
+	alias(libs.plugins.kotlinMultiplatform)
+	alias(libs.plugins.androidLibrary)
+	alias(libs.plugins.jetbrainsCompose)
 	id("maven-publish")
 	id("signing")
 }
@@ -19,21 +19,23 @@ extra.apply {
 }
 
 kotlin {
-	explicitApi()
-
 	androidTarget {
 		publishLibraryVariants("release")
 	}
+
 	jvm {
 		compilations.all {
 			kotlinOptions.jvmTarget = "17"
 		}
 	}
+
 	js(IR) {
 		browser()
 		binaries.executable()
 	}
+
 	macosX64()
+
 	listOf(
 		iosX64(),
 		iosArm64(),
@@ -45,49 +47,44 @@ kotlin {
 	}
 
 	sourceSets {
-		val commonMain by getting {
-			dependencies {
-				api(compose.runtime)
-				api(compose.foundation)
-			}
+		commonMain.dependencies {
+			api(compose.runtime)
+			api(compose.foundation)
 		}
-		val commonTest by getting {
-			dependencies {
-				implementation(kotlin("test"))
-			}
-		}
-		val androidMain by getting {
-			dependencies {
-				api(compose.uiTooling)
-				api(compose.preview)
-				api(compose.material)
-				api(libs.androidx.appcompat)
-				api(libs.androidx.coreKtx)
-				api(libs.compose.activity)
-				api(libs.kotlinx.coroutines.android)
-			}
-		}
-		val jvmMain by getting {
-			dependencies {
-				api(compose.uiTooling)
-				api(compose.preview)
-				api(compose.material)
 
-				val lwjglVersion = "3.3.1"
-				listOf("lwjgl", "lwjgl-tinyfd").forEach { lwjglDep ->
-					implementation("org.lwjgl:${lwjglDep}:${lwjglVersion}")
-					listOf(
-						"natives-windows",
-						"natives-windows-x86",
-						"natives-windows-arm64",
-						"natives-macos",
-						"natives-macos-arm64",
-						"natives-linux",
-						"natives-linux-arm64",
-						"natives-linux-arm32"
-					).forEach { native ->
-						runtimeOnly("org.lwjgl:${lwjglDep}:${lwjglVersion}:${native}")
-					}
+		commonTest.dependencies {
+			implementation(kotlin("test"))
+		}
+
+		androidMain.dependencies {
+			api(compose.uiTooling)
+			api(compose.preview)
+			api(compose.material)
+			api(libs.androidx.appcompat)
+			api(libs.androidx.coreKtx)
+			api(libs.compose.activity)
+			api(libs.kotlinx.coroutines.android)
+		}
+
+		jvmMain.dependencies {
+			api(compose.uiTooling)
+			api(compose.preview)
+			api(compose.material)
+
+			val lwjglVersion = "3.3.1"
+			listOf("lwjgl", "lwjgl-tinyfd").forEach { lwjglDep ->
+				implementation("org.lwjgl:${lwjglDep}:${lwjglVersion}")
+				listOf(
+					"natives-windows",
+					"natives-windows-x86",
+					"natives-windows-arm64",
+					"natives-macos",
+					"natives-macos-arm64",
+					"natives-linux",
+					"natives-linux-arm64",
+					"natives-linux-arm32"
+				).forEach { native ->
+					runtimeOnly("org.lwjgl:${lwjglDep}:${lwjglVersion}:${native}")
 				}
 			}
 		}
@@ -107,8 +104,10 @@ kotlin {
 	publishing {
 		repositories {
 			maven {
-				val releaseRepo = URI("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-				val snapshotRepo = URI("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+				val releaseRepo =
+					URI("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+				val snapshotRepo =
+					URI("https://s01.oss.sonatype.org/content/repositories/snapshots/")
 				url = if (extra["isReleaseVersion"] == true) releaseRepo else snapshotRepo
 				credentials {
 					username = System.getenv("OSSRH_USERNAME") ?: "Unknown user"
