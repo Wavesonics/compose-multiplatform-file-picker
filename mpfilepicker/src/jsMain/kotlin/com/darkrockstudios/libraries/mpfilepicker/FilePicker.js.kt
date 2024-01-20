@@ -3,6 +3,9 @@ package com.darkrockstudios.libraries.mpfilepicker
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import kotlinx.browser.document
+import org.khronos.webgl.ArrayBuffer
+import org.khronos.webgl.Uint8Array
+import org.khronos.webgl.get
 import org.w3c.dom.Document
 import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.ItemArrayLike
@@ -12,27 +15,47 @@ import org.w3c.files.FileReader
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-public actual data class PlatformFile(
-	val file: File
-)
+public data class WebFile(
+	override val path: String,
+	override val platformFile: File,
+) : MPFile<File> {
+	public suspend fun getFileContents(): String = readFileAsText(platformFile)
+	public override suspend fun getFileByteArray(): ByteArray = readFileAsByteArray(platformFile)
+}
 
 @Composable
 public actual fun FilePicker(
 	show: Boolean,
 	initialDirectory: String?,
 	fileExtensions: List<String>,
-	onFileSelected: FileSelected
+	title: String?,
+	onFileSelected: FileSelected,
+) {
+	LaunchedEffect(show) {
+		if (show) {
+			val fixedExtensions = fileExtensions.map { ".$it" }
+			val file: List<File> = document.selectFilesFromDisk(fixedExtensions.joinToString(","), false)
+			onFileSelected(WebFile(file.first().name, file.first()))
+		}
+	}
+}
+
+@Composable
+public actual fun MultipleFilePicker(
+	show: Boolean,
+	initialDirectory: String?,
+	fileExtensions: List<String>,
+	title: String?,
+	onFileSelected: FilesSelected
 ) {
 	LaunchedEffect(show) {
 		if (show) {
 			val fixedExtensions = fileExtensions.map { ".$it" }
 			val file: List<File> = document.selectFilesFromDisk(fixedExtensions.joinToString(","), true)
-			if (file.firstOrNull() != null) {
-				val platformFile = PlatformFile(file.first())
-				onFileSelected(platformFile)
-			} else {
-				onFileSelected(null)
+			val webFiles = file.map {
+				WebFile(it.name, it)
 			}
+			onFileSelected(webFiles)
 		}
 	}
 }
@@ -41,7 +64,8 @@ public actual fun FilePicker(
 public actual fun DirectoryPicker(
 	show: Boolean,
 	initialDirectory: String?,
-	onFileSelected: (String?) -> Unit
+	title: String?,
+	onFileSelected: (String?) -> Unit,
 ) {
 	// in a browser we can not pick directories
 	throw NotImplementedError("DirectoryPicker is not supported on the web")
@@ -75,4 +99,18 @@ public suspend fun readFileAsText(file: File): String = suspendCoroutine {
 		it.resumeWith(Result.success(content))
 	}
 	reader.readAsText(file, "UTF-8")
+}
+
+public suspend fun readFileAsByteArray(file: File): ByteArray = suspendCoroutine {
+	val reader = FileReader()
+	reader.onload = {loadEvt ->
+		val content = loadEvt.target.asDynamic().result as ArrayBuffer
+		val array = Uint8Array(content)
+		val fileByteArray = ByteArray(array.length)
+			for (i in 0 until array.length) {
+				fileByteArray[i] = array[i]
+			}
+		it.resumeWith(Result.success(fileByteArray))
+	}
+	reader.readAsArrayBuffer(file)
 }

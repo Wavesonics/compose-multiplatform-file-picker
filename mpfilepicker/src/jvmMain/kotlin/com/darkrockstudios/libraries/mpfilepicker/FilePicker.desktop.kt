@@ -4,16 +4,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import java.io.File
 
-public actual data class PlatformFile(
-	val file: File
-)
+public data class JvmFile(
+	override val path: String,
+	override val platformFile: File,
+) : MPFile<File> {
+	override suspend fun getFileByteArray(): ByteArray = platformFile.readBytes()
+}
 
 @Composable
 public actual fun FilePicker(
 	show: Boolean,
 	initialDirectory: String?,
 	fileExtensions: List<String>,
-	onFileSelected: FileSelected
+	title: String?,
+	onFileSelected: FileSelected,
 ) {
 	LaunchedEffect(show) {
 		if (show) {
@@ -26,12 +30,43 @@ public actual fun FilePicker(
 			val initialDir = initialDirectory ?: System.getProperty("user.dir")
 			val filePath = chooseFile(
 				initialDirectory = initialDir,
-				fileExtension = fileFilter
+				fileExtension = fileFilter,
+				title = title
 			)
 			if (filePath != null) {
-				val file = File(filePath)
-				val platformFile = PlatformFile(file)
-				onFileSelected(platformFile)
+				onFileSelected(JvmFile(filePath, File(filePath)))
+			} else {
+				onFileSelected(null)
+			}
+
+		}
+	}
+}
+
+@Composable
+public actual fun MultipleFilePicker(
+	show: Boolean,
+	initialDirectory: String?,
+	fileExtensions: List<String>,
+	title: String?,
+	onFileSelected: FilesSelected
+) {
+	LaunchedEffect(show) {
+		if (show) {
+			val fileFilter = if (fileExtensions.isNotEmpty()) {
+				fileExtensions.joinToString(",")
+			} else {
+				""
+			}
+
+			val initialDir = initialDirectory ?: System.getProperty("user.dir")
+			val filePaths = chooseFiles(
+				initialDirectory = initialDir,
+				fileExtension = fileFilter,
+				title = title
+			)
+			if (filePaths != null) {
+				onFileSelected(filePaths.map { JvmFile(it, File(it)) })
 			} else {
 				onFileSelected(null)
 			}
@@ -44,12 +79,13 @@ public actual fun FilePicker(
 public actual fun DirectoryPicker(
 	show: Boolean,
 	initialDirectory: String?,
-	onFileSelected: (String?) -> Unit
+	title: String?,
+	onFileSelected: (String?) -> Unit,
 ) {
 	LaunchedEffect(show) {
 		if (show) {
 			val initialDir = initialDirectory ?: System.getProperty("user.dir")
-			val fileChosen = chooseDirectory(initialDir)
+			val fileChosen = chooseDirectory(initialDir, title)
 			onFileSelected(fileChosen)
 		}
 	}

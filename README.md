@@ -11,7 +11,7 @@ A multiplatform compose widget for picking files with each platform's Native Fil
 ## Include in your project:
 
 ```kts
-implementation("com.darkrockstudios:mpfilepicker:2.1.0")
+implementation("com.darkrockstudios:mpfilepicker:3.1.0")
 ```
 
 ## How to use
@@ -31,6 +31,19 @@ FilePicker(show = showFilePicker, fileExtensions = fileType) { platformFile ->
     // do something with the file
 }
 ````
+
+### Pick multiple files with a filter:
+
+````kotlin
+var showFilePicker by remember { mutableStateOf(false) }
+
+val fileType = listOf("jpg", "png")
+MultipleFilePicker(show = showFilePicker, fileExtensions = fileType) { file ->
+    showFilePicker = false
+    // do something with the file
+}
+````
+
 
 ### Pick a directory:
 
