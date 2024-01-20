@@ -52,12 +52,12 @@ fun main() = application {
 	}
 
 	FilePicker(showSingleFile, fileExtensions = listOf("jpg", "png")) { file ->
-		pathSingleChosen = file?.path ?: "none selected"
+		pathSingleChosen = file?.file?.path ?: "none selected"
 		showSingleFile = false
 	}
 
 	MultipleFilePicker(showMultiFile, fileExtensions = listOf("jpg", "png")) { files ->
-		pathMultiChosen = files?.map { it.path + "\n" } ?: emptyList()
+		pathMultiChosen = files?.map { it.file.path + "\n" } ?: emptyList()
 		showMultiFile = false
 	}
 

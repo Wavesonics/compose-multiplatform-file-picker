@@ -32,8 +32,8 @@ fun MainViewController(): UIViewController = ComposeUIViewController {
 			}
 			Text("File Chosen: $singlePathChosen")
 
-			FilePicker(showSingleFilePicker, fileExtensions = fileType) { mpFile ->
-				singlePathChosen = mpFile?.path ?: "none selected"
+			FilePicker(showSingleFilePicker, fileExtensions = fileType) { platformFile ->
+				singlePathChosen = platformFile?.nsUrl?.path ?: "none selected"
 				showSingleFilePicker = false
 			}
 
@@ -49,8 +49,8 @@ fun MainViewController(): UIViewController = ComposeUIViewController {
 			}
 			Text("Files Chosen: $multiplePathChosen")
 
-			MultipleFilePicker(showMultipleFilePicker, fileExtensions = fileType) { mpFiles ->
-				multiplePathChosen = mpFiles?.map { it.path + "\n" } ?: emptyList()
+			MultipleFilePicker(showMultipleFilePicker, fileExtensions = fileType) { platformFiles ->
+				multiplePathChosen = platformFiles?.map { it.nsUrl.path + "\n" } ?: emptyList()
 				showMultipleFilePicker = false
 			}
 
@@ -61,7 +61,7 @@ fun MainViewController(): UIViewController = ComposeUIViewController {
 			Button(onClick = {
 				MainScope().launch {
 					nonComposeFileChosen = launchFilePicker(fileExtensions = fileType)
-						.firstOrNull()?.path ?: "none selected"
+						.firstOrNull()?.nsUrl?.path ?: "none selected"
 				}
 			}) {
 
@@ -76,7 +76,7 @@ fun MainViewController(): UIViewController = ComposeUIViewController {
 			Button(onClick = {
 				MainScope().launch {
 					nonComposeMultipleFileChosen = launchFilePicker(fileExtensions = fileType, allowMultiple = true)
-						.map { it.path + "\n" }
+						.map { it.nsUrl.path + "\n" }
 				}
 			}) {
 
@@ -108,7 +108,7 @@ fun MainViewController(): UIViewController = ComposeUIViewController {
 			Button(onClick = {
 				MainScope().launch {
 					nonComposeDirChosen = launchDirectoryPicker()
-						.firstOrNull()?.path ?: "none selected"
+						.firstOrNull()?.nsUrl?.path ?: "none selected"
 				}
 			}) {
 
