@@ -90,7 +90,7 @@ class MainActivity : AppCompatActivity() {
 					Button(onClick = {
 						showSaveFilePicker = true
 					}) {
-						Text("Choose Save")
+						Text("Open save file dialog")
 					}
 					Text("Saved File: $savedFile")
 
