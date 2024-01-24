@@ -1,29 +1,22 @@
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-
 plugins {
-	kotlin("multiplatform")
 	kotlin("native.cocoapods")
-	alias(libs.plugins.kotlin.compose)
+	alias(libs.plugins.kotlinMultiplatform)
+	alias(libs.plugins.jetbrainsCompose)
 }
 
-@OptIn(ExperimentalKotlinGradlePluginApi::class)
 kotlin {
-	targetHierarchy.default()
-
 	iosX64()
 	iosArm64()
 	iosSimulatorArm64()
 
 	sourceSets {
-		val iosMain by getting {
-			dependencies {
-				implementation(compose.ui)
-				implementation(compose.foundation)
-				implementation(compose.material)
-				implementation(compose.runtime)
+		iosMain.dependencies {
+			implementation(compose.ui)
+			implementation(compose.foundation)
+			implementation(compose.material)
+			implementation(compose.runtime)
 
-				implementation(project(":mpfilepicker"))
-			}
+			implementation(project(":mpfilepicker"))
 		}
 	}
 }
@@ -42,11 +35,4 @@ kotlin.cocoapods {
 	}
 
 	podfile = project.file("../iosApp/Podfile")
-}
-
-repositories {
-	mavenCentral()
-	maven { url = uri("https://maven.pkg.jetbrains.space/public/p/kotlinx-html/maven") }
-	maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
-	google()
 }

@@ -6,14 +6,10 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.core.net.toFile
 
-public data class AndroidFile(
-	override val path: String,
-	override val platformFile: Uri,
-) : MPFile<Uri> {
-	override suspend fun getFileByteArray(): ByteArray = platformFile.toFile().readBytes()
-}
+public actual data class PlatformFile(
+	val uri: Uri,
+)
 
 @Composable
 public actual fun FilePicker(
@@ -25,7 +21,8 @@ public actual fun FilePicker(
 ) {
 	val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocument()) { result ->
 		if (result != null) {
-			onFileSelected(AndroidFile(result.toString(), result))
+			val platformFile = PlatformFile(result)
+			onFileSelected(platformFile)
 		} else {
 			onFileSelected(null)
 		}
@@ -46,6 +43,7 @@ public actual fun FilePicker(
 		}
 	}
 }
+
 @Composable
 public actual fun MultipleFilePicker(
 	show: Boolean,
@@ -57,11 +55,8 @@ public actual fun MultipleFilePicker(
 	val launcher = rememberLauncherForActivityResult(
 		contract = ActivityResultContracts.OpenMultipleDocuments()
 	) { result ->
-
-		val files = result.mapNotNull { uri ->
-			uri.path?.let {path ->
-				AndroidFile(path, uri)
-			}
+		val files = result.map { uri ->
+			PlatformFile(uri)
 		}
 
 		if (files.isNotEmpty()) {

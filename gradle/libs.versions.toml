@@ -1,19 +1,24 @@
 [versions]
+agp = "8.2.1"
+compose-plugin = "1.5.11"
+kotlin = "1.9.21"
 library = "3.1.0"
 android-compile-sdk = "34"
 android-target-sdk = "34"
 android-min-sdk = "21"
 
 [libraries]
-compose-activity = "androidx.activity:activity-compose:1.7.2"
+compose-activity = "androidx.activity:activity-compose:1.8.2"
 androidx-appcompat = "androidx.appcompat:appcompat:1.6.1"
 androidx-coreKtx = "androidx.core:core-ktx:1.12.0"
+kotlinx-coroutines-core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3"
 kotlinx-coroutines-android = "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3"
 kotlinx-coroutines-swing = "org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.7.3"
 kotlinx-html = "org.jetbrains.kotlinx:kotlinx-html:0.9.1"
 junit = "junit:junit:4.13.2"
 
 [plugins]
-kotlin-compose = "org.jetbrains.compose:1.5.1"
-android-application = "com.android.application:8.1.1"
-android-library = "com.android.library:8.1.1"
+androidApplication = { id = "com.android.application", version.ref = "agp" }
+androidLibrary = { id = "com.android.library", version.ref = "agp" }
+jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
+kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

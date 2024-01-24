@@ -33,9 +33,9 @@ class MainActivity : AppCompatActivity() {
 					}
 					Text("File Chosen: $pathSingleChosen")
 
-					FilePicker(showSingleFilePicker, fileExtensions = fileType) { mpFile ->
-						if (mpFile != null) {
-							pathSingleChosen = mpFile.path
+					FilePicker(showSingleFilePicker, fileExtensions = fileType) { platformFile ->
+						if (platformFile != null) {
+							pathSingleChosen = platformFile.uri.path ?: "none selected"
 						}
 						showSingleFilePicker = false
 					}
@@ -52,9 +52,9 @@ class MainActivity : AppCompatActivity() {
 					}
 					Text("Multiple File Chosen: $pathMultipleChosen")
 
-					MultipleFilePicker(showMultipleFilePicker, fileExtensions = fileType) { mpFiles ->
-						if (mpFiles != null) {
-							pathMultipleChosen = mpFiles.map { it.path + "\n" }
+					MultipleFilePicker(showMultipleFilePicker, fileExtensions = fileType) { platformFiles ->
+						if (platformFiles != null) {
+							pathMultipleChosen = platformFiles.map { it.uri.path + "\n" }
 						}
 						showMultipleFilePicker = false
 					}

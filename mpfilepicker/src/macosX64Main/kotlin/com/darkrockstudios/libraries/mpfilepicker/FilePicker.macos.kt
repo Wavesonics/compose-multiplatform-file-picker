@@ -11,17 +11,18 @@ import platform.Foundation.NSData
 import platform.Foundation.NSURL
 import platform.posix.memcpy
 
-public data class MacOSFile(
-	override val path: String,
-	override val platformFile: NSURL,
-) : MPFile<NSURL> {
+public actual data class PlatformFile(
+	val nsUrl: NSURL,
+) {
+	public val bytes: ByteArray =
+		nsUrl.dataRepresentation.toByteArray()
+
 	@OptIn(ExperimentalForeignApi::class)
-	public fun NSData.toByteArray(): ByteArray = ByteArray(this@toByteArray.length.toInt()).apply {
+	private fun NSData.toByteArray(): ByteArray = ByteArray(this@toByteArray.length.toInt()).apply {
 		usePinned {
 			memcpy(it.addressOf(0), this@toByteArray.bytes, this@toByteArray.length)
 		}
 	}
-	override suspend fun getFileByteArray(): ByteArray = platformFile.dataRepresentation.toByteArray()
 }
 
 @Composable
@@ -48,8 +49,12 @@ public actual fun FilePicker(
 
 				val fileURL = URL
 				val filePath = fileURL?.path
-				if (filePath != null) onFileSelected(MacOSFile(filePath, fileURL))
-				else onFileSelected(null)
+				if (filePath != null)  {
+					val platformFile = PlatformFile(fileURL)
+					onFileSelected(platformFile)
+				} else {
+					onFileSelected(null)
+				}
 			}
 		}
 	}
@@ -77,12 +82,8 @@ public actual fun MultipleFilePicker(
 
 				val filesUrls = URLs
 
-				val files: List<MacOSFile> = filesUrls.mapNotNull { file ->
-					(file as? NSURL)?.let { nsUrl ->
-						nsUrl.path?.let { path ->
-							MacOSFile(path, nsUrl)
-						}
-					}
+				val files: List<PlatformFile> = filesUrls.mapNotNull { file ->
+					(file as? NSURL)?.let { nsUrl -> PlatformFile(nsUrl) }
 				}
 
 				if (files.isEmpty()) onFileSelected(null)

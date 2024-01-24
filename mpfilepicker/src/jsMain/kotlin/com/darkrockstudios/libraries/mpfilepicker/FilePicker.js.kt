@@ -15,13 +15,9 @@ import org.w3c.files.FileReader
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-public data class WebFile(
-	override val path: String,
-	override val platformFile: File,
-) : MPFile<File> {
-	public suspend fun getFileContents(): String = readFileAsText(platformFile)
-	public override suspend fun getFileByteArray(): ByteArray = readFileAsByteArray(platformFile)
-}
+public actual data class PlatformFile(
+	val file: File,
+)
 
 @Composable
 public actual fun FilePicker(
@@ -35,7 +31,8 @@ public actual fun FilePicker(
 		if (show) {
 			val fixedExtensions = fileExtensions.map { ".$it" }
 			val file: List<File> = document.selectFilesFromDisk(fixedExtensions.joinToString(","), false)
-			onFileSelected(WebFile(file.first().name, file.first()))
+			val platformFile = PlatformFile(file.first())
+			onFileSelected(platformFile)
 		}
 	}
 }
@@ -51,10 +48,8 @@ public actual fun MultipleFilePicker(
 	LaunchedEffect(show) {
 		if (show) {
 			val fixedExtensions = fileExtensions.map { ".$it" }
-			val file: List<File> = document.selectFilesFromDisk(fixedExtensions.joinToString(","), true)
-			val webFiles = file.map {
-				WebFile(it.name, it)
-			}
+			val files: List<File> = document.selectFilesFromDisk(fixedExtensions.joinToString(","), true)
+			val webFiles = files.map { PlatformFile(it) }
 			onFileSelected(webFiles)
 		}
 	}

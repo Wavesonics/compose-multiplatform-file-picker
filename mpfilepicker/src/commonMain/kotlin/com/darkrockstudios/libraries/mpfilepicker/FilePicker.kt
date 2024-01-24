@@ -2,16 +2,11 @@ package com.darkrockstudios.libraries.mpfilepicker
 
 import androidx.compose.runtime.Composable
 
-public interface MPFile<out T : Any> {
-	// on JS this will be a file name, on other platforms it will be a file path
-	public val path: String
-	public val platformFile: T
-	public suspend fun getFileByteArray(): ByteArray
-}
+public expect class PlatformFile
 
-public typealias FileSelected = (MPFile<Any>?) -> Unit
+public typealias FileSelected = (PlatformFile?) -> Unit
 
-public typealias FilesSelected = (List<MPFile<Any>>?) -> Unit
+public typealias FilesSelected = (List<PlatformFile>?) -> Unit
 
 @Composable
 public expect fun FilePicker(
