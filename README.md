@@ -87,7 +87,7 @@ To build and run Android examples, use Android Studio.
 
 ### JS
 
-run `jsBrowserDevelopmentRun` via Gradle, it will build a JS example and open it in a browser.
+run `examples:web:jsBrowserDevelopmentRun` via Gradle, it will build a JS example and open it in a browser.
 
 ### MacOS and JVM
 
