@@ -10,10 +10,10 @@ import platform.Foundation.NSData
 import platform.Foundation.NSURL
 import platform.posix.memcpy
 
-public actual data class PlatformFile(
+actual data class PlatformFile(
 	val nsUrl: NSURL,
 ) {
-	public val bytes: ByteArray =
+	actual suspend fun getBytes(): ByteArray? =
 		nsUrl.dataRepresentation.toByteArray()
 
 	@OptIn(ExperimentalForeignApi::class)
@@ -25,7 +25,7 @@ public actual data class PlatformFile(
 }
 
 @Composable
-public actual fun FilePicker(
+actual fun FilePicker(
 	show: Boolean,
 	initialDirectory: String?,
 	fileExtensions: List<String>,
@@ -50,7 +50,7 @@ public actual fun FilePicker(
 }
 
 @Composable
-public actual fun MultipleFilePicker(
+actual fun MultipleFilePicker(
 	show: Boolean,
 	initialDirectory: String?,
 	fileExtensions: List<String>,
@@ -73,7 +73,7 @@ public actual fun MultipleFilePicker(
 }
 
 @Composable
-public actual fun DirectoryPicker(
+actual fun DirectoryPicker(
 	show: Boolean,
 	initialDirectory: String?,
 	title: String?,
