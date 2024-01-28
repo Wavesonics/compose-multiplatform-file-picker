@@ -14,7 +14,7 @@ androidx-coreKtx = "androidx.core:core-ktx:1.12.0"
 kotlinx-coroutines-core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3"
 kotlinx-coroutines-android = "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3"
 kotlinx-coroutines-swing = "org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.7.3"
-kotlinx-html = "org.jetbrains.kotlinx:kotlinx-html:0.9.1"
+kotlinx-html = "org.jetbrains.kotlinx:kotlinx-html:0.11.0"
 junit = "junit:junit:4.13.2"
 
 [plugins]
