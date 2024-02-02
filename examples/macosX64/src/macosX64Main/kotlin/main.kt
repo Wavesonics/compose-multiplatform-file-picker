@@ -84,7 +84,7 @@ fun main() {
 				}
 
 				FilePicker(showSingleFile, fileExtensions = listOf("jpg", "png", "plist")) { file ->
-					singleFilePathChosen = file?.path ?: "none selected"
+					singleFilePathChosen = file?.nsUrl?.path ?: "none selected"
 					showSingleFile = false
 				}
 
@@ -92,7 +92,7 @@ fun main() {
 					showMultipleFile,
 					fileExtensions = listOf("jpg", "png", "plist")
 				) { files ->
-					multipleFilesPathsChosen = files?.map { it.path + "\n" } ?: listOf()
+					multipleFilesPathsChosen = files?.map { it.nsUrl.path + "\n" } ?: listOf()
 					showMultipleFile = false
 				}
 
@@ -107,7 +107,7 @@ fun main() {
 					filename = "newTextFile",
 					fileExtension = "txt",
 				) { selectedFile ->
-					savedFile = selectedFile?.path?.let { path ->
+					savedFile = selectedFile?.nsUrl?.path?.let { path ->
 						val result = writeToFile(path, "some nice text for our file")
 						result.getOrNull() == true
 					} ?: false

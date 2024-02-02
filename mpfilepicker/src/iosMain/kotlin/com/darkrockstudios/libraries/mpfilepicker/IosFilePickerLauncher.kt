@@ -112,10 +112,8 @@ public class FilePickerLauncher(
 			(didPickDocumentsAtURLs as? List<*>)?.let { list ->
 				val files = list.map { file ->
 					(file as? NSURL)?.let { nsUrl ->
-						nsUrl.path?.let { path ->
-							IosFile(path, nsUrl)
-						}
-					} ?: return@let listOf<IosFile>()
+						PlatformFile(nsUrl)
+					} ?: return@let listOf<PlatformFile>()
 				}
 
 				onFileSelected(files)
@@ -187,7 +185,7 @@ public suspend fun launchFilePicker(
 	initialDirectory: String? = null,
 	fileExtensions: List<String>,
 	allowMultiple: Boolean? = false,
-): List<MPFile<Any>> = suspendCoroutine { cont ->
+): List<PlatformFile> = suspendCoroutine { cont ->
 	try {
 		FilePickerLauncher(
 			initialDirectory = initialDirectory,
@@ -213,7 +211,7 @@ public suspend fun launchFilePicker(
 
 public suspend fun launchDirectoryPicker(
 	initialDirectory: String? = null,
-): List<MPFile<Any>> = suspendCoroutine { cont ->
+): List<PlatformFile> = suspendCoroutine { cont ->
 	try {
 		FilePickerLauncher(
 			initialDirectory = initialDirectory,
@@ -239,7 +237,7 @@ public suspend fun launchDirectoryPicker(
 public suspend fun launchSaveFilePicker(
 	initialDirectory: String? = null,
 	filename: String,
-): MPFile<Any>? = suspendCoroutine { cont ->
+): PlatformFile? = suspendCoroutine { cont ->
 	var hasCreatedDir = false
 	var randomDirPath = ""
 	try {

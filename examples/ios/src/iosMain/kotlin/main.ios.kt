@@ -19,12 +19,7 @@ import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.memScoped
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import platform.Foundation.NSFileManager
-import platform.Foundation.NSString
-import platform.Foundation.NSUTF8StringEncoding
-import platform.Foundation.create
-import platform.Foundation.dataUsingEncoding
-import platform.Foundation.writeToFile
+import platform.Foundation.*
 import platform.UIKit.UIViewController
 
 @Suppress("Unused", "FunctionName")
@@ -43,8 +38,8 @@ fun MainViewController(): UIViewController = ComposeUIViewController {
 			}
 			Text("File Chosen: $singlePathChosen")
 
-			FilePicker(showSingleFilePicker, fileExtensions = fileType) { mpFile ->
-				singlePathChosen = mpFile?.path ?: "none selected"
+			FilePicker(showSingleFilePicker, fileExtensions = fileType) { platformFile ->
+				singlePathChosen = platformFile?.nsUrl?.path ?: "none selected"
 				showSingleFilePicker = false
 			}
 
@@ -60,8 +55,8 @@ fun MainViewController(): UIViewController = ComposeUIViewController {
 			}
 			Text("Files Chosen: $multiplePathChosen")
 
-			MultipleFilePicker(showMultipleFilePicker, fileExtensions = fileType) { mpFiles ->
-				multiplePathChosen = mpFiles?.map { it.path + "\n" } ?: emptyList()
+			MultipleFilePicker(showMultipleFilePicker, fileExtensions = fileType) { platformFiles ->
+				multiplePathChosen = platformFiles?.map { it.nsUrl.path + "\n" } ?: emptyList()
 				showMultipleFilePicker = false
 			}
 
@@ -72,7 +67,7 @@ fun MainViewController(): UIViewController = ComposeUIViewController {
 			Button(onClick = {
 				MainScope().launch {
 					nonComposeFileChosen = launchFilePicker(fileExtensions = fileType)
-						.firstOrNull()?.path ?: "none selected"
+						.firstOrNull()?.nsUrl?.path ?: "none selected"
 				}
 			}) {
 
@@ -86,8 +81,9 @@ fun MainViewController(): UIViewController = ComposeUIViewController {
 
 			Button(onClick = {
 				MainScope().launch {
-					nonComposeMultipleFileChosen = launchFilePicker(fileExtensions = fileType, allowMultiple = true)
-						.map { it.path + "\n" }
+					nonComposeMultipleFileChosen =
+						launchFilePicker(fileExtensions = fileType, allowMultiple = true)
+							.map { it.nsUrl.path + "\n" }
 				}
 			}) {
 
@@ -119,7 +115,7 @@ fun MainViewController(): UIViewController = ComposeUIViewController {
 			Button(onClick = {
 				MainScope().launch {
 					nonComposeDirChosen = launchDirectoryPicker()
-						.firstOrNull()?.path ?: "none selected"
+						.firstOrNull()?.nsUrl?.path ?: "none selected"
 				}
 			}) {
 
@@ -144,7 +140,7 @@ fun MainViewController(): UIViewController = ComposeUIViewController {
 				filename = "newFileName.txt",
 			) { selectedFile ->
 				val contents = "Slick saving tech"
-				savedFile = selectedFile?.path?.let { path ->
+				savedFile = selectedFile?.nsUrl?.path?.let { path ->
 					writeToFile(path, contents).getOrNull() == true
 				} ?: false
 				showSaveFilePicker = false
@@ -158,9 +154,11 @@ fun MainViewController(): UIViewController = ComposeUIViewController {
 				MainScope().launch {
 					nonComposeSaveFileChosen = launchSaveFilePicker(
 						filename = "newNcFileName.txt",
-					)?.let {selectedFile ->
+					)?.let { selectedFile ->
 						val contents = "Slick saving tech"
-						writeToFile(selectedFile.path, contents).getOrNull() == true
+						selectedFile.nsUrl.path?.let { path ->
+							writeToFile(path, contents).getOrNull() == true
+						}
 					} ?: false
 				}
 			}) {

@@ -67,12 +67,12 @@ fun main() = application {
 	}
 
 	FilePicker(showSingleFile, fileExtensions = listOf("jpg", "png")) { file ->
-		pathSingleChosen = file?.path ?: "none selected"
+		pathSingleChosen = file?.file?.path ?: "none selected"
 		showSingleFile = false
 	}
 
 	MultipleFilePicker(showMultiFile, fileExtensions = listOf("jpg", "png")) { files ->
-		pathMultiChosen = files?.map { it.path + "\n" } ?: emptyList()
+		pathMultiChosen = files?.map { it.file.path + "\n" } ?: emptyList()
 		showMultiFile = false
 	}
 
@@ -86,15 +86,15 @@ fun main() = application {
 		filename = "newFile.txt",
 	) { selectedFile ->
 		val contents = "this is a new test file"
-		hasSavedFiled = selectedFile?.path?.let { path ->
-			writeToFile(path, contents)
+		hasSavedFiled = selectedFile?.file?.let { file ->
+			writeToFile(file, contents)
 			true
 		} ?: false
 	}
 }
 
-private fun writeToFile(path: String, contents: String) {
-	File(path).bufferedWriter().use { out ->
+private fun writeToFile(file: File, contents: String) {
+	file.bufferedWriter().use { out ->
 		out.write(contents)
 	}
 }

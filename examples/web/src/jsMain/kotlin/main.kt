@@ -1,8 +1,6 @@
 import androidx.compose.runtime.*
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import com.darkrockstudios.libraries.mpfilepicker.MultipleFilePicker
-import com.darkrockstudios.libraries.mpfilepicker.SaveFilePicker
-import com.darkrockstudios.libraries.mpfilepicker.WebFile
 import com.darkrockstudios.libraries.mpfilepicker.readFileAsText
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.web.dom.Br
@@ -30,10 +28,10 @@ fun main() {
 		Text("File content: $fileContents")
 
 		FilePicker(showSingleFile, fileExtensions = listOf("txt", "md")) { file ->
-			if (file is WebFile) {
-				fileName = file.path
+			if (file != null) {
+				fileName = file.file.name
 				scope.launch {
-					fileContents = readFileAsText(file.platformFile)
+					fileContents = readFileAsText(file.file)
 				}
 			}
 			showSingleFile = false
@@ -61,7 +59,7 @@ fun main() {
 			fileExtensions = listOf("png", "jpeg", "jpg"),
 			initialDirectory = null
 		) { files ->
-			filesNames = files?.map { it.path } ?: listOf()
+			filesNames = files?.map { it.file.name } ?: listOf()
 			showMultipleFile = false
 		}
 	}

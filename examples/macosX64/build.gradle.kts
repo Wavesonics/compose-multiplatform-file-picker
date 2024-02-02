@@ -1,6 +1,6 @@
 plugins {
-	kotlin("multiplatform")
-	alias(libs.plugins.kotlin.compose)
+	alias(libs.plugins.kotlinMultiplatform)
+	alias(libs.plugins.jetbrainsCompose)
 }
 
 kotlin {
@@ -24,11 +24,3 @@ kotlin {
 		}
 	}
 }
-
-repositories {
-	mavenCentral()
-	maven { url = uri("https://maven.pkg.jetbrains.space/public/p/kotlinx-html/maven") }
-	maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
-	google()
-}
-

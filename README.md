@@ -11,7 +11,7 @@ A multiplatform compose widget for picking files with each platform's Native Fil
 ## Include in your project:
 
 ```kts
-implementation("com.darkrockstudios:mpfilepicker:3.0.0")
+implementation("com.darkrockstudios:mpfilepicker:3.1.0")
 ```
 
 ## How to use
@@ -26,7 +26,7 @@ To show the dialog, simply set the boolean state to true via a button or what ev
 var showFilePicker by remember { mutableStateOf(false) }
 
 val fileType = listOf("jpg", "png")
-FilePicker(show = showFilePicker, fileExtensions = fileType) { file ->
+FilePicker(show = showFilePicker, fileExtensions = fileType) { platformFile ->
     showFilePicker = false
     // do something with the file
 }
@@ -87,7 +87,7 @@ To build and run Android examples, use Android Studio.
 
 ### JS
 
-run `jsBrowserDevelopmentRun` via Gradle, it will build a JS example and open it in a browser.
+run `examples:web:jsBrowserDevelopmentRun` via Gradle, it will build a JS example and open it in a browser.
 
 ### MacOS and JVM
 

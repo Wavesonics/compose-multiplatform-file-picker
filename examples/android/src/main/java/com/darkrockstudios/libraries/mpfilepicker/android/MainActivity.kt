@@ -39,9 +39,9 @@ class MainActivity : AppCompatActivity() {
 					}
 					Text("File Chosen: $pathSingleChosen")
 
-					FilePicker(showSingleFilePicker, fileExtensions = fileType) { mpFile ->
-						if (mpFile != null) {
-							pathSingleChosen = mpFile.path
+					FilePicker(showSingleFilePicker, fileExtensions = fileType) { platformFile ->
+						if (platformFile != null) {
+							pathSingleChosen = platformFile.uri.path ?: "none selected"
 						}
 						showSingleFilePicker = false
 					}
@@ -58,9 +58,9 @@ class MainActivity : AppCompatActivity() {
 					}
 					Text("Multiple File Chosen: $pathMultipleChosen")
 
-					MultipleFilePicker(showMultipleFilePicker, fileExtensions = fileType) { mpFiles ->
-						if (mpFiles != null) {
-							pathMultipleChosen = mpFiles.map { it.path + "\n" }
+					MultipleFilePicker(showMultipleFilePicker, fileExtensions = fileType) { platformFiles ->
+						if (platformFiles != null) {
+							pathMultipleChosen = platformFiles.map { it.uri.path + "\n" }
 						}
 						showMultipleFilePicker = false
 					}
@@ -102,7 +102,7 @@ class MainActivity : AppCompatActivity() {
 					) { file ->
 						val contents = "this is a new test file"
 						savedFile = try {
-							(file?.platformFile as? Uri?)?.let { uri ->
+							file?.uri?.let { uri ->
 								writeTextToUri(this@MainActivity, uri, contents)
 								true
 							} ?: false

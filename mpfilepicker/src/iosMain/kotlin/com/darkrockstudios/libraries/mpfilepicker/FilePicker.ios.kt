@@ -1,51 +1,26 @@
 package com.darkrockstudios.libraries.mpfilepicker
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import kotlinx.cinterop.BetaInteropApi
-import kotlinx.cinterop.CPointer
+import androidx.compose.runtime.*
 import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.cinterop.ObjCObjectVar
 import kotlinx.cinterop.addressOf
-import kotlinx.cinterop.alloc
-import kotlinx.cinterop.memScoped
-import kotlinx.cinterop.pointed
-import kotlinx.cinterop.ptr
 import kotlinx.cinterop.usePinned
-import kotlinx.cinterop.value
-import platform.Foundation.NSData
-import platform.Foundation.NSDocumentDirectory
-import platform.Foundation.NSError
-import platform.Foundation.NSFileManager
-import platform.Foundation.NSSearchPathForDirectoriesInDomains
-import platform.Foundation.NSString
-import platform.Foundation.NSURL
-import platform.Foundation.NSUTF8StringEncoding
-import platform.Foundation.NSUserDomainMask
-import platform.Foundation.create
-import platform.Foundation.dataUsingEncoding
+import platform.Foundation.*
 import platform.posix.memcpy
 import kotlin.math.absoluteValue
 import kotlin.random.Random
 
-public data class IosFile(
-	override val path: String,
-	override val platformFile: NSURL,
-) : MPFile<NSURL> {
+public actual data class PlatformFile(
+	val nsUrl: NSURL,
+) {
+	public val bytes: ByteArray =
+		nsUrl.dataRepresentation.toByteArray()
+
 	@OptIn(ExperimentalForeignApi::class)
-	public fun NSData.toByteArray(): ByteArray = ByteArray(this@toByteArray.length.toInt()).apply {
+	private fun NSData.toByteArray(): ByteArray = ByteArray(this@toByteArray.length.toInt()).apply {
 		usePinned {
 			memcpy(it.addressOf(0), this@toByteArray.bytes, this@toByteArray.length)
 		}
 	}
-
-	override suspend fun getFileByteArray(): ByteArray =
-		platformFile.dataRepresentation.toByteArray()
 }
 
 @Composable
@@ -107,7 +82,7 @@ public actual fun DirectoryPicker(
 		FilePickerLauncher(
 			initialDirectory = initialDirectory,
 			pickerMode = FilePickerLauncher.Mode.Directory,
-			onFileSelected = { onFileSelected(it?.firstOrNull()?.path) },
+			onFileSelected = { onFileSelected(it?.firstOrNull()?.nsUrl?.path) },
 		)
 	}
 

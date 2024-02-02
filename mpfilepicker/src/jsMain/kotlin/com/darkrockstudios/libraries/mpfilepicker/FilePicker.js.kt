@@ -15,13 +15,9 @@ import org.w3c.files.FileReader
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-public data class WebFile(
-	override val path: String,
-	override val platformFile: File,
-) : MPFile<File> {
-	public suspend fun getFileContents(): String = readFileAsText(platformFile)
-	public override suspend fun getFileByteArray(): ByteArray = readFileAsByteArray(platformFile)
-}
+public actual data class PlatformFile(
+	val file: File,
+)
 
 @Composable
 public actual fun FilePicker(
@@ -36,10 +32,10 @@ public actual fun FilePicker(
 			val fixedExtensions = fileExtensions.map { ".$it" }
 			val file: List<File> = document.selectFilesFromDisk(
 				fixedExtensions.joinToString(","),
-				isMultiple = false,
-				isDirectory = false,
+				false,
 			)
-			onFileSelected(WebFile(file.first().name, file.first()))
+			val platformFile = PlatformFile(file.first())
+			onFileSelected(platformFile)
 		}
 	}
 }
@@ -55,14 +51,12 @@ public actual fun MultipleFilePicker(
 	LaunchedEffect(show) {
 		if (show) {
 			val fixedExtensions = fileExtensions.map { ".$it" }
-			val file: List<File> = document.selectFilesFromDisk(
-				fixedExtensions.joinToString(","),
-				isMultiple = true,
-				isDirectory = false,
-			)
-			val webFiles = file.map {
-				WebFile(it.name, it)
-			}
+			val files: List<File> =
+				document.selectFilesFromDisk(
+					fixedExtensions.joinToString(","),
+					true,
+				)
+			val webFiles = files.map { PlatformFile(it) }
 			onFileSelected(webFiles)
 		}
 	}
@@ -95,10 +89,9 @@ public actual fun SaveFilePicker(
 private suspend fun Document.selectFilesFromDisk(
 	accept: String,
 	isMultiple: Boolean,
-	isDirectory: Boolean,
 ): List<File> = suspendCoroutine {
 	val tempInput = (createElement("input") as HTMLInputElement).apply {
-		type = if (isDirectory) "" else "file"
+		type = "file"
 		style.display = "none"
 		this.accept = accept
 		multiple = isMultiple
@@ -125,13 +118,13 @@ public suspend fun readFileAsText(file: File): String = suspendCoroutine {
 
 public suspend fun readFileAsByteArray(file: File): ByteArray = suspendCoroutine {
 	val reader = FileReader()
-	reader.onload = {loadEvt ->
+	reader.onload = { loadEvt ->
 		val content = loadEvt.target.asDynamic().result as ArrayBuffer
 		val array = Uint8Array(content)
 		val fileByteArray = ByteArray(array.length)
-			for (i in 0 until array.length) {
-				fileByteArray[i] = array[i]
-			}
+		for (i in 0 until array.length) {
+			fileByteArray[i] = array[i]
+		}
 		it.resumeWith(Result.success(fileByteArray))
 	}
 	reader.readAsArrayBuffer(file)

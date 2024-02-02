@@ -3,14 +3,10 @@ package com.darkrockstudios.libraries.mpfilepicker
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import java.io.File
-import java.io.IOException
 
-public data class JvmFile(
-	override val path: String,
-	override val platformFile: File,
-) : MPFile<File> {
-	override suspend fun getFileByteArray(): ByteArray = platformFile.readBytes()
-}
+public actual data class PlatformFile(
+	val file: File,
+)
 
 @Composable
 public actual fun FilePicker(
@@ -35,7 +31,9 @@ public actual fun FilePicker(
 				title = title
 			)
 			if (filePath != null) {
-				onFileSelected(JvmFile(filePath, File(filePath)))
+				val file = File(filePath)
+				val platformFile = PlatformFile(file)
+				onFileSelected(platformFile)
 			} else {
 				onFileSelected(null)
 			}
@@ -67,7 +65,7 @@ public actual fun MultipleFilePicker(
 				title = title
 			)
 			if (filePaths != null) {
-				onFileSelected(filePaths.map { JvmFile(it, File(it)) })
+				onFileSelected(filePaths.map { PlatformFile(File(it)) })
 			} else {
 				onFileSelected(null)
 			}
@@ -110,7 +108,7 @@ public actual fun SaveFilePicker(
 				title = title,
 			)
 			if (filePath != null) {
-				onFileSelected(JvmFile(filePath, File(filePath)))
+				onFileSelected(PlatformFile(File(filePath)))
 			} else {
 				onFileSelected(null)
 			}

@@ -2,45 +2,28 @@ package com.darkrockstudios.libraries.mpfilepicker
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import kotlinx.cinterop.BetaInteropApi
-import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.cinterop.ObjCObjectVar
 import kotlinx.cinterop.addressOf
-import kotlinx.cinterop.alloc
-import kotlinx.cinterop.memScoped
-import kotlinx.cinterop.pointed
-import kotlinx.cinterop.ptr
 import kotlinx.cinterop.usePinned
-import kotlinx.cinterop.value
 import platform.AppKit.NSOpenPanel
 import platform.AppKit.NSSavePanel
 import platform.AppKit.setAllowedFileTypes
 import platform.Foundation.NSData
-import platform.Foundation.NSError
-import platform.Foundation.NSFileHandle
-import platform.Foundation.NSString
 import platform.Foundation.NSURL
-import platform.Foundation.NSUTF8StringEncoding
-import platform.Foundation.closeFile
-import platform.Foundation.create
-import platform.Foundation.dataUsingEncoding
-import platform.Foundation.fileHandleForWritingAtPath
 import platform.posix.memcpy
 
-public data class MacOSFile(
-	override val path: String,
-	override val platformFile: NSURL,
-) : MPFile<NSURL> {
+public actual data class PlatformFile(
+	val nsUrl: NSURL,
+) {
+	public val bytes: ByteArray =
+		nsUrl.dataRepresentation.toByteArray()
+
 	@OptIn(ExperimentalForeignApi::class)
-	public fun NSData.toByteArray(): ByteArray = ByteArray(this@toByteArray.length.toInt()).apply {
+	private fun NSData.toByteArray(): ByteArray = ByteArray(this@toByteArray.length.toInt()).apply {
 		usePinned {
 			memcpy(it.addressOf(0), this@toByteArray.bytes, this@toByteArray.length)
 		}
 	}
-
-	override suspend fun getFileByteArray(): ByteArray =
-		platformFile.dataRepresentation.toByteArray()
 }
 
 @Composable
@@ -67,8 +50,12 @@ public actual fun FilePicker(
 
 				val fileURL = URL
 				val filePath = fileURL?.path
-				if (filePath != null) onFileSelected(MacOSFile(filePath, fileURL))
-				else onFileSelected(null)
+				if (filePath != null)  {
+					val platformFile = PlatformFile(fileURL)
+					onFileSelected(platformFile)
+				} else {
+					onFileSelected(null)
+				}
 			}
 		}
 	}
@@ -97,12 +84,8 @@ public actual fun MultipleFilePicker(
 
 				val filesUrls = URLs
 
-				val files: List<MacOSFile> = filesUrls.mapNotNull { file ->
-					(file as? NSURL)?.let { nsUrl ->
-						nsUrl.path?.let { path ->
-							MacOSFile(path, nsUrl)
-						}
-					}
+				val files: List<PlatformFile> = filesUrls.mapNotNull { file ->
+					(file as? NSURL)?.let { nsUrl -> PlatformFile(nsUrl) }
 				}
 
 				if (files.isEmpty()) onFileSelected(null)
@@ -158,10 +141,9 @@ public actual fun SaveFilePicker(
 				if (fileExtension != null) message = fileExtension
 				runModal()
 
-				val fileURL = URL
-				val filePath = fileURL?.path
-				if (filePath != null) onFileSelected(MacOSFile(filePath, fileURL))
-				else onFileSelected(null)
+				URL?.let { url ->
+					onFileSelected(PlatformFile(url))
+				} ?: onFileSelected(null)
 			}
 		}
 	}
