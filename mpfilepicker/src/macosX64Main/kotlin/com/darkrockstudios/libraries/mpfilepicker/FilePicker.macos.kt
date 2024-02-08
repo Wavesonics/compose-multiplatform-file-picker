@@ -131,7 +131,6 @@ public actual fun SaveFilePicker(
 	fileExtension: String?,
 	onFileSelected: FileSelected,
 ) {
-	// title, prompt, message, nameFieldLabel
 	LaunchedEffect(show) {
 		if (show) {
 			with(NSSavePanel()) {
