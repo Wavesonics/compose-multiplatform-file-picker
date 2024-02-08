@@ -137,7 +137,7 @@ public actual fun SaveFilePicker(
 				if (path != null) directoryURL = NSURL.fileURLWithPath(path, true)
 				canCreateDirectories = true
 				nameFieldStringValue = filename
-				if (fileExtension != null) message = fileExtension
+				if (title != null) message = title
 				runModal()
 
 				URL?.let { url ->
