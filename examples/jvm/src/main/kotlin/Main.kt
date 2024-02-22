@@ -90,6 +90,7 @@ fun main() = application {
 			writeToFile(file, contents)
 			true
 		} ?: false
+		showSaveFile = false
 	}
 }
 
