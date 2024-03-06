@@ -21,6 +21,7 @@ rootProject.name = "MultiplatformFilePicker"
 include(":mpfilepicker")
 include(":examples:android")
 include(":examples:jvm")
+include(":examples:web-wasm")
 include(":examples:web")
 include(":examples:macosX64")
 include(":examples:ios")
