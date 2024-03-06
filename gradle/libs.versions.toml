@@ -1,7 +1,7 @@
 [versions]
 agp = "8.2.1"
-compose-plugin = "1.5.11"
-kotlin = "1.9.21"
+compose-plugin = "1.6.0-beta02"
+kotlin = "1.9.22"
 library = "3.1.0"
 android-compile-sdk = "34"
 android-target-sdk = "34"
