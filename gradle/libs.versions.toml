@@ -1,9 +1,9 @@
 [versions]
-agp = "8.2.2"
+agp = "8.3.0"
 androidx-appcompat = "1.6.1"
 androidx-core = "1.12.0"
 compose-android = "1.8.2"
-compose-plugin = "1.5.12"
+compose-plugin = "1.6.0"
 junit = "4.13.2"
 kotlin = "1.9.22"
 kotlinx-coroutines = "1.8.0"
