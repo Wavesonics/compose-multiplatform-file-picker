@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 import java.net.URI
 
 plugins {
@@ -34,6 +35,13 @@ kotlin {
 		binaries.executable()
 	}
 
+	@OptIn(ExperimentalWasmDsl::class)
+	wasmJs {
+		moduleName = "mpfilepicker"
+		browser()
+		binaries.executable()
+	}
+
 	macosX64()
 
 	listOf(
@@ -61,7 +69,7 @@ kotlin {
 			api(compose.preview)
 			api(compose.material)
 			api(libs.androidx.appcompat)
-			api(libs.androidx.coreKtx)
+			api(libs.androidx.core.ktx)
 			api(libs.compose.activity)
 			api(libs.kotlinx.coroutines.android)
 		}
@@ -90,6 +98,7 @@ kotlin {
 		}
 		val jvmTest by getting
 		val jsMain by getting
+		val wasmJsMain by getting
 	}
 
 	@Suppress("OPT_IN_USAGE")
@@ -174,4 +183,8 @@ android {
 		sourceCompatibility = JavaVersion.VERSION_17
 		targetCompatibility = JavaVersion.VERSION_17
 	}
+}
+
+compose.experimental {
+	web.application {}
 }
