@@ -9,8 +9,8 @@ Pod::Spec.new do |spec|
     spec.vendored_frameworks      = 'build/cocoapods/framework/ios.framework'
     spec.libraries                = 'c++'
     spec.ios.deployment_target = '14.1'
-
-
+                
+                
     if !Dir.exist?('build/cocoapods/framework/ios.framework') || Dir.empty?('build/cocoapods/framework/ios.framework')
         raise "
 
@@ -21,12 +21,12 @@ Pod::Spec.new do |spec|
 
         Alternatively, proper pod installation is performed during Gradle sync in the IDE (if Podfile location is set)"
     end
-
+                
     spec.pod_target_xcconfig = {
         'KOTLIN_PROJECT_PATH' => ':examples:ios',
         'PRODUCT_MODULE_NAME' => 'ios',
     }
-
+                
     spec.script_phases = [
         {
             :name => 'Build ios',

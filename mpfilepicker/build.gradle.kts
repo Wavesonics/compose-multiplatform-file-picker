@@ -69,7 +69,7 @@ kotlin {
 			api(compose.preview)
 			api(compose.material)
 			api(libs.androidx.appcompat)
-			api(libs.androidx.coreKtx)
+			api(libs.androidx.core.ktx)
 			api(libs.compose.activity)
 			api(libs.kotlinx.coroutines.android)
 		}
