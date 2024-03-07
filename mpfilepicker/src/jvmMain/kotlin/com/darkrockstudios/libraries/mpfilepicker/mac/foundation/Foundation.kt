@@ -1,9 +1,5 @@
 package com.darkrockstudios.libraries.mpfilepicker.mac.foundation
 
-//import com.intellij.jna.JnaLoader
-//import com.intellij.openapi.util.NlsSafe
-//import com.intellij.openapi.util.text.StringUtil
-//import com.intellij.util.ImageLoader
 import com.sun.jna.Callback
 import com.sun.jna.Function
 import com.sun.jna.Library
@@ -11,10 +7,8 @@ import com.sun.jna.Memory
 import com.sun.jna.Native
 import com.sun.jna.Pointer
 import com.sun.jna.PointerType
-import com.sun.jna.Structure
 import com.sun.jna.ptr.PointerByReference
 import org.jetbrains.annotations.NonNls
-import java.awt.Image
 import java.io.File
 import java.lang.reflect.Proxy
 import java.nio.CharBuffer
@@ -28,21 +22,14 @@ import java.util.UUID
  */
 @NonNls
 object Foundation {
-	private val myFoundationLibrary: FoundationLibrary
-	private val myObjcMsgSend: Function
+	private val myFoundationLibrary: FoundationLibrary = Native.load(
+		"Foundation",
+		FoundationLibrary::class.java, Collections.singletonMap("jna.encoding", "UTF8")
+	)
 
-	init {
-//		assert(JnaLoader.isLoaded()) { "JNA library is not available" }
-		myFoundationLibrary = Native.load(
-			"Foundation",
-			FoundationLibrary::class.java, Collections.singletonMap("jna.encoding", "UTF8")
-		)
-		val nativeLibrary =
-			(Proxy.getInvocationHandler(myFoundationLibrary) as Library.Handler).nativeLibrary
-		myObjcMsgSend = nativeLibrary.getFunction("objc_msgSend")
-	}
-
-	fun init() { /* fake method to init foundation */
+	private val myObjcMsgSend: Function by lazy {
+		val nativeLibrary = (Proxy.getInvocationHandler(myFoundationLibrary) as Library.Handler).nativeLibrary
+		nativeLibrary.getFunction("objc_msgSend")
 	}
 
 	/**
@@ -231,6 +218,10 @@ object Foundation {
 			invoke(invoke("NSUUID", "alloc"), "initWithUUIDString:", nsString(uuid)),
 			"autorelease"
 		)
+	}
+
+	fun nsURL(path: String): ID {
+		return invoke("NSURL", "fileURLWithPath:", nsString(path))
 	}
 
 	fun toStringViaUTF8(cfString: ID?): String? {
