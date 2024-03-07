@@ -4,12 +4,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import java.io.File
 
-public actual data class PlatformFile(
+actual data class PlatformFile(
 	val file: File,
 )
 
 @Composable
-public actual fun FilePicker(
+actual fun FilePicker(
 	show: Boolean,
 	initialDirectory: String?,
 	fileExtensions: List<String>,
@@ -18,32 +18,25 @@ public actual fun FilePicker(
 ) {
 	LaunchedEffect(show) {
 		if (show) {
-			val fileFilter = if (fileExtensions.isNotEmpty()) {
-				fileExtensions.joinToString(",")
-			} else {
-				""
-			}
-
-			val initialDir = initialDirectory ?: System.getProperty("user.dir")
-			val filePath = chooseFile(
-				initialDirectory = initialDir,
-				fileExtension = fileFilter,
-				title = title
+			// Get path from native file picker
+			val filePicker = PlatformFilePickerUtil.current
+			val filePath = filePicker.pickFile(
+				initialDirectory = initialDirectory,
+				fileExtensions = fileExtensions,
+				title = title,
 			)
-			if (filePath != null) {
-				val file = File(filePath)
-				val platformFile = PlatformFile(file)
-				onFileSelected(platformFile)
-			} else {
-				onFileSelected(null)
-			}
 
+			// Convert path to PlatformFile
+			val result = filePath?.let { PlatformFile(File(it)) }
+
+			// Return result
+			onFileSelected(result)
 		}
 	}
 }
 
 @Composable
-public actual fun MultipleFilePicker(
+actual fun MultipleFilePicker(
 	show: Boolean,
 	initialDirectory: String?,
 	fileExtensions: List<String>,
@@ -52,30 +45,25 @@ public actual fun MultipleFilePicker(
 ) {
 	LaunchedEffect(show) {
 		if (show) {
-			val fileFilter = if (fileExtensions.isNotEmpty()) {
-				fileExtensions.joinToString(",")
-			} else {
-				""
-			}
-
-			val initialDir = initialDirectory ?: System.getProperty("user.dir")
-			val filePaths = chooseFiles(
-				initialDirectory = initialDir,
-				fileExtension = fileFilter,
-				title = title
+			// Get paths from native file picker
+			val filePicker = PlatformFilePickerUtil.current
+			val filePaths = filePicker.pickFiles(
+				initialDirectory = initialDirectory,
+				fileExtensions = fileExtensions,
+				title = title,
 			)
-			if (filePaths != null) {
-				onFileSelected(filePaths.map { PlatformFile(File(it)) })
-			} else {
-				onFileSelected(null)
-			}
 
+			// Convert paths to PlatformFile
+			val result = filePaths?.map { PlatformFile(File(it)) }
+
+			// Return result
+			onFileSelected(result)
 		}
 	}
 }
 
 @Composable
-public actual fun DirectoryPicker(
+actual fun DirectoryPicker(
 	show: Boolean,
 	initialDirectory: String?,
 	title: String?,
@@ -83,9 +71,15 @@ public actual fun DirectoryPicker(
 ) {
 	LaunchedEffect(show) {
 		if (show) {
-			val initialDir = initialDirectory ?: System.getProperty("user.dir")
-			val fileChosen = chooseDirectory(initialDir, title)
-			onFileSelected(fileChosen)
+			// Get path from native file picker
+			val filePicker = PlatformFilePickerUtil.current
+			val filePath = filePicker.pickDirectory(
+				initialDirectory = initialDirectory,
+				title = title,
+			)
+
+			// Return result
+			onFileSelected(filePath)
 		}
 	}
 }

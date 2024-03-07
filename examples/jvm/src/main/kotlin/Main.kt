@@ -51,17 +51,28 @@ fun main() = application {
 		}
 	}
 
-	FilePicker(showSingleFile, fileExtensions = listOf("jpg", "png")) { file ->
+	FilePicker(
+		showSingleFile,
+		fileExtensions = listOf("jpg", "png"),
+		title = "Choose a file",
+	) { file ->
 		pathSingleChosen = file?.file?.path ?: "none selected"
 		showSingleFile = false
 	}
 
-	MultipleFilePicker(showMultiFile, fileExtensions = listOf("jpg", "png")) { files ->
+	MultipleFilePicker(
+		showMultiFile,
+		fileExtensions = listOf("jpg", "png"),
+		title = "Choose files"
+	) { files ->
 		pathMultiChosen = files?.map { it.file.path + "\n" } ?: emptyList()
 		showMultiFile = false
 	}
 
-	DirectoryPicker(showDirPicker) { path ->
+	DirectoryPicker(
+		showDirPicker,
+		title = "Choose a directory"
+	) { path ->
 		dirChosen = path ?: "none selected"
 		showDirPicker = false
 	}
