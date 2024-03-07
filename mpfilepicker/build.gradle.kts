@@ -79,6 +79,8 @@ kotlin {
 			api(compose.preview)
 			api(compose.material)
 
+			implementation(libs.jna)
+
 			val lwjglVersion = "3.3.1"
 			listOf("lwjgl", "lwjgl-tinyfd").forEach { lwjglDep ->
 				implementation("org.lwjgl:${lwjglDep}:${lwjglVersion}")
