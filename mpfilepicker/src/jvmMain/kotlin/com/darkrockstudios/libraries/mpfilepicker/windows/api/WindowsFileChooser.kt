@@ -87,10 +87,10 @@ class WindowsFileChooser {
 	 */
 	var currentDirectory: File? = null
 		protected set
-	protected var filters: ArrayList<Array<String>>
+	private var filters: ArrayList<Array<String>>
 
-	protected var defaultFilename: String = ""
-	protected var dialogTitle: String = ""
+	private var defaultFilename: String = ""
+	private var dialogTitle: String = ""
 
 	/**
 	 * creates a new file chooser

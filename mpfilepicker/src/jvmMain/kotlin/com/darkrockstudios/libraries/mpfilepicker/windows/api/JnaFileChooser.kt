@@ -63,10 +63,10 @@ class JnaFileChooser
 	 */
 	var mode: Mode = Mode.Files
 
-	protected var defaultFile: String = ""
-	protected var dialogTitle: String = ""
-	protected var openButtonText: String = ""
-	protected var saveButtonText: String = ""
+	private var defaultFile: String = ""
+	private var dialogTitle: String = ""
+	private var openButtonText: String = ""
+	private var saveButtonText: String = ""
 
 	/**
 	 * creates a new file chooser with multiselection disabled and mode set
@@ -106,7 +106,7 @@ class JnaFileChooser
 	 *
 	 * @return true if the user clicked OK
 	 */
-	fun showOpenDialog(parent: Window): Boolean {
+	fun showOpenDialog(parent: Window?): Boolean {
 		return showDialog(parent, Action.Open)
 	}
 
@@ -121,7 +121,7 @@ class JnaFileChooser
 		return showDialog(parent, Action.Save)
 	}
 
-	private fun showDialog(parent: Window, action: Action): Boolean {
+	private fun showDialog(parent: Window?, action: Action): Boolean {
 		// native windows filechooser doesn't support mixed selection mode
 		if (Platform.isWindows() && mode != Mode.FilesAndDirectories) {
 			// windows filechooser can only multiselect files
@@ -151,7 +151,7 @@ class JnaFileChooser
 		return showSwingFileChooser(parent, action)
 	}
 
-	private fun showSwingFileChooser(parent: Window, action: Action): Boolean {
+	private fun showSwingFileChooser(parent: Window?, action: Action): Boolean {
 		val fc = JFileChooser(currentDirectory)
 		fc.isMultiSelectionEnabled = isMultiSelectionEnabled
 		fc.fileSelectionMode = mode.jFileChooserValue
@@ -208,7 +208,7 @@ class JnaFileChooser
 		return false
 	}
 
-	private fun showWindowsFileChooser(parent: Window, action: Action): Boolean {
+	private fun showWindowsFileChooser(parent: Window?, action: Action): Boolean {
 		val fc = WindowsFileChooser(currentDirectory)
 		fc.setFilters(filters)
 
@@ -226,7 +226,7 @@ class JnaFileChooser
 		return result
 	}
 
-	private fun showWindowsFolderBrowser(parent: Window): Boolean {
+	private fun showWindowsFolderBrowser(parent: Window?): Boolean {
 		val fb = WindowsFolderBrowser()
 		if (!dialogTitle.isEmpty()) {
 			fb.setTitle(dialogTitle)

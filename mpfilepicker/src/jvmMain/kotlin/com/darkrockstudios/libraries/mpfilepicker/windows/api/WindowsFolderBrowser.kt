@@ -56,7 +56,7 @@ class WindowsFolderBrowser {
 	fun showDialog(parent: Window?): File? {
 		OleInitialize(null)
 		val params = BrowseInfo()
-		params.hwndOwner = Native.getWindowPointer(parent)
+		params.hwndOwner = if (parent == null) null else Native.getWindowPointer(parent)
 		params.ulFlags =  // disable the OK button if the user selects a virtual PIDL
 			Shell32.BIF_RETURNONLYFSDIRS or  // BIF_USENEWUI is only available as of Windows 2000/Me (Shell32.dll 5.0)
 				// but I guess no one is using older versions anymore anyway right?!

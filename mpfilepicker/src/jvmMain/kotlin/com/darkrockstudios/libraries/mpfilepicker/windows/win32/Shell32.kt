@@ -3,7 +3,6 @@ package com.darkrockstudios.libraries.mpfilepicker.windows.win32
 import com.sun.jna.Native
 import com.sun.jna.Pointer
 import com.sun.jna.Structure
-import java.util.Arrays
 
 object Shell32 {
 	init {
@@ -26,21 +25,25 @@ object Shell32 {
 
 	// http://msdn.microsoft.com/en-us/library/bb773205.aspx
 	class BrowseInfo : Structure() {
-		var hwndOwner: Pointer? = null
-		var pidlRoot: Pointer? = null
-		var pszDisplayName: String? = null
-		var lpszTitle: String? = null
-		var ulFlags: Int = 0
-		var lpfn: Pointer? = null
-		var lParam: Pointer? = null
-		var iImage: Int = 0
+		@JvmField var hwndOwner: Pointer? = null
+		@JvmField var pidlRoot: Pointer? = null
+		@JvmField var pszDisplayName: String? = null
+		@JvmField var lpszTitle: String? = null
+		@JvmField var ulFlags: Int = 0
+		@JvmField var lpfn: Pointer? = null
+		@JvmField var lParam: Pointer? = null
+		@JvmField var iImage: Int = 0
 
 		override fun getFieldOrder(): List<String> {
-			return Arrays.asList(
-				*arrayOf(
-					"hwndOwner", "pidlRoot", "pszDisplayName", "lpszTitle",
-					"ulFlags", "lpfn", "lParam", "iImage"
-				)
+			return listOf(
+				"hwndOwner",
+				"pidlRoot",
+				"pszDisplayName",
+				"lpszTitle",
+				"ulFlags",
+				"lpfn",
+				"lParam",
+				"iImage"
 			)
 		}
 	}

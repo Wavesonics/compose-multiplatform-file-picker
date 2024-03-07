@@ -4,7 +4,6 @@ import com.sun.jna.Native
 import com.sun.jna.Pointer
 import com.sun.jna.Structure
 import com.sun.jna.WString
-import java.util.Arrays
 
 object Comdlg32 {
 	init {
@@ -63,36 +62,49 @@ object Comdlg32 {
 	const val FNERR_BUFFERTOOSMALL: Int = 0x3003
 
 	class OpenFileName : Structure() {
-		var lStructSize: Int = size()
-		var hwndOwner: Pointer? = null
-		var hInstance: Pointer? = null
-		var lpstrFilter: WString? = null
-		var lpstrCustomFilter: WString? = null
-		var nMaxCustFilter: Int = 0
-		var nFilterIndex: Int = 0
-		var lpstrFile: Pointer? = null
-		var nMaxFile: Int = 0
-		var lpstrDialogTitle: String? = null
-		var nMaxDialogTitle: Int = 0
-		var lpstrInitialDir: WString? = null
-		var lpstrTitle: WString? = null
-		var Flags: Int = 0
-		var nFileOffset: Short = 0
-		var nFileExtension: Short = 0
-		var lpstrDefExt: String? = null
-		var lCustData: Pointer? = null
-		var lpfnHook: Pointer? = null
-		var lpTemplateName: Pointer? = null
+		@JvmField var lStructSize: Int = size()
+		@JvmField var hwndOwner: Pointer? = null
+		@JvmField var hInstance: Pointer? = null
+		@JvmField var lpstrFilter: WString? = null
+		@JvmField var lpstrCustomFilter: WString? = null
+		@JvmField var nMaxCustFilter: Int = 0
+		@JvmField var nFilterIndex: Int = 0
+		@JvmField var lpstrFile: Pointer? = null
+		@JvmField var nMaxFile: Int = 0
+		@JvmField var lpstrDialogTitle: String? = null
+		@JvmField var nMaxDialogTitle: Int = 0
+		@JvmField var lpstrInitialDir: WString? = null
+		@JvmField var lpstrTitle: WString? = null
+		@JvmField var Flags: Int = 0
+		@JvmField var nFileOffset: Short = 0
+		@JvmField var nFileExtension: Short = 0
+		@JvmField var lpstrDefExt: String? = null
+		@JvmField var lCustData: Pointer? = null
+		@JvmField var lpfnHook: Pointer? = null
+		@JvmField var lpTemplateName: Pointer? = null
+
 		override fun getFieldOrder(): List<String> {
-			return Arrays.asList(
-				*arrayOf(
-					"lStructSize",
-					"hwndOwner", "hInstance", "lpstrFilter", "lpstrCustomFilter",
-					"nMaxCustFilter", "nFilterIndex", "lpstrFile", "nMaxFile",
-					"lpstrDialogTitle", "nMaxDialogTitle", "lpstrInitialDir", "lpstrTitle",
-					"Flags", "nFileOffset", "nFileExtension", "lpstrDefExt",
-					"lCustData", "lpfnHook", "lpTemplateName"
-				)
+			return listOf(
+				"lStructSize",
+				"hwndOwner",
+				"hInstance",
+				"lpstrFilter",
+				"lpstrCustomFilter",
+				"nMaxCustFilter",
+				"nFilterIndex",
+				"lpstrFile",
+				"nMaxFile",
+				"lpstrDialogTitle",
+				"nMaxDialogTitle",
+				"lpstrInitialDir",
+				"lpstrTitle",
+				"Flags",
+				"nFileOffset",
+				"nFileExtension",
+				"lpstrDefExt",
+				"lCustData",
+				"lpfnHook",
+				"lpTemplateName"
 			)
 		}
 	}

@@ -2,6 +2,7 @@ package com.darkrockstudios.libraries.mpfilepicker
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import com.darkrockstudios.libraries.mpfilepicker.windows.api.JnaFileChooser
 import java.io.File
 
 
@@ -24,6 +25,21 @@ public actual fun FilePicker(
 			} else {
 				""
 			}
+
+			val chooser = JnaFileChooser()
+			chooser.mode = JnaFileChooser.Mode.Directories
+			chooser.showOpenDialog(null)
+			chooser.selectedFile?.let {
+				onFileSelected(PlatformFile(it))
+			} ?: onFileSelected(null)
+
+//			if (chooser.showOpenDialog(parent = null)) {
+//				chooser.selectedFile?.let {
+//					onFileSelected(PlatformFile(it))
+//				}
+//			} else {
+//				onFileSelected(null)
+//			}
 
 
 //			val pool = Foundation.NSAutoreleasePool()
