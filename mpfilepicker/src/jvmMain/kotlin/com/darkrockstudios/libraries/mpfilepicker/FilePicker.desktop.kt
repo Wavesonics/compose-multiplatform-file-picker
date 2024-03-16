@@ -89,3 +89,29 @@ public actual fun DirectoryPicker(
 		}
 	}
 }
+
+@Composable
+public actual fun SaveFilePicker(
+	show: Boolean,
+	title: String?,
+	path: String?,
+	filename: String,
+	fileExtension: String?,
+	onFileSelected: FileSelected,
+) {
+	LaunchedEffect(show) {
+		if (show) {
+			val initialDir = path ?: System.getProperty("user.dir")
+			val filePath = chooseSaveFile(
+				path = initialDir,
+				filename = filename,
+				title = title,
+			)
+			if (filePath != null) {
+				onFileSelected(PlatformFile(File(filePath)))
+			} else {
+				onFileSelected(null)
+			}
+		}
+	}
+}

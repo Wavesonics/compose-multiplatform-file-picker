@@ -20,6 +20,8 @@ kotlin {
 				implementation(compose.material3)
 				implementation(compose.runtime)
 				implementation(project(":mpfilepicker"))
+
+				implementation("org.jetbrains.kotlinx:kotlinx-io-core:0.3.1")
 			}
 		}
 	}

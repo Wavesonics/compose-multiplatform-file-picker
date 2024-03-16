@@ -4,21 +4,40 @@ import com.darkrockstudios.libraries.mpfilepicker.FilePickerLauncher.Mode
 import com.darkrockstudios.libraries.mpfilepicker.FilePickerLauncher.Mode.Directory
 import com.darkrockstudios.libraries.mpfilepicker.FilePickerLauncher.Mode.File
 import com.darkrockstudios.libraries.mpfilepicker.FilePickerLauncher.Mode.MultipleFiles
+import kotlinx.cinterop.BetaInteropApi
+import kotlinx.cinterop.CPointer
+import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.ObjCObjectVar
+import kotlinx.cinterop.alloc
+import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.pointed
+import kotlinx.cinterop.ptr
+import kotlinx.cinterop.value
+import platform.Foundation.NSDocumentDirectory
+import platform.Foundation.NSError
+import platform.Foundation.NSFileManager
+import platform.Foundation.NSSearchPathForDirectoriesInDomains
+import platform.Foundation.NSString
 import platform.Foundation.NSURL
+import platform.Foundation.NSUTF8StringEncoding
+import platform.Foundation.NSUserDomainMask
+import platform.Foundation.create
+import platform.Foundation.dataUsingEncoding
 import platform.UIKit.UIAdaptivePresentationControllerDelegateProtocol
 import platform.UIKit.UIApplication
 import platform.UIKit.UIDocumentPickerDelegateProtocol
-import platform.UIKit.UIDocumentPickerMode
 import platform.UIKit.UIDocumentPickerViewController
 import platform.UIKit.UIPresentationController
 import platform.UniformTypeIdentifiers.UTType
 import platform.UniformTypeIdentifiers.UTTypeContent
+import platform.UniformTypeIdentifiers.UTTypeFileURL
 import platform.UniformTypeIdentifiers.UTTypeFolder
 import platform.darwin.NSObject
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 import kotlin.native.concurrent.ThreadLocal
+import kotlin.random.Random
 
 /**
  * Wraps platform specific implementation for launching a
@@ -74,6 +93,13 @@ public class FilePickerLauncher(
 		 *  selected on this file picker.
 		 */
 		public data class File(val extensions: List<String>) : Mode
+
+		/**
+		 * Use this mode to open a [FilePickerLauncher] saving a file.
+		 *
+		 * @param filepath of the file that is going to be saved
+		 */
+		public data class Save(val filepath: String) : Mode
 	}
 
 	private val pickerDelegate = object : NSObject(),
@@ -83,7 +109,6 @@ public class FilePickerLauncher(
 		override fun documentPicker(
 			controller: UIDocumentPickerViewController, didPickDocumentsAtURLs: List<*>
 		) {
-
 			(didPickDocumentsAtURLs as? List<*>)?.let { list ->
 				val files = list.map { file ->
 					(file as? NSURL)?.let { nsUrl ->
@@ -115,16 +140,28 @@ public class FilePickerLauncher(
 			is File -> pickerMode.extensions
 				.mapNotNull { UTType.typeWithFilenameExtension(it) }
 				.ifEmpty { listOf(UTTypeContent) }
+
 			is MultipleFiles -> pickerMode.extensions
 				.mapNotNull { UTType.typeWithFilenameExtension(it) }
 				.ifEmpty { listOf(UTTypeContent) }
+
+			is Mode.Save -> listOf(UTTypeFileURL)
 		}
 
-	private fun createPicker() = UIDocumentPickerViewController(
-		forOpeningContentTypes = contentTypes
-	).apply {
-		delegate = pickerDelegate
-		initialDirectory?.let { directoryURL = NSURL(string = it) }
+	private fun createPicker(): UIDocumentPickerViewController {
+		return (if (pickerMode is Mode.Save) {
+			val filepathAsNsUrl = NSURL(fileURLWithPath = pickerMode.filepath)
+			UIDocumentPickerViewController(
+				forExportingURLs = listOf(filepathAsNsUrl)
+			)
+		} else {
+			UIDocumentPickerViewController(
+				forOpeningContentTypes = contentTypes,
+			)
+		}).apply {
+			delegate = pickerDelegate
+			initialDirectory?.let { directoryURL = NSURL(string = it) }
+		}
 	}
 
 
@@ -194,5 +231,114 @@ public suspend fun launchDirectoryPicker(
 		}
 	} catch (e: Throwable) {
 		cont.resumeWithException(e)
+	}
+}
+
+public suspend fun launchSaveFilePicker(
+	initialDirectory: String? = null,
+	filename: String,
+): PlatformFile? = suspendCoroutine { cont ->
+	var hasCreatedDir = false
+	var randomDirPath = ""
+	try {
+		val defaultPath =
+			NSSearchPathForDirectoriesInDomains(
+				NSDocumentDirectory,
+				NSUserDomainMask,
+				true
+			).first() as String
+
+		// We create a random directory so that we respect the filename given to the file
+		fun generateRandomDirPath(initialDirectory: String?): String {
+			val randomSuffix = Random.nextInt()
+			return "${initialDirectory?.takeIf { it.isNotBlank() } ?: defaultPath}/tmp$randomSuffix"
+		}
+
+		// We keep trying random values just in case there is a file called tmp7688958943 which
+		//  just happens to be the random value we generate. This should be extremely unlikely
+		//  and most times this loop will only run once
+		// TODO could this fail for an irrecoverable error? If yes, we should check for it
+		//  before retrying ad infinitum
+		do {
+			randomDirPath = generateRandomDirPath(initialDirectory)
+			val createDirResult = createTmpDir(randomDirPath)
+		} while (createDirResult.getOrNull() != true)
+		hasCreatedDir = true
+		val filePath = "$randomDirPath/$filename"
+
+		val createFileResult = createTmpFile(path = filePath, "")
+		if (createFileResult.getOrNull() != true) {
+			tryDeleteTmpDir(randomDirPath)
+			createFileResult.exceptionOrNull()?.let {
+				cont.resumeWithException(it)
+			} ?: cont.resume(null)
+		} else {
+			FilePickerLauncher(
+				initialDirectory = initialDirectory,
+				pickerMode = Mode.Save(filePath),
+				onFileSelected = { selected ->
+					FilePickerLauncher.activeLauncher = null
+					tryDeleteTmpDir(randomDirPath)
+					cont.resume(selected.orEmpty().firstOrNull())
+				}
+			).also { launcher ->
+				FilePickerLauncher.activeLauncher = launcher
+				launcher.launchFilePicker()
+			}
+		}
+	} catch (e: Throwable) {
+		if (hasCreatedDir) tryDeleteTmpDir(randomDirPath)
+		cont.resumeWithException(e)
+	}
+}
+
+@OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
+internal fun createTmpDir(path: String): Result<Boolean> = runCatching {
+	memScoped {
+		val errorPointer: CPointer<ObjCObjectVar<NSError?>> =
+			alloc<ObjCObjectVar<NSError?>>().ptr
+		val success = NSFileManager().createDirectoryAtPath(
+			path,
+			withIntermediateDirectories = false,
+			attributes = null,
+			errorPointer,
+		)
+		if (success) true
+		else throw Throwable(errorPointer.pointed.value?.localizedDescription)
+	}
+}
+
+@OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
+internal fun createTmpFile(path: String, contents: String): Result<Boolean> = runCatching {
+	val contentsAsNsData = memScoped {
+		NSString
+			.create(string = contents)
+			.dataUsingEncoding(NSUTF8StringEncoding)
+	} ?: throw Throwable("contents should only include UTF8 values")
+	NSFileManager().createFileAtPath(
+		path,
+		contentsAsNsData,
+		null,
+	)
+}
+
+internal fun tryDeleteTmpDir(path: String) {
+	val deleted = deleteTmpDir(path)
+	if (deleted.getOrNull() != true) {
+		// Log the fact that we couldn't delete the tmp file. We don't pass an error
+		//  or false to onSavedFile because this doesn't affect the operation, it's
+		//  just some cleanup that failed
+		println("couldn't delete the tmp dir")
+	}
+}
+
+@OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
+internal fun deleteTmpDir(path: String): Result<Boolean> = runCatching {
+	memScoped {
+		val errorPointer: CPointer<ObjCObjectVar<NSError?>> =
+			alloc<ObjCObjectVar<NSError?>>().ptr
+		val success = NSFileManager().removeItemAtPath(path, errorPointer)
+		if (success) true
+		else throw Throwable(errorPointer.pointed.value?.localizedDescription)
 	}
 }

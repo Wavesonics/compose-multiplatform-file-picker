@@ -17,7 +17,7 @@ public actual fun FilePicker(
 	initialDirectory: String?,
 	fileExtensions: List<String>,
 	title: String?,
-	onFileSelected: FileSelected
+	onFileSelected: FileSelected,
 ) {
 	val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocument()) { result ->
 		if (result != null) {
@@ -96,6 +96,32 @@ public actual fun DirectoryPicker(
 	LaunchedEffect(show) {
 		if (show) {
 			launcher.launch(null)
+		}
+	}
+}
+
+@Composable
+public actual fun SaveFilePicker(
+	show: Boolean,
+	title: String?,
+	path: String?,
+	filename: String,
+	fileExtension: String?,
+	onFileSelected: FileSelected,
+) {
+	val launcher = rememberLauncherForActivityResult(
+		contract = ActivityResultContracts.CreateDocument(fileExtension ?: "*/*")
+	) { result ->
+		if (result != null) {
+			onFileSelected(PlatformFile(result))
+		} else {
+			onFileSelected(null)
+		}
+	}
+
+	LaunchedEffect(show) {
+		if (show) {
+			launcher.launch(filename)
 		}
 	}
 }
