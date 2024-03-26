@@ -4,12 +4,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import java.io.File
 
-public actual data class PlatformFile(
+actual data class PlatformFile(
 	val file: File,
-)
+) {
+	actual suspend fun getBytes(): ByteArray? =
+		file.readBytes()
+}
 
 @Composable
-public actual fun FilePicker(
+actual fun FilePicker(
 	show: Boolean,
 	initialDirectory: String?,
 	fileExtensions: List<String>,
@@ -43,7 +46,7 @@ public actual fun FilePicker(
 }
 
 @Composable
-public actual fun MultipleFilePicker(
+actual fun MultipleFilePicker(
 	show: Boolean,
 	initialDirectory: String?,
 	fileExtensions: List<String>,
@@ -75,7 +78,7 @@ public actual fun MultipleFilePicker(
 }
 
 @Composable
-public actual fun DirectoryPicker(
+actual fun DirectoryPicker(
 	show: Boolean,
 	initialDirectory: String?,
 	title: String?,

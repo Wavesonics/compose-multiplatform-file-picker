@@ -15,12 +15,15 @@ import org.w3c.files.FileReader
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-public actual data class PlatformFile(
+actual data class PlatformFile(
 	val file: File,
-)
+) {
+	actual suspend fun getBytes(): ByteArray? =
+		readFileAsByteArray(file)
+}
 
 @Composable
-public actual fun FilePicker(
+actual fun FilePicker(
 	show: Boolean,
 	initialDirectory: String?,
 	fileExtensions: List<String>,
@@ -30,7 +33,8 @@ public actual fun FilePicker(
 	LaunchedEffect(show) {
 		if (show) {
 			val fixedExtensions = fileExtensions.map { ".$it" }
-			val file: List<File> = document.selectFilesFromDisk(fixedExtensions.joinToString(","), false)
+			val file: List<File> =
+				document.selectFilesFromDisk(fixedExtensions.joinToString(","), false)
 			val platformFile = PlatformFile(file.first())
 			onFileSelected(platformFile)
 		}
@@ -38,7 +42,7 @@ public actual fun FilePicker(
 }
 
 @Composable
-public actual fun MultipleFilePicker(
+actual fun MultipleFilePicker(
 	show: Boolean,
 	initialDirectory: String?,
 	fileExtensions: List<String>,
@@ -48,7 +52,8 @@ public actual fun MultipleFilePicker(
 	LaunchedEffect(show) {
 		if (show) {
 			val fixedExtensions = fileExtensions.map { ".$it" }
-			val files: List<File> = document.selectFilesFromDisk(fixedExtensions.joinToString(","), true)
+			val files: List<File> =
+				document.selectFilesFromDisk(fixedExtensions.joinToString(","), true)
 			val webFiles = files.map { PlatformFile(it) }
 			onFileSelected(webFiles)
 		}
@@ -56,7 +61,7 @@ public actual fun MultipleFilePicker(
 }
 
 @Composable
-public actual fun DirectoryPicker(
+actual fun DirectoryPicker(
 	show: Boolean,
 	initialDirectory: String?,
 	title: String?,
@@ -87,7 +92,7 @@ private suspend fun Document.selectFilesFromDisk(
 	tempInput.remove()
 }
 
-public suspend fun readFileAsText(file: File): String = suspendCoroutine {
+suspend fun readFileAsText(file: File): String = suspendCoroutine {
 	val reader = FileReader()
 	reader.onload = { loadEvt ->
 		val content = loadEvt.target.asDynamic().result as String
@@ -96,15 +101,15 @@ public suspend fun readFileAsText(file: File): String = suspendCoroutine {
 	reader.readAsText(file, "UTF-8")
 }
 
-public suspend fun readFileAsByteArray(file: File): ByteArray = suspendCoroutine {
+suspend fun readFileAsByteArray(file: File): ByteArray = suspendCoroutine {
 	val reader = FileReader()
-	reader.onload = {loadEvt ->
+	reader.onload = { loadEvt ->
 		val content = loadEvt.target.asDynamic().result as ArrayBuffer
 		val array = Uint8Array(content)
 		val fileByteArray = ByteArray(array.length)
-			for (i in 0 until array.length) {
-				fileByteArray[i] = array[i]
-			}
+		for (i in 0 until array.length) {
+			fileByteArray[i] = array[i]
+		}
 		it.resumeWith(Result.success(fileByteArray))
 	}
 	reader.readAsArrayBuffer(file)

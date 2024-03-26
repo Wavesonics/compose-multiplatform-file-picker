@@ -1,32 +1,44 @@
 package com.darkrockstudios.libraries.mpfilepicker
 
+import android.content.Context
 import android.net.Uri
 import android.webkit.MimeTypeMap
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
 
-public actual data class PlatformFile(
+actual data class PlatformFile(
 	val uri: Uri,
-)
+	private val context: Context,
+) {
+	actual suspend fun getBytes(): ByteArray? = context
+		.contentResolver
+		.openInputStream(uri)
+		.use { stream -> stream?.readBytes() }
+}
 
 @Composable
-public actual fun FilePicker(
+actual fun FilePicker(
 	show: Boolean,
 	initialDirectory: String?,
 	fileExtensions: List<String>,
 	title: String?,
 	onFileSelected: FileSelected
 ) {
-	val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocument()) { result ->
-		if (result != null) {
-			val platformFile = PlatformFile(result)
-			onFileSelected(platformFile)
-		} else {
-			onFileSelected(null)
+	val context = LocalContext.current
+	val launcher =
+		rememberLauncherForActivityResult(
+			contract = ActivityResultContracts.OpenDocument()
+		) { result ->
+			if (result != null) {
+				val platformFile = PlatformFile(result, context)
+				onFileSelected(platformFile)
+			} else {
+				onFileSelected(null)
+			}
 		}
-	}
 
 	val mimeTypeMap = MimeTypeMap.getSingleton()
 	val mimeTypes = if (fileExtensions.isNotEmpty()) {
@@ -45,18 +57,19 @@ public actual fun FilePicker(
 }
 
 @Composable
-public actual fun MultipleFilePicker(
+actual fun MultipleFilePicker(
 	show: Boolean,
 	initialDirectory: String?,
 	fileExtensions: List<String>,
 	title: String?,
 	onFileSelected: FilesSelected
 ) {
+	val context = LocalContext.current
 	val launcher = rememberLauncherForActivityResult(
 		contract = ActivityResultContracts.OpenMultipleDocuments()
 	) { result ->
 		val files = result.map { uri ->
-			PlatformFile(uri)
+			PlatformFile(uri, context)
 		}
 
 		if (files.isNotEmpty()) {
@@ -83,15 +96,16 @@ public actual fun MultipleFilePicker(
 }
 
 @Composable
-public actual fun DirectoryPicker(
+actual fun DirectoryPicker(
 	show: Boolean,
 	initialDirectory: String?,
 	title: String?,
 	onFileSelected: (String?) -> Unit
 ) {
-	val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocumentTree()) { result ->
-		onFileSelected(result?.toString())
-	}
+	val launcher =
+		rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocumentTree()) { result ->
+			onFileSelected(result?.toString())
+		}
 
 	LaunchedEffect(show) {
 		if (show) {
