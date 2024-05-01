@@ -1,7 +1,7 @@
 [versions]
 agp = "8.3.0"
 androidx-appcompat = "1.6.1"
-androidx-core = "1.12.0"
+androidx-core = "1.13.1"
 compose-android = "1.8.2"
 compose-plugin = "1.6.1"
 junit = "4.13.2"
