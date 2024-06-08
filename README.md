@@ -14,6 +14,15 @@ A multiplatform compose widget for picking files with each platform's Native Fil
 implementation("com.darkrockstudios:mpfilepicker:3.1.0")
 ```
 
+For use in compose desktops native distribution, include this in your build.gradle.kts as well:
+```build.gradle.kts
+compose.desktop.application {
+    nativeDistributions {
+        modules("jdk.unsupported")
+    }
+}
+```
+
 ## How to use
 
 In your shared jetbrains compose multiplatform code, add one of the following.
