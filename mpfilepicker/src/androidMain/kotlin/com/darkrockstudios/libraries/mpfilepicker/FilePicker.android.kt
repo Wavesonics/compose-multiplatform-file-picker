@@ -34,7 +34,7 @@ public actual fun FilePicker(
 			mimeTypeMap.getMimeTypeFromExtension(ext)
 		}.toTypedArray()
 	} else {
-		emptyArray()
+		arrayOf("*/*")
 	}
 
 	LaunchedEffect(show) {
@@ -72,7 +72,7 @@ public actual fun MultipleFilePicker(
 			mimeTypeMap.getMimeTypeFromExtension(ext)
 		}.toTypedArray()
 	} else {
-		emptyArray()
+		arrayOf("*/*")
 	}
 
 	LaunchedEffect(show) {
