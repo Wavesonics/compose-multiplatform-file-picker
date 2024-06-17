@@ -25,6 +25,6 @@ jobs:
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@v2.1.1
       - name: Publish package
-        uses: gradle/gradle-build-action@v3.1.0
+        uses: gradle/gradle-build-action@v3.4.2
         with:
           arguments: mpfilepicker:publishAllPublicationsToMavenRepository
