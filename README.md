@@ -1,4 +1,4 @@
-# Thanks for contribtuions and all the issues
+# Thanks for all the contribtuions
 Currently this project is unmaintained. If you want an alternative I will recommend [FileKit](https://github.com/vinceglb/FileKit)
 
 # Compose Multiplatform File Picker
