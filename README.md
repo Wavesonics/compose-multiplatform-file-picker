@@ -1,3 +1,6 @@
+# Thanks for all the contribtuions
+Currently this project is unmaintained. If you want an alternative I will recommend [FileKit](https://github.com/vinceglb/FileKit)
+
 # Compose Multiplatform File Picker
 
 ![MIT License](https://img.shields.io/github/license/Wavesonics/compose-multiplatform-file-picker) ![Latest Release](https://img.shields.io/github/v/release/Wavesonics/compose-multiplatform-file-picker?include_prereleases)
