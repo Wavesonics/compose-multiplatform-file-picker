@@ -2,14 +2,16 @@ package com.darkrockstudios.libraries.mpfilepicker
 
 import androidx.compose.runtime.Composable
 
-public expect class PlatformFile
+expect class PlatformFile {
+	suspend fun getBytes(): ByteArray?
+}
 
-public typealias FileSelected = (PlatformFile?) -> Unit
+typealias FileSelected = (PlatformFile?) -> Unit
 
-public typealias FilesSelected = (List<PlatformFile>?) -> Unit
+typealias FilesSelected = (List<PlatformFile>?) -> Unit
 
 @Composable
-public expect fun FilePicker(
+expect fun FilePicker(
 	show: Boolean,
 	initialDirectory: String? = null,
 	fileExtensions: List<String> = emptyList(),
@@ -18,7 +20,7 @@ public expect fun FilePicker(
 )
 
 @Composable
-public expect fun MultipleFilePicker(
+expect fun MultipleFilePicker(
 	show: Boolean,
 	initialDirectory: String? = null,
 	fileExtensions: List<String> = emptyList(),
@@ -27,7 +29,7 @@ public expect fun MultipleFilePicker(
 )
 
 @Composable
-public expect fun DirectoryPicker(
+expect fun DirectoryPicker(
 	show: Boolean,
 	initialDirectory: String? = null,
 	title: String? = null,
