@@ -10,10 +10,16 @@ import androidx.compose.ui.window.ComposeUIViewController
 import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import com.darkrockstudios.libraries.mpfilepicker.MultipleFilePicker
+import com.darkrockstudios.libraries.mpfilepicker.SaveFilePicker
 import com.darkrockstudios.libraries.mpfilepicker.launchDirectoryPicker
 import com.darkrockstudios.libraries.mpfilepicker.launchFilePicker
+import com.darkrockstudios.libraries.mpfilepicker.launchSaveFilePicker
+import kotlinx.cinterop.BetaInteropApi
+import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.memScoped
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import platform.Foundation.*
 import platform.UIKit.UIViewController
 
 @Suppress("Unused", "FunctionName")
@@ -75,8 +81,9 @@ fun MainViewController(): UIViewController = ComposeUIViewController {
 
 			Button(onClick = {
 				MainScope().launch {
-					nonComposeMultipleFileChosen = launchFilePicker(fileExtensions = fileType, allowMultiple = true)
-						.map { it.nsUrl.path + "\n" }
+					nonComposeMultipleFileChosen =
+						launchFilePicker(fileExtensions = fileType, allowMultiple = true)
+							.map { it.nsUrl.path + "\n" }
 				}
 			}) {
 
@@ -116,6 +123,58 @@ fun MainViewController(): UIViewController = ComposeUIViewController {
 			}
 			Text("Directory Chosen: $nonComposeDirChosen")
 
+			/////////////////////////////////////////////////////////////////
+
+			var showSaveFilePicker by remember { mutableStateOf(false) }
+			var savedFile by remember { mutableStateOf(false) }
+
+			Button(onClick = {
+				showSaveFilePicker = true
+			}) {
+				Text("Choose Save")
+			}
+			Text("Save File Chosen: $savedFile")
+
+			SaveFilePicker(
+				showSaveFilePicker,
+				filename = "newFileName.txt",
+			) { selectedFile ->
+				val contents = "Slick saving tech"
+				savedFile = selectedFile?.nsUrl?.path?.let { path ->
+					writeToFile(path, contents).getOrNull() == true
+				} ?: false
+				showSaveFilePicker = false
+			}
+
+			/////////////////////////////////////////////////////////////////
+
+			var nonComposeSaveFileChosen by remember { mutableStateOf(false) }
+
+			Button(onClick = {
+				MainScope().launch {
+					nonComposeSaveFileChosen = launchSaveFilePicker(
+						filename = "newNcFileName.txt",
+					)?.let { selectedFile ->
+						val contents = "Slick saving tech"
+						selectedFile.nsUrl.path?.let { path ->
+							writeToFile(path, contents).getOrNull() == true
+						}
+					} ?: false
+				}
+			}) {
+				Text("Choose Save Non-Compose")
+			}
+			Text("Save File Chosen: $nonComposeSaveFileChosen")
 		}
 	}
+}
+
+@OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
+private fun writeToFile(path: String, contents: String): Result<Boolean> = runCatching {
+	val contentsAsNsData = memScoped {
+		NSString
+			.create(string = contents)
+			.dataUsingEncoding(NSUTF8StringEncoding)
+	} ?: throw Throwable("contents should only include UTF8 values")
+	contentsAsNsData.writeToFile(path, atomically = true)
 }

@@ -30,7 +30,10 @@ public actual fun FilePicker(
 	LaunchedEffect(show) {
 		if (show) {
 			val fixedExtensions = fileExtensions.map { ".$it" }
-			val file: List<File> = document.selectFilesFromDisk(fixedExtensions.joinToString(","), false)
+			val file: List<File> = document.selectFilesFromDisk(
+				fixedExtensions.joinToString(","),
+				false,
+			)
 			val platformFile = PlatformFile(file.first())
 			onFileSelected(platformFile)
 		}
@@ -48,7 +51,11 @@ public actual fun MultipleFilePicker(
 	LaunchedEffect(show) {
 		if (show) {
 			val fixedExtensions = fileExtensions.map { ".$it" }
-			val files: List<File> = document.selectFilesFromDisk(fixedExtensions.joinToString(","), true)
+			val files: List<File> =
+				document.selectFilesFromDisk(
+					fixedExtensions.joinToString(","),
+					true,
+				)
 			val webFiles = files.map { PlatformFile(it) }
 			onFileSelected(webFiles)
 		}
@@ -66,9 +73,22 @@ public actual fun DirectoryPicker(
 	throw NotImplementedError("DirectoryPicker is not supported on the web")
 }
 
+@Composable
+public actual fun SaveFilePicker(
+	show: Boolean,
+	title: String?,
+	path: String?,
+	filename: String,
+	fileExtension: String?,
+	onFileSelected: FileSelected,
+) {
+	// in a browser we can not save files only download of an existing file is supported
+	throw NotImplementedError("SaveFilePicker is not supported on the web")
+}
+
 private suspend fun Document.selectFilesFromDisk(
 	accept: String,
-	isMultiple: Boolean
+	isMultiple: Boolean,
 ): List<File> = suspendCoroutine {
 	val tempInput = (createElement("input") as HTMLInputElement).apply {
 		type = "file"
@@ -98,13 +118,13 @@ public suspend fun readFileAsText(file: File): String = suspendCoroutine {
 
 public suspend fun readFileAsByteArray(file: File): ByteArray = suspendCoroutine {
 	val reader = FileReader()
-	reader.onload = {loadEvt ->
+	reader.onload = { loadEvt ->
 		val content = loadEvt.target.asDynamic().result as ArrayBuffer
 		val array = Uint8Array(content)
 		val fileByteArray = ByteArray(array.length)
-			for (i in 0 until array.length) {
-				fileByteArray[i] = array[i]
-			}
+		for (i in 0 until array.length) {
+			fileByteArray[i] = array[i]
+		}
 		it.resumeWith(Result.success(fileByteArray))
 	}
 	reader.readAsArrayBuffer(file)

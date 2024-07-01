@@ -52,3 +52,16 @@ internal fun chooseDirectory(
 	title,
 	initialDirectory
 )
+
+internal fun chooseSaveFile(
+	path: String,
+	filename: String,
+	title: String?,
+) : String? = MemoryStack.stackPush().use { _ ->
+	TinyFileDialogs.tinyfd_saveFileDialog(
+		title,
+		"$path${System.getProperty("file.separator")}$filename",
+		null,
+		null,
+	)
+}

@@ -54,7 +54,11 @@ fun main() {
 		Br()
 		Text("Files names: $filesNames")
 		Br()
-		MultipleFilePicker(showMultipleFile, fileExtensions = listOf("png", "jpeg", "jpg"), initialDirectory = null) { files ->
+		MultipleFilePicker(
+			showMultipleFile,
+			fileExtensions = listOf("png", "jpeg", "jpg"),
+			initialDirectory = null
+		) { files ->
 			filesNames = files?.map { it.file.name } ?: listOf()
 			showMultipleFile = false
 		}
